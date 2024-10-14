@@ -55,7 +55,7 @@ const accountSchema = new mongoose.Schema(
 ); // Tự động thêm createdAt và updatedAt
 
 // Tạo model từ schema
-const accountModel =
+const AccountModel =
   mongoose.model.account || mongoose.model("account", accountSchema);
 
-export default accountModel;
+export default AccountModel;

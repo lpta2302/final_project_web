@@ -2,16 +2,20 @@ import express from "express";
 import dotenv from "dotenv";
 import database from "./config/database.js";
 import routesAdmin from "./routes/admin/index.route.js";
+import bodyParser from "body-parser";
 
 // Dotenv
 dotenv.config();
 // End dotenv
 
-//Database
+// Database
 database();
-//End database
+// End database
 
 const app = express();
+
+// parse application/json
+app.use(bodyParser.json()); // Di chuyển cấu hình body-parser lên đây
 
 // Routeradmin
 routesAdmin(app);
