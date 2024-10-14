@@ -41,14 +41,20 @@ const accountSchema = new mongoose.Schema(
     accountStatus: {
       type: String,
       required: true,
-      enum: ["active", "inactive", "suspended"], // Trạng thái tài khoản có thể là 3 giá trị này
-      default: "inactive", // Giá trị mặc định
+      enum: ["active", "inactive"], // Trạng thái tài khoản có thể là 3 giá trị này
+      default: "active", // Giá trị mặc định
     },
     accountCode: {
       type: String,
       required: true,
       unique: true, // Đảm bảo mã tài khoản là duy nhất
       trim: true,
+    },
+    accountRole: {
+      type: String,
+      required: true,
+      enum: ["admin", "client"],
+      default: "client",
     },
   },
   { timestamps: true }
