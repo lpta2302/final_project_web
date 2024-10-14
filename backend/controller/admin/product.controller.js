@@ -12,6 +12,18 @@ export const postProduct = async (req, res) => {
   try {
     const record = new Product(req.body);
 
+    const exitProductCode = await Product.findOne({
+      productCode: req.body.productCode,
+    });
+
+    if (exitProductCode) {
+      res.json({
+        code: 400,
+        message: "Mã sản phẩm đã tồn tại",
+      });
+      return;
+    }
+
     await record.save();
 
     res.json({
@@ -21,7 +33,7 @@ export const postProduct = async (req, res) => {
   } catch (error) {
     res.json({
       code: 400,
-      message: "Tạo sản phẩm thất bại",
+      message: "Tên sản phẩm đã tồn tại",
     });
   }
 };
@@ -78,6 +90,23 @@ export const detail = async (req, res) => {
     res.json({
       code: 200,
       record: record,
+    });
+  } catch (error) {
+    res.json({
+      code: 400,
+      message: "Đã có lỗi xảy ra",
+    });
+  }
+};
+
+// [GET] /products/search
+export const search = async (req, res) => {
+  try {
+    const record = await Product.find({});
+
+    res.json({
+      record: record,
+      code: 200,
     });
   } catch (error) {
     res.json({

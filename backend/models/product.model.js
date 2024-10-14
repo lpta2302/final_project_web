@@ -13,7 +13,7 @@ const productSchema = new mongoose.Schema(
     stockQuantity: Number,
     productStatus: String,
     imageURLs: {
-      type: [String], // Danh sách chứa các URL của hình ảnh
+      type: [String],
     },
     slug: { type: String, slug: "productName" },
   },

@@ -8,5 +8,6 @@ router.get("/productDetail/:id", controller.detail);
 router.post("/postProduct", controller.postProduct);
 router.patch("/editProduct/:id", controller.editProduct);
 router.delete("/deleteProduct/:id", controller.deleteProduct);
+router.get("/search", controller.search);
 
 export default router;

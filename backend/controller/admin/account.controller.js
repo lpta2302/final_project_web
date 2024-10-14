@@ -9,7 +9,7 @@ export const register = async (req, res) => {
     if (isAccount) {
       return res.status(400).json({
         code: 400,
-        message: "Tài khoản đã tồn tại",
+        message: "Email đã tồn tại",
       });
     } else {
       // Mã hóa mật khẩu trước khi lưu
