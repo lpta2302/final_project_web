@@ -5,6 +5,8 @@ import bodyParser from "body-parser";
 import morgan from "morgan";
 import connectDB from "./config/mongodb.js";
 import routesAdmin from "./routes/admin/index.route.js";
+import dotenv from "dotenv";
+import database from "./config/database.js";
 
 // App config
 const app = express();
@@ -14,15 +16,6 @@ const port = process.env.PORT || 4000;
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(cors());
 app.use(morgan("common"));
-
-// Routes
-routesAdmin(app);
-
-// Start Server
-app.listen(port, () => {
-  console.log("Server is running at port: " + port);
-  connectDB();
-});
 
 
 
@@ -34,15 +27,11 @@ dotenv.config();
 database();
 // End database
 
-const app = express();
-
-// parse application/json
-app.use(bodyParser.json()); // Di chuyển cấu hình body-parser lên đây
-
-// Routeradmin
+// Routes
 routesAdmin(app);
-// End routeradmin
 
-app.listen(4000, () => {
-  console.log(`Server is running on port ${process.env.PORT}`);
+
+// Start Server
+app.listen(port, () => {
+  console.log("Server is running at port: " + port);
 });
