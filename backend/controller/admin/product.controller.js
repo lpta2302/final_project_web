@@ -46,3 +46,23 @@ export const editProduct = async (req, res) => {
     });
   }
 };
+
+// [DELETE] /products/deleteProduct
+export const deleteProduct = async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log(id);
+
+    await Product.deleteOne({ _id: id });
+
+    res.json({
+      code: 200,
+      message: "Xóa sản phẩm thành công",
+    });
+  } catch (error) {
+    res.json({
+      code: 400,
+      message: "Xóa sản phẩm thất bại",
+    });
+  }
+};
