@@ -102,16 +102,38 @@ export const detail = async (req, res) => {
 // [GET] /products/search
 export const search = async (req, res) => {
   try {
-    const record = await Product.find({});
+    const { productName, minPrice, maxPrice, productStatus } = req.query;
 
-    res.json({
-      record: record,
-      code: 200,
-    });
+    let filter = {};
+
+    // Nếu có tên sản phẩm, sử dụng regex để tìm kiếm gần đúng (không phân biệt hoa thường)
+    if (productName) {
+      filter.productName = { $regex: productName, $options: "i" };
+    }
+
+    if (minPrice || maxPrice) {
+      filter.price = {};
+      if (minPrice) {
+        filter.price.$gte = Number(minPrice);
+        // Lớn hơn hoặc bằng regex
+      }
+      if (maxPrice) {
+        filter.price.$lte = Number(maxPrice);
+        // Bé hơn hoặc bằng regex
+      }
+    }
+
+    // Nếu có lọc trạng thái sản phẩm
+    if (productStatus) {
+      filter.productStatus = productStatus;
+    }
+
+    // Truy vấn sản phẩm dựa trên điều kiện lọc
+    const products = await Product.find(filter);
+
+    // Trả về danh sách sản phẩm
+    res.json(products);
   } catch (error) {
-    res.json({
-      code: 400,
-      message: "Đã có lỗi xảy ra",
-    });
+    res.status(500).json({ message: "Có lỗi xảy ra", error });
   }
 };
