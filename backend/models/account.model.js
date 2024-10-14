@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 // Định nghĩa schema cho ACCOUNT
 const accountSchema = new mongoose.Schema(
@@ -37,7 +37,6 @@ const accountSchema = new mongoose.Schema(
     },
     dateOfBirth: {
       type: Date,
-      required: true,
     },
     accountStatus: {
       type: String,
@@ -56,6 +55,7 @@ const accountSchema = new mongoose.Schema(
 ); // Tự động thêm createdAt và updatedAt
 
 // Tạo model từ schema
-const Account = mongoose.model("Account", accountSchema);
+const accountModel =
+  mongoose.model.account || mongoose.model("account", accountSchema);
 
-module.exports = Account;
+export default accountModel;

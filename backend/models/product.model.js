@@ -23,6 +23,6 @@ const productSchema = new mongoose.Schema(
 );
 
 // Tạo model Product từ schema
-const Product = mongoose.model("Product", productSchema);
-
-export default Product;
+const productModel =
+  mongoose.models.product || mongoose.model("product", productSchema);
+export default productModel;
