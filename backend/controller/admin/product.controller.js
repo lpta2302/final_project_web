@@ -66,3 +66,23 @@ export const deleteProduct = async (req, res) => {
     });
   }
 };
+
+// [GET] /products/detail/:id
+export const detail = async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log(id);
+
+    const record = await Product.findOne({ _id: id });
+
+    res.json({
+      code: 200,
+      record: record,
+    });
+  } catch (error) {
+    res.json({
+      code: 400,
+      message: "Đã có lỗi xảy ra",
+    });
+  }
+};
