@@ -1,8 +1,35 @@
 import { Router } from "express";
-import * as controller from "../../controller/admin/account.controller.js";
+import accountController from "../../controllers/accountController.js";
 
-const router = Router();
+const accountRouter = Router();
 
-router.post("/register", controller.register);
+// Đăng nhập khách hàng và admin.
+accountRouter.post("/login", accountController.accountLogin);
 
-export default router;
+// Admin Quản lý tài khoản
+
+// Tìm kiếm tài khoản
+accountRouter.get("/Quan-ly-tai-khoan/search", accountController.searchAccount);
+
+// Xem danh sách các tài khoản
+accountRouter.get("/Quan-ly-tai-khoan", accountController.showAccount);
+
+// Xem chi tiết thông tin tài khoản
+accountRouter.get(
+  "/Quan-ly-tai-khoan/:accountCode",
+  accountController.accountDetails
+);
+
+// Chỉnh sửa trạng thái tài khoản
+accountRouter.patch(
+  "/Quan-ly-tai-khoan/:accountCode/Chinh-sua-trang-thai-tai-khoan",
+  accountController.accountUpdateStatus
+);
+
+// Xóa tài khoản
+accountRouter.delete(
+  "/Quan-ly-tai-khoan/:accountCode",
+  accountController.deleteAccount
+);
+
+export default accountRouter;
