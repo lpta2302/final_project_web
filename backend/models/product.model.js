@@ -20,9 +20,9 @@ const productSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
     },
-    category: {
+    tag: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Discount",
+      ref: "Tag",
     },
   },
   {
