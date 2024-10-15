@@ -75,3 +75,35 @@ export const deleteCategory = async (req, res) => {
     });
   }
 };
+
+// [GET] /category/search
+export const search = async (req, res) => {
+  try {
+    // Khởi tạo filter là một đối tượng trống
+    let filter = {};
+
+    // Lấy giá trị từ query params
+    const { categoryCode, categoryName } = req.query;
+
+    // Kiểm tra nếu categoryCode có trong query
+    if (categoryCode) {
+      filter.categoryCode = categoryCode; // Tìm kiếm chính xác theo categoryCode
+    }
+
+    // Kiểm tra nếu categoryName có trong query
+    if (categoryName) {
+      filter.categoryName = { $regex: categoryName, $options: "i" }; // Tìm kiếm gần đúng theo categoryName, không phân biệt hoa thường
+    }
+
+    // Tìm kiếm với bộ lọc filter
+    const categories = await Category.find(filter);
+
+    // Trả về kết quả
+    res.json(categories);
+  } catch (error) {
+    res.status(500).json({
+      code: 500,
+      message: "Tìm kiếm category thất bại",
+    });
+  }
+};
