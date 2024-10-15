@@ -1,10 +1,12 @@
 import { Router } from "express";
-import accountController from "../../controllers/accountController.js";
+import accountController from "../../controllers/admin/accountController.js";
 
 const accountRouter = Router();
 
 // Đăng nhập khách hàng và admin.
-accountRouter.post("/login", accountController.accountLogin);
+accountRouter.post("/auth/login", accountController.accountLogin);
+
+accountRouter.post("/auth/register", accountController.register);
 
 // Admin Quản lý tài khoản
 

@@ -1,24 +1,60 @@
-import account from "../models/accountModel.js";
+import account from "../../models/account.model.js";
 import bcrypt from "bcrypt";
 // import jwt from "jsonwebtoken";
 
 const accountController = {
-  // Route for login
+  // [POST] /auth/register
+  register: async (req, res) => {
+    try {
+      const isAccount = await account.findOne({ email: req.body.email });
+
+      if (isAccount) {
+        return res.status(400).json({
+          code: 400,
+          message: "Email đã tồn tại",
+        });
+      } else {
+        // Mã hóa mật khẩu trước khi lưu
+        const saltRounds = 10; // Số rounds salt
+        const hashedPassword = await bcrypt.hash(req.body.password, saltRounds); // Mã hóa mật khẩu
+
+        const account = new AccountModel({
+          ...req.body,
+          password: hashedPassword,
+        });
+
+        await account.save();
+
+        res.status(200).json({
+          code: 200,
+          message: "Đăng ký thành công",
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        code: 500,
+        message: "Đã có lỗi xảy ra trong quá trình đăng ký",
+      });
+    }
+  },
+
+  // [POST] // Route for login
   accountLogin: async (req, res) => {
     try {
       const { username, password } = req.body;
 
-      const account = await account.findOne({ username });
+      const _account = await account.findOne({ username });
 
-      if (!account) {
+      if (!_account) {
         return res
           .status(400)
           .json("Tài khoản không tồn tại. Vui lòng tiến hành đăng ký");
       }
 
-      const isMatch = await bcrypt.compare(password, account.password);
+      const isMatch = await bcrypt.compare(password, _account.password);
 
-      if (isMatch && account.accountStatus == "active") {
+      if (isMatch && _account.accountStatus == "active") {
         if (account.accountRole == "client") {
           return res.status(200).json("Bạn đăng nhập thành công.");
         } else {
@@ -37,7 +73,7 @@ const accountController = {
   },
 
   // For manage account of client.
-  // Hiển thị danh sách các tài khoản
+  // [GET] // Hiển thị danh sách các tài khoản
   showAccount: async (req, res) => {
     try {
       const listAccount = await account.find();
@@ -51,7 +87,7 @@ const accountController = {
     }
   },
 
-  // Xem chi tiết thông tin tài khoản
+  // [GET] // Xem chi tiết thông tin tài khoản
   accountDetails: async (req, res) => {
     try {
       const accountCode = req.params.accountCode;
@@ -66,7 +102,7 @@ const accountController = {
     }
   },
 
-  // Chỉnh sửa trạng thái của tài khoản
+  // [PATCH] // Chỉnh sửa trạng thái của tài khoản
   accountUpdateStatus: async (req, res) => {
     try {
       const accountDetails = await account.findOne({
@@ -87,7 +123,7 @@ const accountController = {
     }
   },
 
-  // Xóa tài khoản
+  // [DELETE] // Xóa tài khoản
   deleteAccount: async (req, res) => {
     try {
       const result_Delete = await account.deleteOne({
@@ -100,7 +136,7 @@ const accountController = {
     }
   },
 
-  // Tìm kiếm tài khoản
+  // [GET] // Tìm kiếm tài khoản
   searchAccount: async (req, res) => {
     try {
       // Tìm kiếm theo username

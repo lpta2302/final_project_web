@@ -1,9 +1,7 @@
 import express from "express";
 import cors from "cors";
-import "dotenv/config";
 import bodyParser from "body-parser";
 import morgan from "morgan";
-import connectDB from "./config/mongodb.js";
 import routesAdmin from "./routes/admin/index.route.js";
 import dotenv from "dotenv";
 import database from "./config/database.js";
@@ -17,8 +15,6 @@ app.use(bodyParser.json({ limit: "50mb" }));
 app.use(cors());
 app.use(morgan("common"));
 
-
-
 // Dotenv
 dotenv.config();
 // End dotenv
@@ -29,7 +25,6 @@ database();
 
 // Routes
 routesAdmin(app);
-
 
 // Start Server
 app.listen(port, () => {
