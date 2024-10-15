@@ -7,7 +7,7 @@ export const index = async (req, res) => {
   res.json(category);
 };
 
-// [POST] /add
+// [POST] /category/add
 export const add = async (req, res) => {
   try {
     console.log(req.body);
@@ -33,7 +33,26 @@ export const add = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       code: 500,
-      message: "Thêm sản phẩm thất bại",
+      message: "Thêm category thất bại",
+    });
+  }
+};
+
+// [PATCH] /category/edit
+export const edit = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    await Category.updateOne({ _id: id }, req.body);
+
+    res.json({
+      code: 200,
+      message: "Sửa category thành công",
+    });
+  } catch (error) {
+    res.status(500).json({
+      code: 500,
+      message: "Sửa category thất bại",
     });
   }
 };

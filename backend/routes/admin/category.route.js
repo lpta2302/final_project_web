@@ -5,5 +5,6 @@ const router = Router();
 
 router.get("/", controller.index);
 router.post("/add", controller.add);
+router.patch("/edit/:id", controller.edit);
 
 export default router;
