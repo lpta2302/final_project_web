@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
-// Định nghĩa schema cho Category
-const categorySchema = new mongoose.Schema(
+// Định nghĩa schema cho discount
+const discountSchema = new mongoose.Schema(
   {
     categoryCode: {
       type: String,
@@ -26,6 +26,6 @@ const categorySchema = new mongoose.Schema(
 );
 
 // Tạo model Category từ schema
-const Category = mongoose.model("category", categorySchema);
+const Discount = mongoose.model("discount", discountSchema);
 
-export default Category;
+export default Discount;
