@@ -18,12 +18,12 @@ const accountController = {
         const saltRounds = 10; // Số rounds salt
         const hashedPassword = await bcrypt.hash(req.body.password, saltRounds); // Mã hóa mật khẩu
 
-        const account = new AccountModel({
+        const _account = new account({
           ...req.body,
           password: hashedPassword,
         });
 
-        await account.save();
+        await _account.save();
 
         res.status(200).json({
           code: 200,
