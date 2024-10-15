@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-// Định nghĩa schema cho Category
+// Định nghĩa schema cho Tag
 const tagSchema = new mongoose.Schema(
   {
     tagCode: {
