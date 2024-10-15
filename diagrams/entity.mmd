@@ -27,16 +27,16 @@ erDiagram
         string productCode 
         string productName
         string description
-        decimal price
         float discountPercentage
-        int stockQuantity
         string productStatus
         list imageURLs 
     }
 
-    SERIES {
-        string seriesCode
-        string seriesName
+    SPECIFICATION {
+        string specCode
+        Map specifications
+        int stockQuantity
+        decimal price
     }
 
     CATEGORY {
@@ -159,5 +159,4 @@ erDiagram
     PRODUCT ||--|| CATEGORY : "belongsTo"
     PRODUCT ||--|| BRAND : "manufacturedBy"
     PRODUCT ||--|{ TAG : "has"
-    PRODUCT }|--|| SERIES : "belongsTo" 
     
