@@ -8,6 +8,9 @@ import Register from "./components/forms/Register";
 import ForgotPassword from "./components/forms/ForgotPassword";
 import Orders from './_root/pages/customer/Orders';
 import './globalStyle.css'
+import AdminLayout from './_root/AdminLayout';
+import AdminHomePage from './_root/pages/admin/AdminHomePage';
+import { adminNavbar } from './constance/constance';
 
 const theme = createTheme({
   palette: {
@@ -60,6 +63,12 @@ function App() {
               <Route path={'/orders'} element={<Orders />} />
               <Route path={'/vouchers'} element={<Voucher />} />
               <Route path={'/profile'} element={<Profile />} />
+            </Route>
+            <Route element={<AdminLayout />}>
+              <Route path='/admin' element={<AdminHomePage />}/>
+              {adminNavbar.map(navItem=>
+                <Route path={navItem.segment} element={<navItem.element/>} key={navItem.title}/>
+              )}
             </Route>
           </Routes>
         </AuthProvider>

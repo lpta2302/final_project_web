@@ -125,7 +125,7 @@ function TopAppBar() {
                                         flexDirection: 'column',
                                         px: '8px'
                                     }}>
-                                    <item.icon fill='#000' width={32} height={32} />
+                                    <item.icon width={32} height={32} />
                                     <Typography variant='button' sx={{ fontSize: '16px' }}>
                                         {item.title}
                                     </Typography>
