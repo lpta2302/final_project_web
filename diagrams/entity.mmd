@@ -27,16 +27,16 @@ erDiagram
         string productCode 
         string productName
         string description
-        decimal price
         float discountPercentage
-        int stockQuantity
         string productStatus
         list imageURLs 
     }
 
-    SERIES {
-        string seriesCode
-        string seriesName
+    SPECIFICATION {
+        string specCode
+        Map specifications
+        int stockQuantity
+        decimal price
     }
 
     CATEGORY {
@@ -130,13 +130,13 @@ erDiagram
         int usageCount
     }
 
-    CUSTOMER ||--|{ WISHLIST : "has"
+    CUSTOMER ||--|| WISHLIST : "has"
     WISHLIST ||--|{ WISHLIST_ITEM : "contains"
     
-    CUSTOMER ||--|{ CART : "has"
+    CUSTOMER ||--|| CART : "has"
     CART ||--|{ CART_ITEM : "contains"
     
-    CUSTOMER ||--|{ SEEN_PRODUCT : "has"
+    CUSTOMER ||--|| SEEN_PRODUCT : "has"
     SEEN_PRODUCT ||--|{ SEEN_PRODUCT_ITEM : "contains"
 
     CUSTOMER ||--|{ CUSTOMER_VOUCHER : use
@@ -159,5 +159,4 @@ erDiagram
     PRODUCT ||--|| CATEGORY : "belongsTo"
     PRODUCT ||--|| BRAND : "manufacturedBy"
     PRODUCT ||--|{ TAG : "has"
-    PRODUCT }|--|| SERIES : "belongsTo" 
     
