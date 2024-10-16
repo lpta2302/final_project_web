@@ -8,9 +8,6 @@ const productSchema = new mongoose.Schema(
     productCode: String,
     productName: String,
     description: String,
-    price: Number,
-    discountPercentage: Number,
-    stockQuantity: Number,
     productStatus: String,
     imageURLs: {
       type: [String],
