@@ -96,9 +96,15 @@ export const showCart = async (req, res) => {
     const { client } = req.body;
 
     // Tìm giỏ hàng của client và populate thông tin spec
-    const cart = await Cart.findOne({ client: client }).populate(
-      "cartItems.spec"
-    );
+    const cart = await Cart.findOne({ client: client }).populate({
+      path: "cartItems.spec", // Populate spec trong cartItems
+      select: "products", // Chỉ lấy trường 'products' từ spec
+      populate: {
+        path: "products", // Populate product trong spec
+        select: "productName price", // Chỉ lấy 'productName' và 'price' từ product
+        model: "product", // Tên của mô hình product
+      },
+    });
 
     if (!cart) {
       return res.status(404).json({
@@ -110,7 +116,7 @@ export const showCart = async (req, res) => {
     res.json({
       code: 200,
       message: "Lấy thông tin giỏ hàng thành công",
-      cart: cart, // Trả về giỏ hàng với thông tin spec đã populate
+      cart: cart,
     });
   } catch (error) {
     res.status(500).json({
