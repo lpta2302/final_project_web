@@ -54,7 +54,7 @@ export default function Search({isSearchFocused, setIsSearchFocused}) {
           sx={{ 
               alignItems: 'center',
               flexGrow: 1, 
-              borderRadius: '16px',
+              borderRadius: '32px',
               color: 'black.light',
               '& .MuiOutlinedInput-notchedOutline': {
                   borderColor: 'black.light',

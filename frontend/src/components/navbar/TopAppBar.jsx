@@ -4,14 +4,15 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
-import { appBar } from '../constance/constance';
-import Search from './Search';
+import Search from '../Search'
+import { appBar } from '../../constance/constance';
 import { Link, NavLink } from 'react-router-dom';
 
 const drawerWidth = 240;
-const navItems = appBar["customer"];
 
 function TopAppBar() {
+    const user = { role: 'customer' };
+    const navItems = appBar[user.role];
     const [mobileOpen, setMobileOpen] = useState(false);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
 
@@ -68,7 +69,7 @@ function TopAppBar() {
                                         '&:hover': {
                                             backgroundColor: 'transparent'
                                         },
-                                        minWidth: '200px', 
+                                        minWidth: '200px',
                                         textDecoration: 'none'
                                     }}
                         >
@@ -104,7 +105,8 @@ function TopAppBar() {
                     <Box sx={
                         isSearchFocused ?
                             { display: 'none' } :
-                            { justifySelf: 'flex-end', display: { xs: 'none', md: 'flex' }, alignItems: 'center', height: '100%', minWidth: '450px', width: '520px', justifyContent:'space-between'}}>
+                            { display: { xs: 'none', md: 'flex' }, alignItems: 'center', height: '100%', justifyContent: 'space-between', minWidth: '450px', width: '520px' }
+                    }>
                         {navItems.map((item) => (
                             <NavLink
                                 key={item.title}

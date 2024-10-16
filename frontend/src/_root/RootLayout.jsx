@@ -1,6 +1,6 @@
 import { Container } from '@mui/material'
-import TopAppBar from '../components/TopAppBar'
 import { Outlet } from 'react-router-dom'
+import { TopAppBar } from '../components'
 
 function RootLayout() {
   return (
