@@ -62,3 +62,30 @@ export const add = async (req, res) => {
     });
   }
 };
+
+// [PATCH] /cart/delete
+export const deleteProduct = async (req, res) => {
+  try {
+    const { client, spec } = req.body;
+
+    await Cart.updateOne(
+      { client: client }, // Điều kiện để tìm giỏ hàng của client
+      {
+        $pull: {
+          cartItems: { spec: spec }, // Điều kiện để xóa cartItem có spec khớp
+        },
+      }
+    );
+
+    res.json({
+      code: 200,
+      message: "Xóa sản phẩm thành công",
+    });
+  } catch (error) {
+    res.status(400).json({
+      code: 400,
+      message: "Xóa sản phẩm thất bại",
+      error: error.message,
+    });
+  }
+};
