@@ -152,7 +152,6 @@ const accountController = {
     try {
       // Tìm kiếm theo username
       const search = req.query.search || "";
-      console.log("Search Term: ", search);
 
       // Dùng cho đk lọc
       let sort = req.query.sort || "accountCode";

@@ -1,4 +1,5 @@
 import Product from "../../models/product.model.js";
+import Brand from "../../models/brand.model.js";
 
 // [GET] /products
 export const index = async (req, res) => {
@@ -24,7 +25,9 @@ export const postProduct = async (req, res) => {
       return;
     }
 
-    await record.save();
+    const savedProduct = await record.save();
+    const brand = await Brand.findById(req.body.brand);
+    await brand.updateOne({ $push: { products: savedProduct._id } });
 
     res.json({
       code: 200,
@@ -62,10 +65,12 @@ export const editProduct = async (req, res) => {
 // [DELETE] /products/deleteProduct
 export const deleteProduct = async (req, res) => {
   try {
-    const id = req.params.id;
-    console.log(id);
+    await Brand.updateOne(
+      { products: req.params.id },
+      { $pull: { products: req.params.id } }
+    );
 
-    await Product.deleteOne({ _id: id });
+    await Product.findByIdAndDelete(req.params.id);
 
     res.json({
       code: 200,
