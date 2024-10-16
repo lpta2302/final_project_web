@@ -1,5 +1,4 @@
 import { useState } from "react";
-import React from "react";
 import {
   Container,
   Paper,
@@ -109,7 +108,7 @@ const Register = () => {
   };
 
   const handleLogin = () => {
-    navigate("/dang-nhap"); // Điều hướng sang trang Đăng nhập
+    navigate("/login"); // Điều hướng sang trang Đăng nhập
   };
 
   return (

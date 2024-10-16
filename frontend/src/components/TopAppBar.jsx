@@ -1,13 +1,19 @@
-
-import { Button, Typography, Toolbar, ListItemText, ListItemButton, ListItem, List, IconButton, Drawer, Divider, AppBar, Box, buttonClasses } from '@mui/material'
+import {
+    Button, Typography, Toolbar, ListItemText, ListItemButton,
+    ListItem, List, IconButton, Drawer, Divider, AppBar, Box, buttonClasses
+} from '@mui/material';
 import { useState } from 'react';
-import MenuIcon from '@mui/icons-material/Menu'
+import MenuIcon from '@mui/icons-material/Menu';
 import { appBar } from '../constance/constance';
+import Search from './Search';
+import { Link, NavLink } from 'react-router-dom';
+
 const drawerWidth = 240;
 const navItems = appBar["customer"];
 
 function TopAppBar() {
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [isSearchFocused, setIsSearchFocused] = useState(false);
 
     const handleDrawerToggle = () => {
         setMobileOpen((prevState) => !prevState);
@@ -15,9 +21,11 @@ function TopAppBar() {
 
     const drawer = (
         <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
-            <Typography variant="h6" sx={{ my: 2 }}>
-                MUI
-            </Typography>
+            <Link to={'/'}>
+                <Typography variant="h5" sx={{ my: 2, fontFamily: 'Nunito', color: 'primary.main' }}>
+                    FCOMPUTER
+                </Typography>
+            </Link>
             <Divider />
             <List>
                 {navItems.map((item) => (
@@ -32,46 +40,96 @@ function TopAppBar() {
     );
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <AppBar component="nav">
-                <Toolbar>
+        <Box component='header' sx={{ display: 'flex', alignItems: 'center' }}>
+            <AppBar color='white' component="nav"
+                sx={{
+                    '& .MuiToolbar-root': {
+                        px: '16px'
+                    }
+                }}
+            >
+                <Toolbar sx={{ height: '80px' }}>
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
                         edge="start"
                         onClick={handleDrawerToggle}
-                        sx={{ mr: 2, display: { sm: 'none' } }}
+                        sx={{ mr: 2, display: { md: 'none' } }}
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Typography
-                        variant="h6"
-                        component="div"
-                        sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+                    <Link to={'/'}>
+                        <Button
+                            sx={
+                                isSearchFocused ?
+                                    { display: 'none' } :
+                                    {
+                                        display: { xs: 'none', md: 'block' },
+                                        '&:hover': {
+                                            backgroundColor: 'transparent'
+                                        },
+                                        minWidth: '200px', 
+                                        textDecoration: 'none'
+                                    }}
+                        >
+                            <Typography
+                                variant="h5"
+                                component="div"
+                                sx={{ color: 'primary.main', fontFamily: 'nunito', fontWeight: 'bold' }}
+                            >
+                                FCOMPUTER
+                            </Typography>
+                        </Button>
+                    </Link>
+                    <Box sx={
+                        isSearchFocused ?
+                            { display: 'none' } :
+                            { width: '300px', display: { xs: 'none', md: 'block' } }} />
+                    <Box
+                        sx={{
+                            width: isSearchFocused ? '100%' : '600px',
+                            minWidth: '170px',
+                            height: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            transition: 'width 0.3s ease',
+                            mx: 'auto'
+                        }}
                     >
-                        MUI
-                    </Typography>   
-                    <Box sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center'}}>
+                        <Search
+                            isSearchFocused={isSearchFocused}
+                            setIsSearchFocused={setIsSearchFocused}
+                        />
+                    </Box>
+                    <Box sx={
+                        isSearchFocused ?
+                            { display: 'none' } :
+                            { justifySelf: 'flex-end', display: { xs: 'none', md: 'flex' }, alignItems: 'center', height: '100%', minWidth: '450px', width: '520px', justifyContent:'space-between'}}>
                         {navItems.map((item) => (
-                            <Button 
-                                size='large'
-                                startIcon={<item.icon/>} 
-                                key={item.title} 
-                                sx={{ 
-                                    color: '#fff',
-                                    [`& .${buttonClasses.startIcon} > *:nth-of-type(1)`]: {
-                                        fontSize: "32px"
-                                    },
-                                    alignItems: 'center'
+                            <NavLink
+                                key={item.title}
+                                to={item.path}
+                            >
+                                <Button
+                                    color='black.main'
+                                    size='large'
+                                    sx={{
+                                        [`& .${buttonClasses.startIcon} > *:nth-of-type(1)`]: {
+                                            fontSize: '32px'
+                                        },
+                                        color: 'black.main',
+                                        alignItems: 'center',
+                                        height: '100%',
+                                        flexDirection: 'column',
+                                        px: '8px'
                                     }}>
-                                {item.title}
-                            </Button>
+                                    <item.icon fill='#000' width={32} height={32} />
+                                    <Typography variant='button' sx={{ fontSize: '16px' }}>
+                                        {item.title}
+                                    </Typography>
+                                </Button>
+                            </NavLink>
                         ))}
-                        <Box sx={{display:'flex', alignItems: 'center'}}>
-                            <Button sx={{color:'#fff'}}>Đăng nhập</Button>
-                            <Divider sx={{bgcolor: '#fff', height: '20px', width:'1px'}} orientation='vertical' variant='middle' flexItem></Divider>
-                            <Button sx={{color:'#fff'}}>Đăng ký</Button>
-                        </Box>
                     </Box>
                 </Toolbar>
             </AppBar>
@@ -81,19 +139,16 @@ function TopAppBar() {
                     open={mobileOpen}
                     onClose={handleDrawerToggle}
                     ModalProps={{
-                        keepMounted: true, // Better open performance on mobile.
+                        keepMounted: true,
                     }}
                     sx={{
-                        display: { xs: 'block', sm: 'none' },
+                        display: { xs: 'block', md: 'none' },
                         '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
                     }}
                 >
                     {drawer}
                 </Drawer>
             </nav>
-            <Box component="main" sx={{ p: 3 }}>
-                <Toolbar />
-            </Box>
         </Box>
     );
 }

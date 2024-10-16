@@ -1,5 +1,4 @@
 import { useState } from "react";
-import React from "react";
 import {
   Container,
   Paper,
@@ -13,7 +12,7 @@ import {
   Grid2,
   Link,
 } from "@mui/material";
-import LockOutlinedIcon from "@mui/icons-material/LockOutLined";
+import LockOutLinedIcon from "@mui/icons-material/LockOutlined";
 import LoginIcon from "@mui/icons-material/Login";
 import { useNavigate } from "react-router-dom";
 
@@ -56,11 +55,11 @@ const Login = () => {
 
   // Hàm xử lý chuyển hướng
   const handleForgotPassword = () => {
-    navigate("/quen-mat-khau"); // Điều hướng sang trang Quên mật khẩu
+    navigate("/forgot-password"); // Điều hướng sang trang Quên mật khẩu
   };
 
   const handleRegister = () => {
-    navigate("/dang-ky"); // Điều hướng sang trang Đăng ký
+    navigate("/register"); // Điều hướng sang trang Đăng ký
   };
 
   return (
@@ -80,7 +79,7 @@ const Login = () => {
             mb: 1, // marginBottom
           }}
         >
-          <LockOutlinedIcon sx={{ color: "#ffffff" }} />
+          <LockOutLinedIcon sx={{ color: "#ffffff" }} />
         </Avatar>
         <Typography component="h1" variant="h5" sx={{ textAlign: "center" }}>
           Đăng nhập

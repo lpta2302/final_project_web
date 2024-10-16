@@ -1,4 +1,5 @@
-import { ShoppingCart } from "@mui/icons-material";
+import { AccountCircleOutlined, ShoppingCart } from "@mui/icons-material";
+import { CartIcon, OrderIcon, VoucherIcon } from "../icons/CustomIcons";
 
 const appBar = {
     admin: [{
@@ -31,16 +32,23 @@ const appBar = {
     }],
     customer: [{
         title: 'Khuyến mãi',
-        icon: ShoppingCart
-
+        icon: VoucherIcon,
+        path: '/vouchers'
     },
     {
         title: 'Đơn của tôi',
-        icon: ShoppingCart
+        icon: OrderIcon,
+        path: '/orders'
     },
     {
         title: 'Giỏ hàng',
-        icon: ShoppingCart
+        icon: CartIcon,
+        path: '/cart'
+    },
+    {
+        title: 'Đăng nhập',
+        icon: AccountCircleOutlined,
+        path: '/login'
     }]
 }
 
