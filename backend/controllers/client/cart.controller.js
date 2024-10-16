@@ -89,3 +89,34 @@ export const deleteProduct = async (req, res) => {
     });
   }
 };
+
+// [POST] /cart/showCart
+export const showCart = async (req, res) => {
+  try {
+    const { client } = req.body;
+
+    // Tìm giỏ hàng của client và populate thông tin spec
+    const cart = await Cart.findOne({ client: client }).populate(
+      "cartItems.spec"
+    );
+
+    if (!cart) {
+      return res.status(404).json({
+        code: 404,
+        message: "Giỏ hàng không tồn tại",
+      });
+    }
+
+    res.json({
+      code: 200,
+      message: "Lấy thông tin giỏ hàng thành công",
+      cart: cart, // Trả về giỏ hàng với thông tin spec đã populate
+    });
+  } catch (error) {
+    res.status(500).json({
+      code: 500,
+      message: "Lỗi khi lấy thông tin giỏ hàng",
+      error: error.message,
+    });
+  }
+};

@@ -5,5 +5,6 @@ const router = Router();
 
 router.post("/add", controller.add);
 router.patch("/delete", controller.deleteProduct);
+router.post("/showCart", controller.showCart);
 
 export default router;
