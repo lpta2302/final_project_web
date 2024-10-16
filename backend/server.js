@@ -3,6 +3,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import morgan from "morgan";
 import routesAdmin from "./routes/admin/index.route.js";
+import routesClient from "./routes/client/index.js";
 import dotenv from "dotenv";
 import database from "./config/database.js";
 
@@ -25,6 +26,7 @@ database();
 
 // Routes
 routesAdmin(app);
+routesClient(app);
 
 // Start Server
 app.listen(port, () => {
