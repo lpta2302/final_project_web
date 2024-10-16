@@ -16,6 +16,17 @@ const productSchema = new mongoose.Schema(
       type: [String],
     },
     slug: { type: String, slug: "productName" },
+    // Tan add Brand and Spec
+    specs: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Specification",
+      },
+    ],
+    brand: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Brand",
+    },
   },
   {
     timestamps: true,
