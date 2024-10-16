@@ -47,11 +47,10 @@ const ForgotPassword = () => {
           component="h1"
           variant="h4"
           sx={{
-            fontSize: { xs: "1.5rem", md: "1.65rem" }, // Responsive font size
+            fontSize: { xs: "1.5rem", md: "1.65rem" },
             fontWeight: "bold",
-            fontFamily: "Nunito",
             mb: 2,
-            textAlign: "center", // Center align title
+            textAlign: "center",
           }}
         >
           Quên mật khẩu
@@ -102,8 +101,7 @@ const ForgotPassword = () => {
             variant="contained"
             sx={{
               height: "3rem",
-              fontSize: { xs: "0.9rem", md: "1rem" }, // Responsive button font size
-              fontFamily: "Nunito",
+              fontSize: { xs: "0.9rem", md: "1rem" },
               borderRadius: "12px",
             }}
           >
@@ -122,7 +120,7 @@ const ForgotPassword = () => {
                 textDecoration: "none",
                 textAlign: "center",
                 display: "block",
-                fontSize: { xs: "0.9rem", md: "1rem" }, // Responsive link font size
+                fontSize: { xs: "0.9rem", md: "1rem" },
               }}
             >
               Quay lại trang đăng nhập

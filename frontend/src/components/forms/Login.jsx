@@ -70,9 +70,8 @@ const Login = () => {
           component="h1"
           variant="h4"
           sx={{
-            fontSize: { xs: "1.5rem", sm: "1.65rem" }, // Responsive font size
+            fontSize: { xs: "1.5rem", sm: "1.65rem" },
             fontWeight: "bold",
-            fontFamily: "Nunito",
             mb: 2,
           }}
         >
@@ -81,7 +80,7 @@ const Login = () => {
         <Typography
           variant="h5"
           sx={{
-            fontSize: { xs: "1.2rem", sm: "1.5rem" }, // Responsive font size
+            fontSize: { xs: "1.2rem", sm: "1.5rem" },
             fontFamily: "Nunito",
             color: "primary.main",
             fontWeight: "bold",
@@ -99,7 +98,6 @@ const Login = () => {
             display: "flex",
             flexDirection: "column",
             gap: 2,
-            fontFamily: "Nunito",
           }}
         >
           <TextField
@@ -115,7 +113,6 @@ const Login = () => {
             helperText={error.username}
             sx={{
               fontSize: "1rem",
-              fontFamily: "Nunito",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
               },
@@ -135,7 +132,6 @@ const Login = () => {
             helperText={error.password}
             sx={{
               fontSize: "1rem",
-              fontFamily: "Nunito",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
               },
@@ -145,7 +141,7 @@ const Login = () => {
             <FormControlLabel
               control={<Checkbox value="remember" />}
               label={
-                <Typography sx={{ fontSize: "1rem", fontFamily: "Nunito" }}>
+                <Typography sx={{ fontSize: "1rem" }}>
                   Nhớ mật khẩu
                 </Typography>
               }
@@ -154,7 +150,7 @@ const Login = () => {
               component="button"
               type="button"
               onClick={handleForgotPassword}
-              sx={{ fontSize: "1rem", fontFamily: "Nunito" }}
+              sx={{ fontSize: "1rem" }}
             >
               Quên mật khẩu?
             </Link>
@@ -167,7 +163,6 @@ const Login = () => {
               mt: 1,
               height: "3rem",
               fontSize: "1rem",
-              fontFamily: "Nunito",
               borderRadius: "12px",
             }}
           >
@@ -180,7 +175,7 @@ const Login = () => {
             Bạn chưa có tài khoản?{" "}
             <Link
               onClick={handleRegister}
-              sx={{ fontSize: "1rem", fontFamily: "Nunito", cursor: "pointer" }}
+              sx={{ fontSize: "1rem", cursor: "pointer" }}
             >
               Đăng ký ngay
             </Link>

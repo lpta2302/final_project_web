@@ -112,7 +112,6 @@ const Register = () => {
           sx={{
             fontSize: "1.65rem",
             fontWeight: "bold",
-            fontFamily: "Nunito",
             mb: 2,
           }}
         >
@@ -139,7 +138,6 @@ const Register = () => {
             display: "flex",
             flexDirection: "column",
             gap: 2,
-            fontFamily: "Nunito",
           }}
         >
           <TextField
@@ -151,7 +149,6 @@ const Register = () => {
             autoFocus
             sx={{
               fontSize: "1rem",
-              fontFamily: "Nunito",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
               },
@@ -171,7 +168,6 @@ const Register = () => {
             required
             sx={{
               fontSize: "1rem",
-              fontFamily: "Nunito",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
               },
@@ -181,7 +177,7 @@ const Register = () => {
             error={!!error.password}
             helperText={error.password}
           />
-          <Grid2 container spacing={2} sx={{ mb: 2 }}>
+          <Grid2 container spacing={2}>
             <Grid2 xs={12} sm={6}>
               <TextField
                 id="outlined-lastname"
@@ -191,7 +187,6 @@ const Register = () => {
                 fullWidth
                 sx={{
                   fontSize: "1rem",
-                  fontFamily: "Nunito",
                   "& .MuiOutlinedInput-root": {
                     borderRadius: "12px",
                   },
@@ -211,7 +206,6 @@ const Register = () => {
                 fullWidth
                 sx={{
                   fontSize: "1rem",
-                  fontFamily: "Nunito",
                   "& .MuiOutlinedInput-root": {
                     borderRadius: "12px",
                   },
@@ -232,7 +226,6 @@ const Register = () => {
             fullWidth
             sx={{
               fontSize: "1rem",
-              fontFamily: "Nunito",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
               },
@@ -251,7 +244,6 @@ const Register = () => {
             fullWidth
             sx={{
               fontSize: "1rem",
-              fontFamily: "Nunito",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
               },
@@ -269,7 +261,6 @@ const Register = () => {
             fullWidth
             sx={{
               fontSize: "1rem",
-              fontFamily: "Nunito",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
               },
@@ -305,7 +296,6 @@ const Register = () => {
               mt: 1,
               height: "3rem",
               fontSize: "1rem",
-              fontFamily: "Nunito",
               borderRadius: "12px",
             }}
             disabled={!isAgree}
@@ -322,7 +312,6 @@ const Register = () => {
                 onClick={handleLogin}
                 sx={{
                   fontSize: "1rem",
-                  fontFamily: "Nunito",
                   cursor: "pointer",
                 }}
               >
