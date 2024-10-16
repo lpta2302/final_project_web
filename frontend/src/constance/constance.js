@@ -48,7 +48,7 @@ const appBar = {
     {
         title: 'Đăng nhập',
         icon: AccountCircleOutlined,
-        path: '/sign-in'
+        path: '/login'
     }]
 }
 
