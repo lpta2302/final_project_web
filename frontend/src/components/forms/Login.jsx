@@ -75,7 +75,7 @@ const Login = () => {
         <Avatar
           sx={{
             mx: "auto", // margin X (left & right)
-            bgcolor: "#1D3557",
+            bgcolor: "#09083D",
             textAlign: "center",
             mb: 1, // marginBottom
           }}
@@ -121,7 +121,7 @@ const Login = () => {
             type="submit"
             variant="contained"
             fullWidth
-            sx={{ mt: 1, backgroundColor: "#1D3557" }}
+            sx={{ mt: 1, backgroundColor: "#09083D" }}
           >
             <LoginIcon sx={{ mr: 2 }} />
             Đăng nhập

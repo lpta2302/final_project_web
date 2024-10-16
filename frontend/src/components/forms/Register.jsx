@@ -124,7 +124,7 @@ const Register = () => {
         <Avatar
           sx={{
             mx: "auto", // margin X (left & right)
-            bgcolor: "#1D3557",
+            bgcolor: "#09083D",
             textAlign: "center",
             mb: 1, // marginBottom
           }}
@@ -246,7 +246,7 @@ const Register = () => {
             type="submit"
             variant="contained"
             fullWidth
-            sx={{ mt: 1, backgroundColor: "#1D3557" }}
+            sx={{ mt: 1, backgroundColor: "#09083D" }}
             disabled={!isAgree} // Nút Đăng ký sẽ bị vô hiệu hóa nếu checkbox không được tích
           >
             <PersonAddIcon sx={{ mr: 2 }} />

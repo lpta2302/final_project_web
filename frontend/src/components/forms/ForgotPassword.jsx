@@ -62,7 +62,7 @@ const ForgotPassword = () => {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ backgroundColor: "#1D3557" }}
+            sx={{ backgroundColor: "#09083D" }}
           >
             <SendIcon sx={{ mr: 2 }} />
             Gửi yêu cầu
