@@ -8,7 +8,7 @@ import brandRoutes from "./brand.route.js";
 
 export default (app) => {
   app.use("/product", authenticateJWT, productRoutes);
-  app.use("/account", authenticateJWT, accountRoutes);
+  app.use("/account", accountRoutes);
   app.use("/auth", accountRoutes);
   app.use("/category", authenticateJWT, categoryRoutes);
   app.use("/tag", authenticateJWT, tagRoutes);
