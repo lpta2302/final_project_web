@@ -12,51 +12,10 @@ import {
   CardContent,
   CardMedia,
   CardActionArea,
-  Button,
-  IconButton,
-  AppBar,
-  Toolbar,
-  Menu,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu"; // Chỉ import 1 lần
-const Navbar = () => {
-  return (
-    <AppBar
-      position="static"
-      style={{
-        backgroundColor: "#09083D",
-        position: "fixed",
-        zIndex: "1000",
-        top: "64px",
-      }}
-    >
-      <Toolbar>
-        {/* Nút menu bên trái */}
-        <IconButton
-          edge="start"
-          color="inherit"
-          aria-label="menu"
-          sx={{ mr: 2 }}
-        >
-          <MenuIcon /> {/* Thêm MenuIcon */}
-        </IconButton>
 
-        {/* Danh sách các mục */}
-        <Box
-          sx={{ flexGrow: 1, display: "flex", justifyContent: "space-between" }}
-        >
-          <Button color="inherit">Danh mục sản phẩm</Button>
-          <Button color="inherit">Sản phẩm bán chạy</Button>
-          <Button color="inherit">Tư vấn bán hàng</Button>
-          <Button color="inherit">Dịch vụ sửa chữa</Button>
-          <Button color="inherit">Tin tức công nghệ</Button>
-          <Button color="inherit">Xây dựng cấu hình</Button>
-        </Box>
-      </Toolbar>
-    </AppBar>
-  );
-};
-
+import { Rating } from "@mui/material";
+import { Menu } from "@mui/material";
 // FilterBar Component
 const FilterBar = () => {
   return (
@@ -290,6 +249,7 @@ const ProductCard = ({ product, onClick }) => {
           height="150"
           image={product.imageUrl || "https://via.placeholder.com/300"}
           alt={product.title || "Product Image"}
+          style={{ marginRight: "100px" }}
         />
         <CardContent>
           <Box sx={{ textAlign: "center" }}>
@@ -320,6 +280,15 @@ const ProductCard = ({ product, onClick }) => {
             >
               {product.specs || "N/A"}
             </Typography>
+
+            {/* Thêm phần Rating */}
+            <Rating
+              name="read-only"
+              value={product.rating || 0} // Thêm giá trị rating nếu có
+              precision={0.5}
+              readOnly
+              sx={{ marginTop: "8px" }}
+            />
           </Box>
         </CardContent>
       </CardActionArea>
@@ -337,6 +306,7 @@ const products = [
     price: "15,000,000 VND",
     imageUrl: "https://via.placeholder.com/300",
     status: "Còn hàng",
+    rating: 4.5,
     specs: [
       "OS: Windows 11 Home",
       "CPU: Intel Core i5-13500H",
@@ -353,6 +323,7 @@ const products = [
     price: "18,000,000 VND",
     imageUrl: "https://via.placeholder.com/300",
     status: "Còn hàng",
+    rating: 4.0,
     specs: [
       "OS: Windows 11 Home",
       "CPU: Intel Core i5-13500H",
@@ -369,6 +340,7 @@ const products = [
     price: "20,000,000 VND",
     imageUrl: "https://via.placeholder.com/300",
     status: "Còn hàng",
+    rating: 4.5,
     specs: [
       "OS: Windows 11 Home",
       "CPU: Intel Core i5-13500H",
@@ -385,6 +357,7 @@ const products = [
     price: "21,000,000 VND",
     imageUrl: "https://via.placeholder.com/300",
     status: "Còn hàng",
+    rating: 5.0,
     specs: [
       "OS: Windows 11 Home",
       "CPU: Intel Core i5-13500H",
@@ -401,6 +374,7 @@ const products = [
     price: "21,000,000 VND",
     imageUrl: "https://via.placeholder.com/300",
     status: "Còn hàng",
+    rating: 4.5,
     specs: [
       "OS: Windows 11 Home",
       "CPU: Intel Core i5-13500H",
@@ -417,6 +391,7 @@ const products = [
     price: "21,000,000 VND",
     imageUrl: "https://via.placeholder.com/300",
     status: "Còn hàng",
+    rating: 4.5,
     specs: [
       "OS: Windows 11 Home",
       "CPU: Intel Core i5-13500H",
@@ -433,6 +408,7 @@ const products = [
     price: "21,000,000 VND",
     imageUrl: "https://via.placeholder.com/300",
     status: "Còn hàng",
+    rating: 4.5,
     specs: [
       "OS: Windows 11 Home",
       "CPU: Intel Core i5-13500H",
@@ -449,6 +425,7 @@ const products = [
     price: "21,000,000 VND",
     imageUrl: "https://via.placeholder.com/300",
     status: "Còn hàng",
+    rating: 4.5,
     specs: [
       "OS: Windows 11 Home",
       "CPU: Intel Core i5-13500H",
@@ -465,6 +442,7 @@ const products = [
     price: "21,000,000 VND",
     imageUrl: "https://via.placeholder.com/300",
     status: "Còn hàng",
+    rating: 4.5,
     specs: [
       "OS: Windows 11 Home",
       "CPU: Intel Core i5-13500H",
@@ -481,6 +459,7 @@ const products = [
     price: "21,000,000 VND",
     imageUrl: "https://via.placeholder.com/300",
     status: "Hết hàng",
+    rating: 4.5,
     specs: [
       "OS: Windows 11 Home",
       "CPU: Intel Core i5-13500H",
@@ -516,7 +495,6 @@ const ProductList = () => {
 const MenuProductPage = () => {
   return (
     <Box>
-      <Navbar />
       <FilterBar />
       <MenuProduct />
       <ProductList />
