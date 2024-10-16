@@ -16,6 +16,16 @@ const productSchema = new mongoose.Schema(
       type: [String],
     },
     slug: { type: String, slug: "productName" },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+    },
+    tag: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Tag",
+      },
+    ],
   },
   {
     timestamps: true,

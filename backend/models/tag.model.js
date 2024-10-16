@@ -1,15 +1,15 @@
 import mongoose from "mongoose";
 
-// Định nghĩa schema cho Category
-const categorySchema = new mongoose.Schema(
+// Định nghĩa schema cho Tag
+const tagSchema = new mongoose.Schema(
   {
-    categoryCode: {
+    tagCode: {
       type: String,
       required: true,
       unique: true,
       trim: true,
     },
-    categoryName: {
+    tagName: {
       type: String,
       required: true,
     },
@@ -26,6 +26,6 @@ const categorySchema = new mongoose.Schema(
 );
 
 // Tạo model Category từ schema
-const Category = mongoose.model("category", categorySchema, "category");
+const Tag = mongoose.model("tag", tagSchema, "tag");
 
-export default Category;
+export default Tag;

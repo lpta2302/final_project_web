@@ -1,6 +1,7 @@
 import account from "../../models/account.model.js";
 import bcrypt from "bcrypt";
-// import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken"; // Thêm dòng này để sử dụng JWT
+const secretKey = "your-secret-key"; // Khóa bí mật để ký JWT, bạn nên lưu khóa này ở file .env
 
 const accountController = {
   // [POST] /auth/register
@@ -25,9 +26,19 @@ const accountController = {
 
         await _account.save();
 
+        // Tạo JWT
+        const token = jwt.sign(
+          { id: _account._id, email: _account.email },
+          secretKey,
+          {
+            expiresIn: "1h", // Token sẽ hết hạn sau 1 giờ
+          }
+        );
+
         res.status(200).json({
           code: 200,
           message: "Đăng ký thành công",
+          token: token,
         });
       }
     } catch (error) {
