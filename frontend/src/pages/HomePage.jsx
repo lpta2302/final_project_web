@@ -14,19 +14,22 @@ const products = [
   {
     id: 1,
     title: "Laptop Dell XPS 13",
-    image: "https://example.com/laptop1.jpg",
+    image:
+      "https://laptopdell.com.vn/wp-content/uploads/2022/07/laptop_lenovo_legion_s7_8.jpg",
     price: 1000,
   },
   {
     id: 2,
     title: "Laptop HP Spectre x360",
-    image: "https://example.com/laptop2.jpg",
+    image:
+      "https://www.tnc.com.vn/uploads/news/20230309_SEO/dell-xps-13-plus-1678233879.png",
     price: 1200,
   },
   {
     id: 3,
     title: "Máy tính để bàn iMac",
-    image: "https://example.com/imac.jpg",
+    image:
+      "https://phongvu.vn/cong-nghe/wp-content/uploads/sites/2/2020/09/Dell-XPS-15-1024x572.jpg",
     price: 1500,
   },
   // Đảm bảo không có id trùng lặp
@@ -35,23 +38,34 @@ const products = [
 const banners = [
   {
     id: 1,
-    image: "https://example.com/banner1.jpg",
+    image:
+      "https://giatin.com.vn/wp-content/uploads/2020/11/cac-loai-kich-thuoc-man-hinh-laptop.jpg",
     title: "Deal HP Ngập Tràn",
   },
-  { id: 2, image: "https://example.com/banner2.jpg", title: "Hot Deal" },
+  {
+    id: 2,
+    image:
+      "https://img.lovepik.com/bg/20240112/Astonishing-Laptop-Image-with-Sky-as-Cloudy-Background_2759597_wh860.jpg!/fw/860",
+    title: "Hot Deal",
+  },
   {
     id: 3,
     image:
       "https://cdn2.fptshop.com.vn/unsafe/Uploads/images/tin-tuc/145289/Originals/pc-game.png",
     title: "Thiết Bị Mạng Chính Hãng",
   },
-  { id: 4, image: "https://example.com/banner4.jpg", title: "Sản Phẩm Mới" },
+  {
+    id: 4,
+    image:
+      "https://anphat.com.vn/media/lib/18-08-2023/lenovoyogaslim7pro14iah782ut006cvn1.jpg",
+    title: "Sản Phẩm Mới",
+  },
 ];
 
 const HomePage = () => {
   return (
     <Container>
-      <Grid item xs={9} style={{ marginTop: "100px" }}>
+      <Grid item xs={9} style={{ marginTop: "10px" }}>
         <Grid container spacing={2}>
           {banners.map((banner) => (
             <Grid item xs={12} sm={6} md={6} key={banner.id}>
@@ -72,7 +86,7 @@ const HomePage = () => {
         </Grid>
       </Grid>
 
-      <Typography variant="h4" align="center" style={{ margin: "20px 0" }}>
+      <Typography variant="h4" align="center" style={{ margin: "50px 0" }}>
         Sản phẩm khuyến mãi
       </Typography>
       <Grid container spacing={0.5}>

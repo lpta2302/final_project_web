@@ -22,10 +22,10 @@ const FilterBar = () => {
     <Box
       sx={{
         display: "flex",
-        justifyContent: "space-evenly   ",
+        justifyContent: "space-evenly ",
         mb: 1,
         ml: 40,
-        mt: 5,
+        mt: 1,
       }}
     >
       <Select defaultValue="Mới nhất" label="Sắp xếp" size="small">
@@ -262,7 +262,7 @@ const ProductCard = ({ product, onClick }) => {
             <Typography
               variant="h6"
               color="text.primary"
-              sx={{ marginTop: "8px" }}
+              sx={{ marginTop: "8px", color: "red" }}
             >
               {product.price || "N/A"}
             </Typography>
