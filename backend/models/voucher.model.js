@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-// Định nghĩa schema cho Tag
+// Định nghĩa schema cho voucher
 const voucherSchema = new mongoose.Schema(
   {
     voucherName: {

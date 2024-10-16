@@ -5,6 +5,7 @@ import tagRoutes from "./tag.route.js";
 import authenticateJWT from "../../middleware/authMiddleware.js";
 import specRoutes from "./specification.route.js";
 import brandRoutes from "./brand.route.js";
+import voucherRoutes from "./voucher.route.js";
 
 export default (app) => {
   app.use("/product", authenticateJWT, productRoutes);
@@ -15,4 +16,5 @@ export default (app) => {
   app.use("/category", categoryRoutes);
   app.use("/spec", specRoutes);
   app.use("/brand", brandRoutes);
+  app.use("/voucher", voucherRoutes);
 };
