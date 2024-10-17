@@ -3,13 +3,6 @@ import accountController from "../../controllers/admin/accountController.js";
 
 const accountRouter = Router();
 
-// Đăng nhập khách hàng và admin.
-accountRouter.post("/auth/login", accountController.accountLogin);
-
-accountRouter.post("/auth/register", accountController.register);
-
-// Admin Quản lý tài khoản
-
 // Tìm kiếm tài khoản
 accountRouter.get("/Quan-ly-tai-khoan/search", accountController.searchAccount);
 
