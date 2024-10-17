@@ -4,8 +4,6 @@ import AuthProvider from "./context/AuthContext";
 import RootLayout from './_root/RootLayout';
 import { HomePage } from './_root/pages';
 import Login from "./components/forms/Login";
-import Register from "./components/forms/Register";
-import ForgotPassword from "./components/forms/ForgotPassword";
 import './globalStyle.css'
 import AdminLayout from './_root/AdminLayout';
 import AdminHomePage from './_root/pages/admin/AdminHomePage';
