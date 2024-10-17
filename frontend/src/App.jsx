@@ -7,7 +7,8 @@ import Login from "./components/forms/Login";
 import Register from "./components/forms/Register";
 import ForgotPassword from "./components/forms/ForgotPassword";
 import Orders from './_root/pages/customer/Orders';
-import './globalStyle.css'
+import Product from './pages/Product';
+import './globalStyle.css';
 
 const theme = createTheme({
   palette: {
@@ -60,6 +61,7 @@ function App() {
               <Route path={'/orders'} element={<Orders />} />
               <Route path={'/vouchers'} element={<Voucher />} />
               <Route path={'/profile'} element={<Profile />} />
+              <Route path={'/product/productId'} element={<Product />} />
             </Route>
           </Routes>
         </AuthProvider>
