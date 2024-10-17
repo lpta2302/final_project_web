@@ -53,9 +53,6 @@ function App() {
         <CssBaseline />
         <AuthProvider>
           <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route element={<RootLayout />}>
               <Route index element={<HomePage />} path='/' />
               {customerNav.map(navItem =>

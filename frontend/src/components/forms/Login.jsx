@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 import {
   Container,
   Paper,
-  Avatar,
   Typography,
   Box,
   TextField,
@@ -10,81 +9,86 @@ import {
   Checkbox,
   Button,
   Grid2,
-  Link,
 } from "@mui/material";
-import LockOutLinedIcon from "@mui/icons-material/LockOutlined";
 import LoginIcon from "@mui/icons-material/Login";
-import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
 
-const Login = () => {
-  const [inputs, setInputs] = useState({ username: "", password: "" }); // Khởi tạo state cho inputs
+const Login = ({ setModalType }) => {
+  const [inputs, setInputs] = useState({ username: "", password: "" });
   const [error, setError] = useState({ username: "", password: "" });
 
-  const navigate = useNavigate();
 
   const handleChange = (event) => {
     const name = event.target.name;
     const value = event.target.value;
-    setInputs((values) => ({ ...values, [name]: value })); // Cập nhật state cho inputs
+    setInputs((values) => ({ ...values, [name]: value }));
   };
 
   const handleLogin = (event) => {
-    event.preventDefault(); // Ngăn không cho form reload trang
+    event.preventDefault();
 
-    // Kiểm tra các trường đầu vào
     let tempError = { username: "", password: "" };
 
     if (!inputs.username) {
-      tempError.username = "Tên tài khoản không được để trống"; // Cập nhật lỗi nếu username trống
+      tempError.username = "Tên tài khoản không được để trống";
     }
 
     if (!inputs.password) {
-      tempError.password = "Mật khẩu không được để trống"; // Cập nhật lỗi nếu password trống
+      tempError.password = "Mật khẩu không được để trống";
     }
 
     if (tempError.username || tempError.password) {
-      setError(tempError); // Cập nhật trạng thái lỗi
+      setError(tempError);
       return;
     }
 
-    // Nếu tên tài khoản và mật khẩu hợp lệ
-    setError({ username: "", password: "" }); // Xóa thông báo lỗi nếu có
+    setError({ username: "", password: "" });
     console.log("Login successful with username:", inputs.username, ", pass:", inputs.password);
-    // Thực hiện điều hướng hoặc các hành động sau khi đăng nhập thành công
   };
 
-  // Hàm xử lý chuyển hướng
-  const handleForgotPassword = () => {
-    navigate("/forgot-password"); // Điều hướng sang trang Quên mật khẩu
-  };
-
-  const handleRegister = () => {
-    navigate("/register"); // Điều hướng sang trang Đăng ký
-  };
 
   return (
-    <Container maxWidth="xs">
+    <Container maxWidth="sm" sx={{ mt: 8 }}>
       <Paper
-        elevation={10} // Đổ bóng
+        elevation={10}
         sx={{
-          mt: 8, // marginTop
+          mt: 8,
           padding: 2,
+          borderRadius: "16px",
         }}
       >
-        <Avatar
+        <Typography
+          component="div"
+          variant="h6"
           sx={{
-            mx: "auto", // margin X (left & right)
-            bgcolor: "#1D3557",
-            textAlign: "center",
-            mb: 1, // marginBottom
+            mb: 2,
           }}
         >
-          <LockOutLinedIcon sx={{ color: "#ffffff" }} />
-        </Avatar>
-        <Typography component="h1" variant="h5" sx={{ textAlign: "center" }}>
           Đăng nhập
         </Typography>
-        <Box component="form" onSubmit={handleLogin} noValidate sx={{ mt: 1 }}>
+        <Typography
+          variant="h5"
+          sx={{
+            fontSize: { xs: "1.2rem", sm: "1.5rem" },
+            fontFamily: "Nunito",
+            color: "primary.main",
+            fontWeight: "bold",
+            textAlign: "center",
+            mb: 3,
+          }}
+        >
+          FCOMPUTER
+        </Typography>
+        <Box
+          component="form"
+          onSubmit={handleLogin}
+          noValidate
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+          }}
+        >
           <TextField
             required
             id="outlined-required"
@@ -92,55 +96,87 @@ const Login = () => {
             name="username"
             fullWidth
             autoFocus
-            sx={{ mb: 2 }}
-            value={inputs.username} // Gán giá trị cho username từ inputs
-            onChange={handleChange} // Cập nhật state khi nhập liệu
-            error={!!error.username} // Nếu có lỗi, viền đỏ
-            helperText={error.username} // Hiển thị thông báo lỗi
+            value={inputs.username}
+            onChange={handleChange}
+            error={!!error.username}
+            helperText={error.username}
+            sx={{
+              fontSize: "1rem",
+              "& .MuiOutlinedInput-root": {
+                borderRadius: "12px",
+              },
+            }}
           />
+
           <TextField
+            required
             id="outlined-password-input"
             label="Mật khẩu"
             type="password"
             name="password"
-            autoComplete="current-password"
             fullWidth
-            required
-            value={inputs.password} // Gán giá trị cho password từ inputs
-            onChange={handleChange} // Cập nhật state khi nhập liệu
-            error={!!error.password} // Nếu có lỗi, viền đỏ
-            helperText={error.password} // Hiển thị thông báo lỗi
+            value={inputs.password}
+            onChange={handleChange}
+            error={!!error.password}
+            helperText={error.password}
+            sx={{
+              fontSize: "1rem",
+              "& .MuiOutlinedInput-root": {
+                borderRadius: "12px",
+              },
+            }}
           />
-          
-          <FormControlLabel
-            control={<Checkbox value="remember" />}
-            label="Nhớ mật khẩu"
-          />
+          <Grid2 container justifyContent="space-between" alignItems="center">
+            <FormControlLabel
+              control={<Checkbox value="remember" />}
+              label={
+                <Typography sx={{ fontSize: "1rem" }}>
+                  Nhớ mật khẩu
+                </Typography>
+              }
+            />
+            <Typography
+              onClick={()=>setModalType('forgot-password')}
+              color='primary.main'
+              sx={{ fontSize: "1rem", textDecoration: 'underline', '&:hover': { cursor: 'pointer' } }}
+            >
+              Quên mật khẩu?
+            </Typography>
+          </Grid2>
           <Button
             type="submit"
             variant="contained"
             fullWidth
-            sx={{ mt: 1, backgroundColor: "#1D3557" }}
+            sx={{
+              mt: 1,
+              height: "3rem",
+              fontSize: "1rem",
+              borderRadius: "12px",
+            }}
           >
             <LoginIcon sx={{ mr: 2 }} />
             Đăng nhập
           </Button>
         </Box>
-        <Grid2 container justifyContent="space-between" sx={{ mt: 1 }}>
-          <Grid2>
-            <Link onClick={handleForgotPassword} sx={{ cursor: "pointer" }}>
-              Quên mật khẩu?
-            </Link>
-          </Grid2>
-          <Grid2>
-            <Link onClick={handleRegister} sx={{ cursor: "pointer" }}>
-              Đăng ký
-            </Link>
-          </Grid2>
-        </Grid2>
+        <Box
+          sx={{ display: 'flex', mt: 4, mb: 2}}
+        >
+          Bạn chưa có tài khoản?
+          <Typography
+            onClick={()=>setModalType('register')}
+            color='primary.main'
+            sx={{ ml: 1, fontSize: "1rem", textDecoration: 'underline', '&:hover': { cursor: 'pointer' } }}
+          >
+            Đăng ký ngay
+          </Typography>
+        </Box>
       </Paper>
     </Container>
   );
 };
 
-export default Login;
+Login.propTypes = {
+  setModalType: PropTypes.func
+}
+
+export default forwardRef(Login);

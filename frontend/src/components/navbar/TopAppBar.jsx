@@ -1,6 +1,7 @@
 import {
     Button, Typography, Toolbar, ListItemText, ListItemButton,
-    ListItem, List, IconButton, Drawer, Divider, AppBar, Box, buttonClasses
+    ListItem, List, IconButton, Drawer, Divider, AppBar, Box, buttonClasses,
+    Modal
 } from '@mui/material';
 import { useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -12,12 +13,16 @@ import { customerNav } from '../../constance/constance.jsx';
 import PropTypes from 'prop-types';
 import Logo from '../Logo.jsx';
 import { CartIcon } from '../../icons/CustomIcons.jsx';
+import Login from '../forms/Login.jsx';
+import Register from '../forms/Register.jsx';
+import ForgotPassword from '../forms/ForgotPassword.jsx';
 
 const drawerWidth = 240;
 
-const NavbarButton = ({ title, path, navIcon }) =>
+const NavbarButton = ({ title, path, navIcon, onClick }) =>
     <NavLink to={path}>
         <Button
+            onClick={onClick}
             color='black.main'
             size='large'
             sx={{
@@ -53,8 +58,9 @@ NavbarLink.propTypes = {
 
 NavbarButton.propTypes = {
     title: PropTypes.string.isRequired,
-    path: PropTypes.string.isRequired,
+    path: PropTypes.string,
     navIcon: PropTypes.node.isRequired,
+    onClick: PropTypes.func
 }
 
 const navItems = customerNav;
@@ -63,10 +69,16 @@ function TopAppBar() {
     const { isAuthenticated, user } = useAuthContext();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalType, setModalType] = useState('login')
 
     const handleDrawerToggle = () => {
         setMobileOpen((prevState) => !prevState);
     };
+
+    const handleModalToggle = () => {
+        setModalOpen(!modalOpen)
+    }
 
     const drawer = (
         <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
@@ -87,6 +99,12 @@ function TopAppBar() {
             </List>
         </Box>
     );
+
+    const modal = {
+        'login': <Login setModalType={setModalType}/>,
+        'register': <Register setModalType={setModalType}/>,
+        'forgot-password': <ForgotPassword setModalType={setModalType}/>
+    }
 
     return (
         <Box component='header' sx={{ display: 'flex', alignItems: 'center' }}>
@@ -149,7 +167,7 @@ function TopAppBar() {
                         edge="end"
                         sx={{ ml: 2, display: { md: 'none' } }}
                     >
-                        <Link to='/cart' style={{color: 'unset'}}>
+                        <Link to='/cart' style={{ color: 'unset' }}>
                             <CartIcon />
                         </Link>
                     </IconButton>
@@ -164,7 +182,7 @@ function TopAppBar() {
                         {
                             isAuthenticated ?
                                 <NavbarButton title={user.name} navIcon={<AccountCircleOutlined />} path='/profile' /> :
-                                <NavbarButton title='Đăng nhập' navIcon={<AccountCircleOutlined />} path='/login' />
+                                <NavbarButton title='Đăng nhập' navIcon={<AccountCircleOutlined />} onClick={handleModalToggle} />
                         }
                     </Box>
                 </Toolbar>
@@ -184,7 +202,15 @@ function TopAppBar() {
                 >
                     {drawer}
                 </Drawer>
-            </nav>
+            </nav>  
+            <Modal
+                open={modalOpen}
+                onClose={handleModalToggle}
+                aria-labelledby="parent-modal-title"
+                aria-describedby="parent-modal-description"
+            >
+                {modal[modalType]}
+            </Modal>
         </Box>
     );
 }
