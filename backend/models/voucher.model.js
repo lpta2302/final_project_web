@@ -10,10 +10,6 @@ const voucherSchema = new mongoose.Schema(
     discountPercentage: Number,
     description: String,
     fixedAmount: Number,
-<<<<<<< HEAD
-    usageLimitPerCustomer: Number,
-=======
->>>>>>> origin/Tan
     clients: [
       {
         clientId: {
