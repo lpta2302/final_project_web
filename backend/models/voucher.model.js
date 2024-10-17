@@ -11,6 +11,18 @@ const voucherSchema = new mongoose.Schema(
     description: String,
     fixedAmount: Number,
     usageLimitPerCustomer: Number,
+    clients: [
+      {
+        clientId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "account",
+        },
+        usageLimitPerCustomer: {
+          type: Number,
+          default: 1,
+        },
+      },
+    ],
   },
   {
     timestamps: true,
