@@ -4,6 +4,7 @@ import Orders from "./customer/Orders";
 import Voucher from "./customer/Voucher";
 import Profile from "./shared/Profile";
 
+import AdminAccount from './admin/AdminAccount'
 import AdminHomePage from './admin/AdminHomePage'
 import Dashboard from './admin/Dashboard'
 import ManageAccount from './admin/ManageAccount'
@@ -20,6 +21,7 @@ export {
     Profile,
     AdminHomePage,
     Dashboard,
+    AdminAccount,
     ManageAccount,
     ManageProduct,
     ManageInventory,

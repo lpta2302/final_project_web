@@ -1,67 +1,45 @@
 import { AppProvider } from '@toolpad/core/AppProvider'
 import { DashboardLayout } from '@toolpad/core/DashboardLayout'
-import { AccountBoxOutlined, Dashboard, WarehouseOutlined } from "@mui/icons-material"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Logo from '../components/Logo'
 import { useNavigate, Outlet } from 'react-router-dom'
 import { Box, Typography } from '@mui/material'
-import { BoxIcon, OrderTextIcon, VoucherIcon } from '../icons/CustomIcons'
+import { adminNav } from '../constance/constance.jsx'
+import { AdminAccount } from './pages/index.js'
 
-const nav = [
-  {
-    kind: 'header',
-    title: 'Quản lý hàng hóa'
-  },
-  {
-    segment: 'manage-product',
-    title: 'Sản phẩm',
-    icon: <BoxIcon />
-  },
-  {
-    segment: 'manage-inventory',
-    title: 'Kho hàng',
-    icon: <WarehouseOutlined />
-  },
-  {
-    kind: 'header',
-    title: 'Quản lý mua hàng'
-  },
-  {
-    segment: 'manage-voucher',
-    title: 'Mã giảm giá',
-    icon: <VoucherIcon />
-  },
-  {
-    segment: 'manage-order',
-    title: 'Đơn hàng',
-    icon: <OrderTextIcon />
-  },
-  {
-    kind: 'header',
-    title: 'Quản lý tài khoản'
-  },
-  {
-    segment: 'manage-account',
-    title: 'Tài khoản',
-    icon: <AccountBoxOutlined />
-  },
-  {
-    segment: 'dashboard',
-    title: 'Thống kê',
-    icon: <Dashboard />
-  }];
+const initSession = {
+  user: {
+    name: 'Bharat Kashyap',
+    email: 'bharatkashyap@outlook.com',
+    image: 'https://avatars.githubusercontent.com/u/19550456',
+  }
+}
 
-
-function AdminLayout() {
-  const [pathname, setPathname] = useState("/admin");
+function AdminLayout({user = initSession}) {
+  const [pathname, setPathname] = useState(user);
   const navigate = useNavigate();
+  const [session, setSession] = useState(initSession);
+  const authentication = useMemo(() => {
+    return {
+      signIn: () => {
+        setSession(initSession);
+      },
+      signOut: () => {
+        setSession(null);
+      },
+    };
+  }, [])
+
+  useEffect(() => {
+
+  }, []);
 
   const router = useMemo(() => {
     return {
       pathname,
       searchParams: new URLSearchParams(),
       navigate: (path) => {
-        navigate(path);
+        navigate('/admin' + path);
         setPathname(path);
       },
     };
@@ -77,20 +55,22 @@ function AdminLayout() {
   return (
     <>
       <AppProvider
-        navigation={nav}
+        navigation={adminNav}
         router={router}
         branding={{
-          title: '', logo: 
-          <Box
-            component='div'
-            onClick={handleLogoClick}
-            display='flex'
-            alignItems='center'
-          >
-            <Logo />
-            <Typography variant='subtitle2' ml='12px'>Admin</Typography>
-          </Box>
+          title: '', logo:
+            <Box
+              component='div'
+              onClick={handleLogoClick}
+              display='flex'
+              alignItems='center'
+            >
+              <Logo />
+              <Typography variant='subtitle2' ml='12px'>Admin</Typography>
+            </Box>
         }}
+        session={session}
+        authentication={authentication}
       >
         <DashboardLayout >
           <Outlet />

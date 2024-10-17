@@ -5,14 +5,62 @@ import {
 import { useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import Search from '../Search'
-import { appBar } from '../../constance/constance';
 import { Link, NavLink } from 'react-router-dom';
+import { useAuthContext } from '../../context/AuthContext';
+import { AccountCircleOutlined } from '@mui/icons-material';
+import { customerNav } from '../../constance/constance.jsx';
+import PropTypes from 'prop-types';
+import Logo from '../Logo.jsx';
+import { CartIcon } from '../../icons/CustomIcons.jsx';
 
 const drawerWidth = 240;
 
+const NavbarButton = ({ title, path, navIcon }) =>
+    <NavLink to={path}>
+        <Button
+            color='black.main'
+            size='large'
+            sx={{
+                [`& .${buttonClasses.startIcon} > *:nth-of-type(1)`]: {
+                    fontSize: '32px'
+                },
+                color: 'black.main',
+                alignItems: 'center',
+                height: '100%',
+                flexDirection: 'column',
+                px: '8px'
+            }}>
+            {navIcon}
+            <Typography variant='button' sx={{ fontSize: '16px' }}>
+                {title}
+            </Typography>
+        </Button>
+    </NavLink>
+
+const NavbarLink = ({ title, segment }) =>
+    <NavLink to={segment} style={{ color: 'black' }}>
+        <ListItem disablePadding>
+            <ListItemButton sx={{ textAlign: 'center' }}>
+                <ListItemText primary={title} />
+            </ListItemButton>
+        </ListItem>
+    </NavLink>
+
+NavbarLink.propTypes = {
+    title: PropTypes.string.isRequired,
+    segment: PropTypes.string.isRequired
+}
+
+NavbarButton.propTypes = {
+    title: PropTypes.string.isRequired,
+    path: PropTypes.string.isRequired,
+    navIcon: PropTypes.node.isRequired,
+}
+
+const navItems = customerNav;
+
 function TopAppBar() {
-    const user = { role: 'customer' };
-    const navItems = appBar[user.role];
+    const { isAuthenticated, user } = useAuthContext();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
 
@@ -23,19 +71,19 @@ function TopAppBar() {
     const drawer = (
         <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
             <Link to={'/'}>
-                <Typography variant="h5" sx={{ my: 2, fontFamily: 'Nunito', color: 'primary.main' }}>
-                    FCOMPUTER
-                </Typography>
+                <Logo margin='12px 0 12px 0' />
             </Link>
             <Divider />
             <List>
-                {navItems.map((item) => (
-                    <ListItem key={item.title} disablePadding>
-                        <ListItemButton sx={{ textAlign: 'center' }}>
-                            <ListItemText primary={item.title} />
-                        </ListItemButton>
-                    </ListItem>
-                ))}
+                {navItems.map((item) =>
+                    <NavbarLink key={item.title} segment={item.segment} title={item.title} />)}
+                {isAuthenticated ?
+                    <NavbarLink segment='/profile' title={user.name} />
+
+                    :
+                    <NavbarLink segment='/login' title='Đăng nhập' />
+
+                }
             </List>
         </Box>
     );
@@ -73,13 +121,7 @@ function TopAppBar() {
                                         textDecoration: 'none'
                                     }}
                         >
-                            <Typography
-                                variant="h5"
-                                component="div"
-                                sx={{ color: 'primary.main', fontFamily: 'nunito', fontWeight: 'bold' }}
-                            >
-                                FCOMPUTER
-                            </Typography>
+                            <Logo />
                         </Button>
                     </Link>
                     <Box sx={
@@ -102,36 +144,28 @@ function TopAppBar() {
                             setIsSearchFocused={setIsSearchFocused}
                         />
                     </Box>
+                    <IconButton
+                        color="inherit"
+                        edge="end"
+                        sx={{ ml: 2, display: { md: 'none' } }}
+                    >
+                        <Link to='/cart' style={{color: 'unset'}}>
+                            <CartIcon />
+                        </Link>
+                    </IconButton>
                     <Box sx={
                         isSearchFocused ?
                             { display: 'none' } :
                             { display: { xs: 'none', md: 'flex' }, alignItems: 'center', height: '100%', justifyContent: 'space-between', minWidth: '450px', width: '520px' }
                     }>
                         {navItems.map((item) => (
-                            <NavLink
-                                key={item.title}
-                                to={item.path}
-                            >
-                                <Button
-                                    color='black.main'
-                                    size='large'
-                                    sx={{
-                                        [`& .${buttonClasses.startIcon} > *:nth-of-type(1)`]: {
-                                            fontSize: '32px'
-                                        },
-                                        color: 'black.main',
-                                        alignItems: 'center',
-                                        height: '100%',
-                                        flexDirection: 'column',
-                                        px: '8px'
-                                    }}>
-                                    <item.icon width={32} height={32} />
-                                    <Typography variant='button' sx={{ fontSize: '16px' }}>
-                                        {item.title}
-                                    </Typography>
-                                </Button>
-                            </NavLink>
+                            <NavbarButton title={item.title} path={item.segment} navIcon={item.icon} key={item.title} />
                         ))}
+                        {
+                            isAuthenticated ?
+                                <NavbarButton title={user.name} navIcon={<AccountCircleOutlined />} path='/profile' /> :
+                                <NavbarButton title='Đăng nhập' navIcon={<AccountCircleOutlined />} path='/login' />
+                        }
                     </Box>
                 </Toolbar>
             </AppBar>
