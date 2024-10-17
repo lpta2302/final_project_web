@@ -8,6 +8,7 @@ import Register from "./components/forms/Register";
 import ForgotPassword from "./components/forms/ForgotPassword";
 import Orders from './_root/pages/customer/Orders';
 import Product from './pages/Product';
+import Checkout from './pages/Checkout';
 import './globalStyle.css';
 
 const theme = createTheme({
@@ -62,6 +63,7 @@ function App() {
               <Route path={'/vouchers'} element={<Voucher />} />
               <Route path={'/profile'} element={<Profile />} />
               <Route path={'/product/productId'} element={<Product />} />
+              <Route path={'/checkout'} element={<Checkout />} />
             </Route>
           </Routes>
         </AuthProvider>

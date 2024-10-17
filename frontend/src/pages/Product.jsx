@@ -222,7 +222,7 @@ const Product = () => {
           </Button>
         </Box>
 
-        {/* Display Existing Comments - Hiển thị sau form */}
+        {/* Display Existing Comments */}
         {userComments.length > 0 ? (
           userComments.map((comment, index) => (
             <Paper key={index} sx={{ p: 2, mb: 2 }}>
