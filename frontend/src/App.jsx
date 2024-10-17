@@ -3,11 +3,11 @@ import { Container, createTheme, CssBaseline, ThemeProvider } from "@mui/materia
 import AuthProvider from "./context/AuthContext";
 import RootLayout from './_root/RootLayout';
 import { HomePage } from './_root/pages';
-import Login from "./components/forms/Login";
 import './globalStyle.css'
 import AdminLayout from './_root/AdminLayout';
 import AdminHomePage from './_root/pages/admin/AdminHomePage';
 import { adminNav, customerNav } from './constance/constance.jsx';
+import { Login } from './components/index.js';
 
 const theme = createTheme({
   palette: {
@@ -46,6 +46,7 @@ function App() {
   return (
     <Container
       component='main'
+      maxWidth='xl'
     >
       <ThemeProvider theme={theme}>
         <CssBaseline />
@@ -65,8 +66,8 @@ function App() {
             {adminNav.map(navItem =>
               <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
             )}
-            <Route path="login" element={<Login admin />} />
           </Route>
+          <Route path='admin/login' element={<Login/>} />
         </Routes>
       </ThemeProvider>
     </Container>
