@@ -75,8 +75,9 @@ const HomePage = () => {
                   height="200"
                   image={banner.image}
                   alt={banner.title}
-                  style={{ cursor: "poiter" }}
+                  style={{ cursor: "pointer" }}
                 />
+
                 <CardContent>
                   <Typography variant="h5">{banner.title}</Typography>
                 </CardContent>

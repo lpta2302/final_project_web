@@ -88,10 +88,11 @@ const CartPage = () => {
           </Button>
         </div>
       ) : (
-        <TableContainer>
-          <Table>
+        <TableContainer style={{ maxHeight: "400px" }}>
+          <Table stickyHeader>
             <TableHead>
               <TableRow>
+                <TableCell>ẢNH</TableCell>
                 <TableCell>SẢN PHẨM</TableCell>
                 <TableCell>GIÁ</TableCell>
                 <TableCell>SỐ LƯỢNG</TableCell>
@@ -102,6 +103,12 @@ const CartPage = () => {
             <TableBody>
               {cartItems.map((item) => (
                 <TableRow key={item.id}>
+                  <TableCell>
+                    <img
+                      src="https://www.tnc.com.vn/uploads/product/XUYEN_102020/DELL-S2421HN.jpg"
+                      width="200"
+                    />
+                  </TableCell>
                   <TableCell>{item.name}</TableCell>
                   <TableCell>{item.price.toLocaleString()} đ</TableCell>
                   <TableCell>
@@ -139,6 +146,16 @@ const CartPage = () => {
       {cartItems.length > 0 && (
         <Typography variant="h6" style={{ marginTop: "20px" }}>
           Tổng cộng: {totalAmount.toLocaleString()} đ
+          <Button
+            style={{
+              float: "right",
+              border: "1px solid black",
+              backgroundColor: "#1976d2",
+              color: "white",
+            }}
+          >
+            Thanh toán
+          </Button>
         </Typography>
       )}
     </Container>
