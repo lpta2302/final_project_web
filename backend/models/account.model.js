@@ -56,6 +56,13 @@ const accountSchema = new mongoose.Schema(
       enum: ["admin", "client"],
       default: "client",
     },
+    // Mảng địa chỉ, mỗi phần tử là một ObjectId tham chiếu đến Address model
+    addresses: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Address", // Tham chiếu đến model Address
+      },
+    ],
   },
   { timestamps: true }
 ); // Tự động thêm createdAt và updatedAt
