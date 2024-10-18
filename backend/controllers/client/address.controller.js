@@ -37,3 +37,41 @@ export const post = async (req, res) => {
     });
   }
 };
+
+// [PATCH] /client/address/edit/:id
+export const edit = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    await Address.updateOne({ _id: id }, req.body);
+
+    res.status(200).json({
+      code: 200,
+      message: "Cập nhập địa chỉ thành công",
+    });
+  } catch (error) {
+    res.status(400).json({
+      code: 400,
+      error: error.message,
+      message: "Cập nhập địa chỉ mới thất bại",
+    });
+  }
+};
+
+// [DELETE] /client/address/delete/:id
+export const deleteAddress = async (req, res) => {
+  try {
+    await Address.deleteOne({ _id: req.params.id });
+
+    res.status(200).json({
+      code: 200,
+      message: "Xóa địa chỉ mới thành công",
+    });
+  } catch (error) {
+    res.status(400).json({
+      code: 400,
+      error: error.message,
+      message: "Xóa địa chỉ mới thất bại",
+    });
+  }
+};
