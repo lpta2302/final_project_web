@@ -1,6 +1,6 @@
 import Seen from "../../models/seen.model.js";
 
-// [POST] /client/seen
+// [POST] /client/seen/add
 export const add = async (req, res) => {
   try {
     const { userId, productId } = req.body;
@@ -53,6 +53,34 @@ export const add = async (req, res) => {
     res.status(400).json({
       code: 400,
       message: "Thêm sản phẩm thất bại",
+      error: error.message,
+    });
+  }
+};
+
+// [GET] /client/seen/:userId
+export const getSeenProducts = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // Tìm bản ghi `seen` của người dùng
+    const seen = await Seen.findOne({ userId: userId }).populate("products");
+
+    if (!seen || seen.products.length === 0) {
+      return res.status(404).json({
+        code: 404,
+        message: "Không tìm thấy danh sách sản phẩm đã xem gần đây",
+      });
+    }
+
+    res.status(200).json({
+      code: 200,
+      products: seen.products,
+    });
+  } catch (error) {
+    res.status(400).json({
+      code: 400,
+      message: "Lấy danh sách sản phẩm thất bại",
       error: error.message,
     });
   }
