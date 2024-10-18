@@ -1,76 +1,93 @@
-import { Route, Routes } from 'react-router-dom'
-import { Container, createTheme, CssBaseline, ThemeProvider } from "@mui/material";
+import { Route, Routes } from "react-router-dom";
+import {
+  Container,
+  createTheme,
+  CssBaseline,
+  ThemeProvider,
+} from "@mui/material";
 import AuthProvider from "./context/AuthContext";
-import RootLayout from './_root/RootLayout';
-import { HomePage } from './_root/pages';
+import RootLayout from "./_root/RootLayout";
+import { HomePage } from "./_root/pages";
 import Login from "./components/forms/Login";
-import './globalStyle.css'
-import AdminLayout from './_root/AdminLayout';
-import AdminHomePage from './_root/pages/admin/AdminHomePage';
-import { adminNav, customerNav } from './constance/constance.jsx';
+import "./globalStyle.css";
+import AdminLayout from "./_root/AdminLayout";
+import AdminHomePage from "./_root/pages/admin/AdminHomePage";
+import { adminNav, customerNav } from "./constance/constance.jsx";
+import HomePageClient from "./pages/HomePageClient.jsx";
+import CartPage from "./pages/ShoppingCart.jsx";
+import GridProduct from "./pages/GridProduct.jsx";
 
 const theme = createTheme({
   palette: {
     white: {
-      main: '#fff',
-      smoke: 'f5f5f5'
+      main: "#fff",
+      smoke: "f5f5f5",
     },
     black: {
-      main: '#000',
-      light: '#505050'
+      main: "#000",
+      light: "#505050",
     },
     secondary: {
-      main: '#09083d'
+      main: "#09083d",
     },
     primary: {
-      main: '#0672cb'
+      main: "#0672cb",
     },
   },
   typography: {
-    fontFamily: 'inter'
+    fontFamily: "inter",
   },
   components: {
     MuiButton: {
       styleOverrides: {
         text: {
-          '&:hover': {
-            backgroundColor: 'rgba(0,0,0,0.035)'
-          }
-        }
-      }
-    }
-  }
+          "&:hover": {
+            backgroundColor: "rgba(0,0,0,0.035)",
+          },
+        },
+      },
+    },
+  },
 });
 
 function App() {
   return (
-    <Container
-      component='main'
-    >
+    <Container component="main">
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AuthProvider>
           <Routes>
             <Route element={<RootLayout />}>
-              <Route index element={<HomePage />} path='/' />
-              {customerNav.map(navItem =>
-                <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
-              )}
+              <Route index element={<HomePage />} path="/" />
+              {customerNav.map((navItem) => (
+                <Route
+                  path={navItem.segment}
+                  element={navItem.element}
+                  key={navItem.title}
+                />
+              ))}
             </Route>
           </Routes>
         </AuthProvider>
         <Routes>
-          <Route path='/admin' element={<AdminLayout />}>
+          <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminHomePage />} />
-            {adminNav.map(navItem =>
-              <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
-            )}
+            {adminNav.map((navItem) => (
+              <Route
+                path={navItem.segment}
+                element={navItem.element}
+                key={navItem.title}
+              />
+            ))}
             <Route path="login" element={<Login admin />} />
           </Route>
+          <Route path="/homepageclient" element={<HomePageClient />} />
+          <Route path="/shopingcart" element={<CartPage />} />
+          <Route path="/productgrid" element={<GridProduct />} />
         </Routes>
       </ThemeProvider>
     </Container>
-  )
+  );
 }
 
 export default App;

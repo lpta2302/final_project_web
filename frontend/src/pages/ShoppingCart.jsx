@@ -1,4 +1,3 @@
-// src/pages/CartPage.js
 import { useState } from "react";
 import {
   Container,
@@ -13,6 +12,7 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Link } from "react-router-dom";
+import { TopAppBar } from "../components";
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([
@@ -68,97 +68,111 @@ const CartPage = () => {
   );
 
   return (
-    <Container>
-      <Typography variant="h4" gutterBottom>
-        Giỏ hàng
-      </Typography>
+    <>
+      <TopAppBar />
 
-      {cartItems.length === 0 ? (
-        <div>
-          <Typography variant="h6" gutterBottom>
-            Giỏ hàng của bạn hiện đang trống!
-          </Typography>
-          <Button
-            component={Link}
-            to="/homepage"
-            variant="contained"
-            color="primary"
-          >
-            Quay lại Trang chủ
-          </Button>
-        </div>
-      ) : (
-        <TableContainer style={{ maxHeight: "400px" }}>
-          <Table stickyHeader>
-            <TableHead>
-              <TableRow>
-                <TableCell>ẢNH</TableCell>
-                <TableCell>SẢN PHẨM</TableCell>
-                <TableCell>GIÁ</TableCell>
-                <TableCell>SỐ LƯỢNG</TableCell>
-                <TableCell>TỔNG CỘNG</TableCell>
-                <TableCell></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {cartItems.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell>
-                    <img
-                      src="https://www.tnc.com.vn/uploads/product/XUYEN_102020/DELL-S2421HN.jpg"
-                      width="200"
-                    />
-                  </TableCell>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>{item.price.toLocaleString()} đ</TableCell>
-                  <TableCell>
-                    <Button
-                      onClick={() => handleQuantityChange(item.id, "decrease")}
-                    >
-                      -
-                    </Button>
-                    {item.quantity}
-                    <Button
-                      onClick={() => handleQuantityChange(item.id, "increase")}
-                    >
-                      +
-                    </Button>
-                  </TableCell>
-                  <TableCell>
-                    {(item.price * item.quantity).toLocaleString()} đ
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      onClick={() => handleDeleteItem(item.id)}
-                      startIcon={<DeleteIcon />}
-                      color="error"
-                    >
-                      Xóa
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
-
-      {cartItems.length > 0 && (
-        <Typography variant="h6" style={{ marginTop: "20px" }}>
-          Tổng cộng: {totalAmount.toLocaleString()} đ
-          <Button
-            style={{
-              float: "right",
-              border: "1px solid black",
-              backgroundColor: "#1976d2",
-              color: "white",
-            }}
-          >
-            Thanh toán
-          </Button>
+      <Container sx={{ marginTop: "100px" }}>
+        <Typography variant="h4" gutterBottom>
+          Giỏ hàng
         </Typography>
-      )}
-    </Container>
+
+        {cartItems.length === 0 ? (
+          <div>
+            <Typography variant="h6" gutterBottom>
+              Giỏ hàng của bạn hiện đang trống!
+            </Typography>
+            <Button
+              component={Link}
+              to="/homepage"
+              variant="contained"
+              color="primary"
+            >
+              Quay lại Trang chủ
+            </Button>
+          </div>
+        ) : (
+          <TableContainer sx={{ maxHeight: "400px", overflowX: "auto" }}>
+            <Table stickyHeader>
+              <TableHead>
+                <TableRow>
+                  <TableCell>ẢNH</TableCell>
+                  <TableCell>SẢN PHẨM</TableCell>
+                  <TableCell>GIÁ</TableCell>
+                  <TableCell>SỐ LƯỢNG</TableCell>
+                  <TableCell>TỔNG CỘNG</TableCell>
+                  <TableCell></TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {cartItems.map((item) => (
+                  <TableRow key={item.id}>
+                    <TableCell sx={{ width: "150px" }}>
+                      <img
+                        src="https://www.tnc.com.vn/uploads/product/XUYEN_102020/DELL-S2421HN.jpg"
+                        width="100"
+                        alt={item.name}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ minWidth: "200px" }}>
+                      {item.name}
+                    </TableCell>
+                    <TableCell>{item.price.toLocaleString()} đ</TableCell>
+                    <TableCell>
+                      <Button
+                        onClick={() =>
+                          handleQuantityChange(item.id, "decrease")
+                        }
+                      >
+                        -
+                      </Button>
+                      {item.quantity}
+                      <Button
+                        onClick={() =>
+                          handleQuantityChange(item.id, "increase")
+                        }
+                      >
+                        +
+                      </Button>
+                    </TableCell>
+                    <TableCell>
+                      {(item.price * item.quantity).toLocaleString()} đ
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        onClick={() => handleDeleteItem(item.id)}
+                        startIcon={<DeleteIcon />}
+                        color="error"
+                      >
+                        Xóa
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
+
+        {cartItems.length > 0 && (
+          <Typography
+            variant="h6"
+            sx={{ marginTop: "20px", textAlign: "right" }}
+          >
+            Tổng cộng: {totalAmount.toLocaleString()} đ
+            <Button
+              sx={{
+                marginLeft: "20px",
+                border: "1px solid black",
+                backgroundColor: "#1976d2",
+                color: "white",
+              }}
+            >
+              Thanh toán
+            </Button>
+          </Typography>
+        )}
+      </Container>
+    </>
   );
 };
 
