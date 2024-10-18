@@ -20,7 +20,7 @@ const specificationSchema = new mongoose.Schema(
       required: true,
     },
     price: {
-      type: mongoose.Types.Decimal128, // Được sử dụng để đại diện cho số thập phân trong MongoDB
+      type: Number, // Được sử dụng để đại diện cho số thập phân trong MongoDB
       required: true,
     },
     products: {
