@@ -25,7 +25,6 @@ const productSchema = new mongoose.Schema(
       },
     ],
 
-    // Tan add Brand and Spec
     specs: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -42,7 +41,6 @@ const productSchema = new mongoose.Schema(
   }
 );
 
-// Tạo model Product từ schema
 const Product =
-  mongoose.models.product || mongoose.model("product", productSchema);
+  mongoose.models.Product || mongoose.model("Product", productSchema); // Tên model là "Product"
 export default Product;
