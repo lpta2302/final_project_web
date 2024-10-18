@@ -14,7 +14,7 @@ export const index = async (req, res) => {
   }
 };
 
-// [GET] /client/brand
+// [GET] /client/brand/:idBrand
 export const getProduct = async (req, res) => {
   try {
     const idBrand = req.params.idBrand;
@@ -24,6 +24,31 @@ export const getProduct = async (req, res) => {
     console.log(brand);
 
     res.json(brand);
+  } catch (error) {
+    res.status(400).json({
+      code: 400,
+      error: error.message,
+    });
+  }
+};
+
+// [GET] /client/brand/search
+export const search = async (req, res) => {
+  try {
+    const { brandCode, brandName } = req.query;
+
+    const searchConditions = {};
+    if (brandCode) {
+      searchConditions.brandCode = brandCode;
+    }
+    if (brandName) {
+      // Sử dụng biểu thức chính quy để tìm kiếm không phân biệt hoa thường
+      searchConditions.brandName = new RegExp(brandName, "i");
+    }
+
+    const brands = await _Brand.find(searchConditions).populate("products");
+
+    res.json(brands);
   } catch (error) {
     res.status(400).json({
       code: 400,
