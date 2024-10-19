@@ -1,88 +1,131 @@
-import { Container } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
-
-const rows = [
-  {
-    id: 1,
-    accountCode: 'ACC001',
-    username: 'john_doe',
-    password: 'password123',
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'john.doe@example.com',
-    phoneNumber: '123-456-7890',
-    dateOfBirth: '1990-01-01',
-    accountStatus: 'Active',
-  },
-  {
-    id: 2,
-    accountCode: 'ACC002',
-    username: 'jane_smith',
-    password: 'pass456',
-    firstName: 'Jane',
-    lastName: 'Smith',
-    email: 'jane.smith@example.com',
-    phoneNumber: '098-765-4321',
-    dateOfBirth: '1985-05-15',
-    accountStatus: 'Inactive',
-  },
-  {
-    id: 3,
-    accountCode: 'ACC003',
-    username: 'mike_jones',
-    password: 'password789',
-    firstName: 'Mike',
-    lastName: 'Jones',
-    email: 'mike.jones@example.com',
-    phoneNumber: '555-123-4567',
-    dateOfBirth: '1992-12-20',
-    accountStatus: 'Active',
-  },
-  {
-    id: 4,
-    accountCode: 'ACC004',
-    username: 'alice_williams',
-    password: 'alicePass123',
-    firstName: 'Alice',
-    lastName: 'Williams',
-    email: 'alice.williams@example.com',
-    phoneNumber: '321-654-0987',
-    dateOfBirth: '1995-04-10',
-    accountStatus: 'Suspended',
-  },
-  {
-    id: 5,
-    accountCode: 'ACC005',
-    username: 'chris_brown',
-    password: 'chrisBrown98',
-    firstName: 'Chris',
-    lastName: 'Brown',
-    email: 'chris.brown@example.com',
-    phoneNumber: '777-888-9999',
-    dateOfBirth: '1988-08-08',
-    accountStatus: 'Active',
-  },
-];
-
-const columns = [
-  { field: 'accountCode', headerName: 'Id', width: 100 },
-  { field: 'username', headerName: 'Tên tài khoản', width: 150 },
-  { field: 'password', headerName: 'Mật khẩu', width: 150 },
-  { field: 'firstName', headerName: 'Họ', width: 80 },
-  { field: 'lastName', headerName: 'Tên', width: 150 },
-  { field: 'email', headerName: 'Email', width: 150 },
-  { field: 'phoneNumber', headerName: 'Số điện thoại', width: 150 },
-  { field: 'dateOfBirth', headerName: 'Ngày sinh', width: 150 },
-  { field: 'accountStatus', headerName: 'Trạng thái', width: 150 },
-];
-
+import { DataGrid, GridActionsCellItem, GridToolbar } from '@mui/x-data-grid';
+import { PageContainer } from '@toolpad/core';
+import { renderEditStatus, renderStatus, STATUS_OPTIONS } from './customRenderer/status.jsx';
+import { useDeleteAccount, useReadAllAccount, useUpdateAccountStatus } from '../../../api/queries.js';
+import { Delete } from '@mui/icons-material';
+import { useEffect, useState } from 'react';
+import DataGridConfirmDialog from '../../../components/dialogs/DataGridConfirmDialog.jsx';
+import { ManagePageSearch } from "../../../components";
+import { enqueueSnackbar as toaster } from 'notistack';
+import { Box } from '@mui/material';
 
 
 function ManageAccount() {
+  const [searchValue, setSearchValue] = useState('')
+  const [rows, setRows] = useState()
+  const { data } = useReadAllAccount();
+  const [dialogPayload, setDialogPayload] = useState({ state: false, id: null });
+  const { mutateAsync: deleteAccount } = useDeleteAccount();
+  const { mutateAsync: updateAccountStatus } = useUpdateAccountStatus();
+
+
+  const breadcrumbs = [
+    { path: '/', title: 'Home' },
+    { path: '/manage-account', title: 'Quản lý tài khoản' },
+  ]
+
+  useEffect(() => setRows(data), [data])
+
+  const columns = [
+    { field: 'accountCode', headerName: 'Id', width: 150 },
+    { field: 'username', headerName: 'Tên tài khoản', width: 150 },
+    { field: 'firstName', headerName: 'Họ', width: 80 },
+    { field: 'lastName', headerName: 'Tên', width: 200 },
+    { field: 'email', headerName: 'Email', width: 200 },
+    { field: 'phoneNumber', headerName: 'Số điện thoại', width: 150 },
+    { field: 'dateOfBirth', headerName: 'Ngày sinh', width: 150 },
+    {
+      field: 'accountStatus', headerName: 'Trạng thái', width: 150, renderCell: renderStatus,
+      renderEditCell: renderEditStatus,
+      type: 'singleSelect',
+      valueOptions: STATUS_OPTIONS,
+      editable: true,
+      align: 'center'
+    },
+    {
+      field: 'actions',
+      type: 'actions',
+      headerName: '',
+      width: 100,
+      align: 'center',
+      cellClassName: 'actions',
+      getActions: ({ id }) => {
+        return [<GridActionsCellItem
+          icon={<Delete color='error' />}
+          label="Delete"
+          onClick={() => setDialogPayload({ state: true, id: id })}
+          color="inherit"
+          key="delete"
+        />]
+      }
+    }
+  ];
+
+  const handleDeleteClick = async (isAccept) => {
+    console.log(isAccept);
+
+    const { id } = dialogPayload
+
+    if (!isAccept) {
+      setDialogPayload({ state: false, id: null });
+      return;
+    }
+
+
+    await deleteAccount(id)
+    setRows(rows.filter((row) => row.accountCode !== id));
+    setDialogPayload({ state: false, id: null });
+  }
+
+  const handleUpdate = async (updatedRow) => {
+    await updateAccountStatus(updatedRow)
+    toaster("Cập nhật trạng thái tài khoản thành công", { variant: 'success' })
+    return updatedRow;
+  }
+
+  const handleUpdateError = () => {
+    toaster("Cập nhật trạng thái tài khoản thất bại", { variant: 'error' })
+  }
+
+  const handleSearch = () => {
+    console.log(searchValue);
+
+  }
+
+
   return (
-    <Container>
-      <DataGrid rows={rows} columns={columns} />
-    </Container>
+    <PageContainer
+      title='Quản lý tài khoản'
+      breadCrumbs={breadcrumbs}
+      sx={{ maxWidth: { xl: 'unset', lg: '94vw', sm: '92vw', xs: '100vw' } }}
+    >
+      <Box
+        display='flex'
+        width='100%'
+        justifyContent='flex-end'
+      >
+        <ManagePageSearch
+          {...{searchValue, setSearchValue, handleSearch}}
+        />
+      </Box>
+      <DataGridConfirmDialog
+        onClick={handleDeleteClick}
+        state={dialogPayload.state}
+        title="Xác nhận xóa?"
+        content="Người dùng, bao gồm cả thông tin sẽ bị xóa vĩnh viễn và không thể khôi phục."
+      />
+      <DataGrid
+        getRowId={(row) => row.accountCode}
+        rows={rows}
+        columns={columns}
+        slots={{ toolbar: GridToolbar }}
+        checkboxSelection
+        // onCellEditStop={handleUpdate}
+        processRowUpdate={handleUpdate}
+        onProcessRowUpdateError={handleUpdateError}
+      />
+
+    </PageContainer>
   )
 }
 

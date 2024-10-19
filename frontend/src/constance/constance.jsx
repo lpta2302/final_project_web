@@ -1,6 +1,6 @@
-import { AccountBoxOutlined, Dashboard, WarehouseOutlined } from "@mui/icons-material";
+import { AccountBoxOutlined, CategoryOutlined, Dashboard, WarehouseOutlined } from "@mui/icons-material";
 import { BoxIcon, CartIcon, OrderIcon, OrderTextIcon, VoucherIcon } from "../icons/CustomIcons";
-import { Cart, ManageAccount, ManageInventory, ManageOrder, ManageProduct, ManageVoucher, Voucher, Dashboard as DashboardPage } from "../_root/pages";
+import { Cart, ManageAccount, ManageInventory, ManageOrder, ManageProduct, ManageVoucher, Voucher, Dashboard as DashboardPage, ManageSpecification } from "../_root/pages";
 import Orders from "../_root/pages/customer/Orders";
 
 export const adminNav = [
@@ -9,10 +9,16 @@ export const adminNav = [
     title: 'Quản lý hàng hóa'
   },
   {
-    segment: 'manage-product',
     title: 'Sản phẩm',
-    icon: <BoxIcon />,
+    segment: 'manage-product',
+    icon: <BoxIcon/>,
     element: <ManageProduct/>
+  },
+  {
+    segment: 'manage-specification',
+    title: 'Phân loại',
+    icon: <CategoryOutlined />,
+    element: <ManageSpecification/>
   },
   {
     segment: 'manage-inventory',
@@ -45,6 +51,10 @@ export const adminNav = [
     title: 'Tài khoản',
     icon: <AccountBoxOutlined />,
     element: <ManageAccount/>
+  },
+  {
+    kind: 'header',
+    title: 'Báo cáo'
   },
   {
     segment: 'dashboard',

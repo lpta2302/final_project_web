@@ -1,9 +1,9 @@
 import { AppProvider } from '@toolpad/core/AppProvider'
 import { DashboardLayout } from '@toolpad/core/DashboardLayout'
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import Logo from '../components/Logo'
 import { useNavigate, Outlet } from 'react-router-dom'
-import { Box, Typography } from '@mui/material'
+import { Box, Grid2, Typography } from '@mui/material'
 import { adminNav } from '../constance/constance.jsx'
 
 const initSession = {
@@ -27,13 +27,14 @@ function AdminLayout() {
     };
   }, [])
 
-  useEffect(() => {
-    if (session.user === null) {
-      navigate('login');
-    } else {
-      return;
-    }
-  }, [session.user, navigate]);
+
+  // useEffect(() => {
+  //   if (session.user === null) {
+  //     navigate('login');
+  //   } else {
+  //     return;
+  //   }
+  // }, [session.user, navigate]);
 
   const router = useMemo(() => {
     return {
@@ -66,16 +67,14 @@ function AdminLayout() {
             alignItems='center'
           >
             <Logo />
-            <Typography variant='subtitle2' ml='12px'>Admin</Typography>
+            <Typography variant='subtitle2' ml={{ sm: '12px', xs: 'none' }}>Admin</Typography>
           </Box>
       }}
       session={session}
       authentication={authentication}
     >
-      <DashboardLayout
-
-      >
-        <Outlet />
+      <DashboardLayout>
+          <Outlet />
       </DashboardLayout>
     </AppProvider>
   )
