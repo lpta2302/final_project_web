@@ -188,7 +188,10 @@ const accountController = {
 
       const _accounts = await account
         .find({
-          username: { $regex: search, $options: "i" },
+          $or: [
+            { username: { $regex: search, $options: "i" } },
+            { accountCode: { $regex: search, $options: "i" } },
+          ],
         })
         .where("accountStatus")
         .in([...status])
