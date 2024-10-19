@@ -265,9 +265,7 @@ const SubNavbar = () => {
   };
 
   return (
-    <Toolbar
-      sx={{ backgroundColor: "#f4f4f4", padding: "10px 0", marginTop: "20px" }}
-    >
+    <Toolbar sx={{ backgroundColor: "#f4f4f4" }}>
       <Box sx={{ flexGrow: 1 }}>
         {/* NavItems by category */}
         <Typography variant="h6" sx={{ display: "inline", marginRight: 2 }}>
@@ -341,7 +339,7 @@ const HomePageClient = () => {
       <SubNavbar />
 
       {/* Main content container */}
-      <Container sx={{ marginTop: 2 }}>
+      <Container>
         {/* Banners Section */}
         <BannerSlider />
 

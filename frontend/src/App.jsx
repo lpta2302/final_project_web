@@ -14,9 +14,8 @@ import AdminLayout from "./_root/AdminLayout";
 import AdminHomePage from "./_root/pages/admin/AdminHomePage";
 import { adminNav, customerNav } from "./constance/constance.jsx";
 import HomePageClient from "./pages/HomePageClient.jsx";
-import CartPage from "./pages/ShoppingCart.jsx";
 import GridProduct from "./pages/GridProduct.jsx";
-
+import CheckoutPage from "./pages/Checkoutpage.jsx";
 const theme = createTheme({
   palette: {
     white: {
@@ -58,7 +57,7 @@ function App() {
         <AuthProvider>
           <Routes>
             <Route element={<RootLayout />}>
-              <Route index element={<HomePage />} path="/" />
+              <Route index element={<HomePageClient />} path="/" />
               {customerNav.map((navItem) => (
                 <Route
                   path={navItem.segment}
@@ -81,9 +80,9 @@ function App() {
             ))}
             <Route path="login" element={<Login admin />} />
           </Route>
-          <Route path="/homepageclient" element={<HomePageClient />} />
-          <Route path="/shopingcart" element={<CartPage />} />
+
           <Route path="/productgrid" element={<GridProduct />} />
+          <Route path="/checkoutpage" element={<CheckoutPage />} />
         </Routes>
       </ThemeProvider>
     </Container>
