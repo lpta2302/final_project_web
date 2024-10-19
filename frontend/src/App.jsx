@@ -1,5 +1,10 @@
-import { Route, Routes } from 'react-router-dom'
-import { Container, createTheme, CssBaseline, ThemeProvider } from "@mui/material";
+import { Route, Routes } from "react-router-dom";
+import {
+  Container,
+  createTheme,
+  CssBaseline,
+  ThemeProvider,
+} from "@mui/material";
 import AuthProvider from "./context/AuthContext";
 import RootLayout from './_root/RootLayout';
 import { HomePage } from './_root/pages';
@@ -15,34 +20,34 @@ import { SnackbarProvider } from 'notistack'
 const theme = createTheme({
   palette: {
     white: {
-      main: '#fff',
-      smoke: 'f5f5f5'
+      main: "#fff",
+      smoke: "f5f5f5",
     },
     black: {
-      main: '#000',
-      light: '#505050'
+      main: "#000",
+      light: "#505050",
     },
     secondary: {
-      main: '#09083d'
+      main: "#09083d",
     },
     primary: {
-      main: '#0672cb'
+      main: "#0672cb",
     },
   },
   typography: {
-    fontFamily: 'inter'
+    fontFamily: "inter",
   },
   components: {
     MuiButton: {
       styleOverrides: {
         text: {
-          '&:hover': {
-            backgroundColor: 'rgba(0,0,0,0.035)'
-          }
-        }
-      }
-    }
-  }
+          "&:hover": {
+            backgroundColor: "rgba(0,0,0,0.035)",
+          },
+        },
+      },
+    },
+  },
 });
 
 const queryClient = new QueryClient();
