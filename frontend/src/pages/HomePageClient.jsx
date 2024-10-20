@@ -292,17 +292,34 @@ const SubNavbar = () => {
           MenuListProps={{
             onMouseLeave: handleMenuClose,
           }}
+          sx={{
+            minWidth: "200px", // Điều chỉnh độ rộng tối thiểu của menu
+          }}
         >
-          <MenuItem onClick={() => handleCategoryClick("Laptop")}>
+          <MenuItem
+            onClick={() => handleCategoryClick("Laptop")}
+            sx={{ minWidth: "200px" }}
+          >
             Laptop
           </MenuItem>
-          <MenuItem onClick={() => handleCategoryClick("Chuột")}>
+          <MenuItem
+            onClick={() => handleCategoryClick("Chuột")}
+            sx={{ minWidth: "200px" }}
+          >
             Chuột
           </MenuItem>
-          <MenuItem onClick={() => handleCategoryClick("Tai nghe")}>
+          <MenuItem
+            onClick={() => handleCategoryClick("Tai nghe")}
+            sx={{ minWidth: "200px" }}
+          >
             Tai nghe
           </MenuItem>
-          <MenuItem onClick={() => handleCategoryClick("Loa")}>Loa</MenuItem>
+          <MenuItem
+            onClick={() => handleCategoryClick("Loa")}
+            sx={{ minWidth: "200px" }}
+          >
+            Loa
+          </MenuItem>
         </Menu>
 
         {/* Thương hiệu */}
@@ -328,10 +345,26 @@ const SubNavbar = () => {
           MenuListProps={{
             onMouseLeave: handleMenuClose,
           }}
+          sx={{ minWidth: "200px" }}
         >
-          <MenuItem onClick={() => handleBrandClick("Dell")}>Dell</MenuItem>
-          <MenuItem onClick={() => handleBrandClick("Apple")}>Apple</MenuItem>
-          <MenuItem onClick={() => handleBrandClick("HP")}>HP</MenuItem>
+          <MenuItem
+            onClick={() => handleBrandClick("Dell")}
+            sx={{ minWidth: "200px" }}
+          >
+            Dell
+          </MenuItem>
+          <MenuItem
+            onClick={() => handleBrandClick("Apple")}
+            sx={{ minWidth: "200px" }}
+          >
+            Apple
+          </MenuItem>
+          <MenuItem
+            onClick={() => handleBrandClick("HP")}
+            sx={{ minWidth: "200px" }}
+          >
+            HP
+          </MenuItem>
         </Menu>
       </Box>
     </Toolbar>
