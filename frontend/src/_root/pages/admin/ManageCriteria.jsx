@@ -1,77 +1,71 @@
 import { DataGrid, GridActionsCellItem, GridToolbar } from '@mui/x-data-grid';
 import { PageContainer } from '@toolpad/core';
-import { renderEditProductStatus, renderProductStatus, STATUS_OPTIONS } from './customRenderer/productStatus.jsx';
 import { useEffect, useState } from 'react';
 import DataGridConfirmDialog from '../../../components/dialogs/DataGridConfirmDialog.jsx';
-import { ManagePageSearch } from "../../../components";
+import { ManagePageSearch, SplitButton } from "../../../components";
 import { enqueueSnackbar as toaster } from 'notistack';
-import { Box } from '@mui/material';
+import { Box, Button, ButtonGroup } from '@mui/material';
 import { Delete } from '@mui/icons-material';
-import { useDeleteProduct, useReadAllProduct } from '../../../api/queries.js';
+import { useDeleteBrand, useDeleteCategory, useDeleteSpecification, useDeleteTag, useReadAllBrand, useReadAllCategory, useReadAllSpecification, useReadAllTag } from '../../../api/queries.js';
 
-const columnFields = [
-  { field: 'productCode', headerName: 'Id', width: 150 },
-    { field: 'productName', headerName: 'Tên sản phẩm', width: 200 },
-    { field: 'description', headerName: 'Mô tả', width: 300 },
-    {
-      field: 'productStatus',
-      headerName: 'Trạng thái',
-      width: 150,
-      renderCell: renderProductStatus,
-      renderEditCell: renderEditProductStatus,
-      type: 'singleSelect',
-      valueOptions: STATUS_OPTIONS,
-      editable: true,
-      align: 'center'
-    },
-]
+const criteria = {
+  brand: {
+    read: useReadAllBrand,
+    delete: useDeleteBrand,
+    columns: [
+      { field: 'brandCode', headerName: 'Id', width: 150 },
+      { field: 'brandName', headerName: 'Hãng sản xuất', width: 200 }
+    ]
+  },
+  category: {
+    read: useReadAllCategory,
+    delete: useDeleteCategory,
+    columns: [
+      { field: 'categoryCode', headerName: 'Id', width: 150 },
+      { field: 'categoryName', headerName: 'Loại sản phẩm', width: 200 }
+    ]
+  },
+  tag: {
+    read: useReadAllTag,
+    delete: useDeleteTag,
+    columns: [
+      { field: 'tagCode', headerName: 'Id', width: 150 },
+      { field: 'tagName', headerName: 'Tên thẻ', width: 200 }
+    ]
+  },
+  // specification:{
+  //   read: useReadAllSpecification,
+  //   delete: useDeleteSpecification,
+  //   columns: [
+  //     { field: 'specCode', headerName: 'Id', width: 150 },
+  //   { field: 'specName', headerName: 'Loại ', width: 200 }
+  //   ]
+  // }
+}
 
+const criteriaKeys = Object.keys(criteria);
 
-function ManageAccount() {
+function ManageCriteria() {
+  const [criterion, setCriterion] = useState('category')
   const [searchValue, setSearchValue] = useState('')
   const [rows, setRows] = useState()
-  const { data, isPending: isLoading } = useReadAllProduct();
+  const { data } = criteria[criterion].read();
   const [dialogPayload, setDialogPayload] = useState({ state: false, id: null });
-  const { mutateAsync: deleteAccount } = useDeleteProduct();
+  const { mutateAsync: handleDelete } = criteria[criterion].delete();
   // const { mutateAsync: updateAccountStatus } = useUpdateAccountStatus();
 
 
   const breadcrumbs = [
     { path: '/', title: 'Home' },
-    { path: '/manage-product', title: 'Quản lý sản phẩm' },
+    { path: '/manage-criteria', title: 'Quản lý tiêu chí phân loại' },
   ]
 
-  useEffect(() => setRows(data), [data])
+  useEffect(() => setRows(data), [data,criterion])
   console.log(data);
+  
 
   const columns = [
-    ...columnFields,
-    // {
-    //   field: 'imageURLs',
-    //   headerName: 'Hình ảnh',
-    //   width: 200,
-    //   renderCell: (params) => (
-    //     <img src={params.value[0]} alt="Product" style={{ width: '50px', height: '50px' }} />
-    //   ),
-    // },
-    // {
-    //   field: 'category',
-    //   headerName: 'Phân loại',
-    //   width: 150,
-    //   valueGetter: (value, row) => console.log(row),
-    // },
-    // {
-    //   field: 'brand',
-    //   headerName: 'Thương hiệu',
-    //   width: 150,
-    //   valueGetter: (params) => params.row.brand.name || '',
-    // },
-    // {
-    //   field: 'specs',
-    //   headerName: 'Thông số kỹ thuật',
-    //   width: 200,
-    //   renderCell: (params) => params.value.map(spec => spec.name).join(', '),
-    // },
+    ...criteria[criterion].columns,
     {
       field: 'actions',
       type: 'actions',
@@ -79,7 +73,7 @@ function ManageAccount() {
       width: 100,
       align: 'center',
       cellClassName: 'actions',
-      getActions: ({ row:{_id: id}}) => {
+      getActions: ({ row: { _id: id } }) => {
         return [
           <GridActionsCellItem
             icon={<Delete color='error' />}
@@ -103,14 +97,14 @@ function ManageAccount() {
     }
 
 
-    await deleteAccount(id)
+    await handleDelete(id)
     setRows(rows.filter((row) => row.accountCode !== id));
     setDialogPayload({ state: false, id: null });
   }
 
   const handleUpdate = async (updatedRow) => {
     console.log(updatedRow);
-    
+
     // await updateAccountStatus(updatedRow)
     // toaster("Cập nhật trạng thái tài khoản thành công", { variant: 'success' })
     return updatedRow;
@@ -128,15 +122,24 @@ function ManageAccount() {
 
   return (
     <PageContainer
-      title='Quản lý sản phẩm'
+      title='Quản lý tiêu chí phân loại'
       breadCrumbs={breadcrumbs}
       sx={{ maxWidth: { xl: 'unset', lg: '94vw', sm: '92vw', xs: '100vw' } }}
     >
       <Box
         display='flex'
         width='100%'
-        justifyContent='flex-end'
+        justifyContent='space-between'
       >
+        <Box
+          maxHeight='50%'
+        >
+          <SplitButton
+            options={criteriaKeys}
+            selecting={criterion}
+            setSelecting={setCriterion}
+          />
+        </Box>
         <ManagePageSearch
           {...{ searchValue, setSearchValue, handleSearch }}
         />
@@ -148,18 +151,17 @@ function ManageAccount() {
         content="Sản phẩm, bao gồm cả thông tin sẽ bị xóa vĩnh viễn và không thể khôi phục."
       />
       <DataGrid
-        getRowId={(row) => row.productCode}
+        getRowId={(row) => row[criterion+'Code']}
         rows={rows}
         columns={columns}
         slots={{ toolbar: GridToolbar }}
         checkboxSelection
         processRowUpdate={handleUpdate}
         onProcessRowUpdateError={handleUpdateError}
-        loading={isLoading}
       />
 
     </PageContainer>
   )
 }
 
-export default ManageAccount
+export default ManageCriteria
