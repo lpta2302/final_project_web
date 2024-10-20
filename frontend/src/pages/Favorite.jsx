@@ -1,10 +1,9 @@
 import React from 'react';
+import GridProduct from './GridProduct';
 
 const Favorite = () => {
   return (
-    <div>
-      Favorite
-    </div>
+    <GridProduct />
   )
 }
 
