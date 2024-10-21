@@ -19,8 +19,6 @@ const INIT_STATE = {
     checkAuthUser: async () => false,
 };
 
-const getCurrentUser = () => ({ id: 1 });
-
 const AuthContext = createContext(INIT_STATE)
 
 export default function AuthProvider({ children }) {
@@ -31,8 +29,9 @@ export default function AuthProvider({ children }) {
 
     async function checkAuthUser() {
         try {
-            const { id, ...userInfo } = await getCurrentUser();
-            if (!id)
+            // const { id, ...userInfo } = await getCurrentUser();
+            
+            if (!user.id)
                 return false
             else
                 setUser({ id, ...userInfo })

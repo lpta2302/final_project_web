@@ -2,56 +2,60 @@ import { AccountCircleOutlined, ShoppingCart } from "@mui/icons-material";
 import { CartIcon, OrderIcon, VoucherIcon } from "../icons/CustomIcons";
 
 const appBar = {
-    admin: [{
-        title: 'Tài khoản',
-        icon: ShoppingCart
+  admin: [
+    {
+      segment: "manage-account",
+      title: "Tài khoản",
+      icon: ShoppingCart,
     },
     {
-        title: 'Kho hàng',
-        icon: ShoppingCart
+      segment: "manage-inventory",
+      title: "Kho hàng",
+      icon: ShoppingCart,
     },
     {
-        title: 'Sản phẩm',
-        icon: ShoppingCart
+      segment: "manage-product",
+      title: "Sản phẩm",
+      icon: ShoppingCart,
     },
     {
-        title: 'Dòng sản phẩm',
-        icon: ShoppingCart
+      segment: "manage-order",
+      title: "Đơn hàng",
+      icon: ShoppingCart,
     },
     {
-        title: 'Đơn hàng',
-        icon: ShoppingCart
+      segment: "manage-voucher",
+      title: "Mã giảm giá",
+      icon: ShoppingCart,
     },
     {
-        title: 'Mã giảm giá',
-        icon: ShoppingCart
+      segment: "dashboard",
+      title: "Thống kê",
+      icon: ShoppingCart,
+    },
+  ],
+  customer: [
+    {
+      title: "Khuyến mãi",
+      icon: VoucherIcon,
+      path: "/vouchers",
     },
     {
-        title: 'Thống kê',
-        icon: ShoppingCart
-    }],
-    customer: [{
-        title: 'Khuyến mãi',
-        icon: VoucherIcon,
-        path: '/vouchers'
+      title: "Đơn của tôi",
+      icon: OrderIcon,
+      path: "/orders",
     },
     {
-        title: 'Đơn của tôi',
-        icon: OrderIcon,
-        path: '/orders'
+      title: "Giỏ hàng",
+      icon: CartIcon,
+      path: "/shopingcart",
     },
     {
-        title: 'Giỏ hàng',
-        icon: CartIcon,
-        path: '/cart'
+      title: "Đăng nhập",
+      icon: AccountCircleOutlined,
+      path: "/login",
     },
-    {
-        title: 'Đăng nhập',
-        icon: AccountCircleOutlined,
-        path: '/login'
-    }]
-}
-
-export {
-    appBar
+  ],
 };
+
+export { appBar };

@@ -4,10 +4,29 @@ import Orders from "./customer/Orders";
 import Voucher from "./customer/Voucher";
 import Profile from "./shared/Profile";
 
+import AdminAccount from './admin/AdminAccount'
+import AdminHomePage from './admin/AdminHomePage'
+import Dashboard from './admin/Dashboard'
+import ManageAccount from './admin/ManageAccount'
+import ManageProduct from './admin/ManageProduct'
+import ManageInventory from './admin/ManageInventory'
+import ManageOrder from './admin/ManageOrder'
+import ManageVoucher from './admin/ManageVoucher'
+import ManageSpecification from './admin/ManageSpecification'
+
 export {
     HomePage,
     Cart,
     Orders as Order,
     Voucher,
-    Profile
+    Profile,
+    AdminHomePage,
+    Dashboard,
+    AdminAccount,
+    ManageAccount,
+    ManageProduct,
+    ManageInventory,
+    ManageOrder,
+    ManageVoucher,
+    ManageSpecification
 };
