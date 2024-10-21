@@ -72,3 +72,33 @@ export const detail = async (req, res) => {
     });
   }
 };
+
+// [DELETE] /client/order/edit/:idOrder
+export const deleteOrder = async (req, res) => {
+  try {
+    const orderId = req.params.orderID;
+
+    const record = await Order.findOne({ _id: orderId });
+
+    if (!record) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    if (record.processStatus === "pending") {
+      await Order.deleteOne({ _id: orderId });
+      return res.json({ success: true, message: "Order successfully deleted" });
+    } else {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "Only pending orders can be deleted",
+        });
+    }
+  } catch (error) {
+    res.status(400).json({
+      code: 400,
+      message: error,
+    });
+  }
+};
