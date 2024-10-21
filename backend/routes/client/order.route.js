@@ -6,5 +6,6 @@ const router = Router();
 
 router.get("/user/:id", controller.index);
 router.post("/add", controller.add);
+router.patch("/edit/:idOrder", controller.edit);
 
 export default router;

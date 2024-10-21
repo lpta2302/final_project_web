@@ -17,7 +17,7 @@ export const index = async (req, res) => {
   }
 };
 
-// [GET] /client/order/add
+// [POST] /client/order/add
 export const add = async (req, res) => {
   try {
     const record = new Order(req.body);
@@ -29,6 +29,28 @@ export const add = async (req, res) => {
       code: 400,
       message: "Đã có lỗi xảy ra",
       error: error.message,
+    });
+  }
+};
+
+// [PATCH] /client/order/edit/:idOrder
+export const edit = async (req, res) => {
+  try {
+    const orderId = req.params.idOrder;
+
+    const { address, voucher } = req.body;
+
+    const updateData = {};
+    if (address) updateData.address = address;
+    if (voucher) updateData.voucher = voucher;
+
+    await Order.updateOne({ _id: orderId }, updateData);
+
+    res.json(true);
+  } catch (error) {
+    res.status(400).json({
+      code: 400,
+      message: error,
     });
   }
 };
