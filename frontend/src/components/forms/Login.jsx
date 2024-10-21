@@ -13,7 +13,7 @@ import {
 import LoginIcon from "@mui/icons-material/Login";
 import PropTypes from "prop-types";
 
-const Login = ({ setModalType }) => {
+const Login = ({ setModalType, isAdmin }) => {
   const [inputs, setInputs] = useState({ username: "", password: "" });
   const [error, setError] = useState({ username: "", password: "" });
 
@@ -44,6 +44,7 @@ const Login = ({ setModalType }) => {
 
     setError({ username: "", password: "" });
     console.log("Login successful with username:", inputs.username, ", pass:", inputs.password);
+
   };
 
 
@@ -158,7 +159,9 @@ const Login = ({ setModalType }) => {
             Đăng nhập
           </Button>
         </Box>
-        <Box
+        {
+          isAdmin &&
+          <Box
           sx={{ display: 'flex', mt: 4, mb: 2}}
         >
           Bạn chưa có tài khoản?
@@ -169,14 +172,15 @@ const Login = ({ setModalType }) => {
           >
             Đăng ký ngay
           </Typography>
-        </Box>
+        </Box>}
       </Paper>
     </Container>
   );
 };
 
 Login.propTypes = {
-  setModalType: PropTypes.func
+  setModalType: PropTypes.func,
+  isAdmin: PropTypes.bool
 }
 
 export default forwardRef(Login);

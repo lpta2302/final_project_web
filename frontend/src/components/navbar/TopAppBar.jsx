@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
-import Search from '../Search'
+import ExpandableSearch from '../inputs/ExpandableSearch.jsx'
 import { Link, NavLink } from 'react-router-dom';
 import { useAuthContext } from '../../context/AuthContext';
 import { AccountCircleOutlined } from '@mui/icons-material';
@@ -101,9 +101,9 @@ function TopAppBar() {
     );
 
     const modal = {
-        'login': <Login setModalType={setModalType}/>,
-        'register': <Register setModalType={setModalType}/>,
-        'forgot-password': <ForgotPassword setModalType={setModalType}/>
+        'login': <Login setModalType={setModalType} />,
+        'register': <Register setModalType={setModalType} />,
+        'forgot-password': <ForgotPassword setModalType={setModalType} />
     }
 
     return (
@@ -157,7 +157,7 @@ function TopAppBar() {
                             mx: 'auto'
                         }}
                     >
-                        <Search
+                        <ExpandableSearch
                             isSearchFocused={isSearchFocused}
                             setIsSearchFocused={setIsSearchFocused}
                         />
@@ -202,7 +202,7 @@ function TopAppBar() {
                 >
                     {drawer}
                 </Drawer>
-            </nav>  
+            </nav>
             <Modal
                 open={modalOpen}
                 onClose={handleModalToggle}

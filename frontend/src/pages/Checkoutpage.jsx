@@ -28,13 +28,13 @@ const CheckoutPage = () => {
       id: 2,
       name: "Màn hình Dell S2421HN",
       price: 3499000,
-      quantity: 1,
+      quantity: 3,
     },
     {
       id: 3,
       name: "Bàn phím cơ Keychron K6",
       price: 2190000,
-      quantity: 1,
+      quantity: 2,
     },
     {
       id: 4,
@@ -44,6 +44,12 @@ const CheckoutPage = () => {
     },
     {
       id: 5,
+      name: "Tai nghe Sony WH-1000XM4",
+      price: 6990000,
+      quantity: 1,
+    },
+    {
+      id: 6,
       name: "Tai nghe Sony WH-1000XM4",
       price: 6990000,
       quantity: 1,
@@ -66,7 +72,7 @@ const CheckoutPage = () => {
         <Grid item xs={12} md={8}>
           <Paper style={{ padding: "16px" }}>
             <Typography variant="h6" gutterBottom>
-              Tóm tắt đơn hàng
+              Hóa đơn
             </Typography>
 
             {/* Bảng tóm tắt đơn hàng với scroll */}

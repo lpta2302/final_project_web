@@ -12,6 +12,7 @@ import ManageProduct from './admin/ManageProduct'
 import ManageInventory from './admin/ManageInventory'
 import ManageOrder from './admin/ManageOrder'
 import ManageVoucher from './admin/ManageVoucher'
+import ManageSpecification from './admin/ManageSpecification'
 
 export {
     HomePage,
@@ -26,5 +27,6 @@ export {
     ManageProduct,
     ManageInventory,
     ManageOrder,
-    ManageVoucher
+    ManageVoucher,
+    ManageSpecification
 };

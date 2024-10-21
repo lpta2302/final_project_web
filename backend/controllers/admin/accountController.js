@@ -19,9 +19,18 @@ const accountController = {
         const saltRounds = 10; // Số rounds salt
         const hashedPassword = await bcrypt.hash(req.body.password, saltRounds); // Mã hóa mật khẩu
 
+        const emailPrefix = req.body.email.slice(0, 4);
+
+        const now = new Date();
+        const timeString = `${now.getHours()}${now.getMinutes()}${now.getSeconds()}`;
+
+        // Tạo accountCode
+        const accountCode = `ACC_${emailPrefix}${timeString}`;
+
         const _account = new account({
           ...req.body,
           password: hashedPassword,
+          accountCode: accountCode, // Gắn accountCode vào req.body
         });
 
         await _account.save();
