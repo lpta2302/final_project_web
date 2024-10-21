@@ -7,7 +7,13 @@ import {
     READ_ALL_CATEGORIES,
     READ_ALL_BRANDS,
     READ_ALL_VOUCHERS,
-    READ_ALL_SPECIFICATION
+    READ_ALL_SPECIFICATION,
+    READ_ALL_WISHLISTS,
+    READ_ALL_CARTS,
+    READ_ALL_ADDRESSES,
+    READ_ALL_REVIEWS,
+    READ_ALL_ORDERS,
+    READ_ALL_CAROUSEL
 } from "./queryKeys";
 
 //----------------------------- Account -----------------------------
@@ -151,3 +157,52 @@ export const useDeleteSpecification = () => {
         },
     });
 };
+
+//----------------------------- Carousel -----------------------------
+export const useReadAllCarousel = () => {
+    return useQuery({
+        queryKey: [READ_ALL_CAROUSEL],
+        queryFn: () => readAll('carousel'),
+    });
+};
+
+//----------------------------- Order -----------------------------
+export const useReadAllOrder = () => {
+    return useQuery({
+        queryKey: [READ_ALL_ORDERS],
+        queryFn: () => readAll('order'),
+    });
+};
+
+//----------------------------- Review -----------------------------
+export const useReadAllReview = () => {
+    return useQuery({
+        queryKey: [READ_ALL_REVIEWS],
+        queryFn: (id) => readAll('review',id),
+    });
+};
+
+//----------------------------- Address -----------------------------
+export const useReadAllAddress = () => {
+    return useQuery({
+        queryKey: [READ_ALL_ADDRESSES],
+        queryFn: (accountId) => readAll('address', accountId),
+    });
+};
+
+//----------------------------- Cart -----------------------------
+export const useReadAllCart = () => {
+    return useQuery({
+        queryKey: [READ_ALL_CARTS],
+        queryFn: (userId) => readAll('cart',userId),
+    });
+};
+
+//----------------------------- Wishlist -----------------------------
+export const useReadAllWishlist = () => {
+    return useQuery({
+        queryKey: [READ_ALL_WISHLISTS],
+        queryFn: (userId) => readAll('wishList',userId),
+    });
+};
+

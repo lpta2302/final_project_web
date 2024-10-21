@@ -1,12 +1,12 @@
-import { DELETE, READ_URL } from './API_URL';
+import { DELETE, READ_ALL_URL } from './API_URL';
 import axios from './myAxios'
 
 //----------------------------- General -----------------------------
-export async function readAll(readType) {
+export async function readAll(readType, id) {
     try {
-        console.log(READ_URL[readType]);
-        
-        const data = (await axios.get(READ_URL[readType])).data;
+        console.log(READ_ALL_URL(id)[readType]);
+
+        const data = (await axios.get(READ_ALL_URL(id)[readType])).data;
         return data;
     } catch (error) {
         console.error(error);
@@ -17,7 +17,7 @@ export async function readAll(readType) {
 export async function deleteRecord(id, deleteType) {
     try {
         const status = (await axios.delete(DELETE(id)[deleteType])).status;
-        if(status)
+        if (status)
             return status;
         throw Error;
     } catch (error) {
@@ -43,7 +43,7 @@ export async function createAccount(user) {
 export async function updateAccountStatus(user) {
     try {
         const status = (await axios.patch(`/account/Quan-ly-tai-khoan/${user.accountCode}/Chinh-sua-trang-thai-tai-khoan`, user)).status;
-        if(status)
+        if (status)
             return status;
         throw Error;
     } catch (error) {
