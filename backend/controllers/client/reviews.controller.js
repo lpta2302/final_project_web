@@ -44,7 +44,7 @@ const reviewController = {
         data: review,
       });
     } catch (err) {
-      return false;
+      return res.status(500).json({ message: false });
     }
   },
 
@@ -57,7 +57,7 @@ const reviewController = {
         data: review,
       });
     } catch (err) {
-      return false;
+      return res.status(500).json({ message: false });
     }
   },
 
@@ -83,7 +83,7 @@ const reviewController = {
         data: review,
       });
     } catch (err) {
-      return false;
+      return res.status(500).json({ message: false });
     }
   },
 };

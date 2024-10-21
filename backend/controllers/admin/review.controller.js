@@ -10,7 +10,7 @@ const reviewController = {
         data: reviews,
       });
     } catch (err) {
-      return false;
+      return res.status(500).json({ message: false });
     }
   },
 
@@ -23,7 +23,7 @@ const reviewController = {
         data: detailReviews,
       });
     } catch (err) {
-      return false;
+      return res.status(500).json({ message: false });
     }
   },
 
@@ -62,7 +62,7 @@ const reviewController = {
       // Trả về các reviews đã được lọc và sắp xếp
       return res.status(200).json(filteredReviews);
     } catch (err) {
-      return false;
+      return res.status(500).json({ message: false });
     }
   },
 };
