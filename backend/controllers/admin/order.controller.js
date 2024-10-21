@@ -53,34 +53,34 @@ export const edit = async (req, res) => {
   }
 };
 
-// [GET] /category/search
+// [GET] /order/search
 export const search = async (req, res) => {
   try {
     // Khởi tạo filter là một đối tượng trống
     let filter = {};
 
     // Lấy giá trị từ query params
-    const { categoryCode, categoryName } = req.query;
+    const { orderId, userId } = req.query;
 
     // Kiểm tra nếu categoryCode có trong query
-    if (categoryCode) {
-      filter.categoryCode = categoryCode; // Tìm kiếm chính xác theo categoryCode
+    if (orderId) {
+      filter._id = orderId; // Tìm kiếm chính xác theo categoryCode
     }
 
     // Kiểm tra nếu categoryName có trong query
-    if (categoryName) {
-      filter.categoryName = { $regex: categoryName, $options: "i" }; // Tìm kiếm gần đúng theo categoryName, không phân biệt hoa thường
+    if (userId) {
+      filter.userId = userId;
     }
 
     // Tìm kiếm với bộ lọc filter
-    const categories = await Category.find(filter);
+    const order = await Order.find(filter);
 
     // Trả về kết quả
-    res.json(categories);
+    res.json(order);
   } catch (error) {
     res.status(500).json({
       code: 500,
-      message: "Tìm kiếm category thất bại",
+      message: "Tìm kiếm order thất bại",
     });
   }
 };
