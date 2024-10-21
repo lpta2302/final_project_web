@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Container, Typography, TextField, Button, Grid2, Box, Avatar } from '@mui/material';
+import { Container, Paper, Typography, TextField, Button, Grid2, Box, Avatar } from '@mui/material';
 
 const ManagePersonalProfile = () => {
-  // State để quản lý thông tin người dùng
   const [inputs, setInputs] = useState({
     username: "",
     password: "",
@@ -11,7 +10,7 @@ const ManagePersonalProfile = () => {
     email: "",
     phone: "",
     birthDate: "",
-    avatar: "", // Thêm ảnh đại diện
+    avatar: "",
   });
 
   const [error, setError] = useState({
@@ -23,10 +22,6 @@ const ManagePersonalProfile = () => {
     phone: "",
     birthDate: "",
   });
-
-  const fileInputRef = useRef(null);
-
-  const defaultAvatar = "https://static-00.iconduck.com/assets.00/avatar-icon-512x512-gu21ei4u.png";
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -41,19 +36,20 @@ const ManagePersonalProfile = () => {
         birthDate: "1990-01-01",
       };
 
-      setInputs(response); // Điền dữ liệu vào state
+      setInputs(response);
     };
 
     fetchUserData();
   }, []);
 
-  // Hàm xử lý thay đổi thông tin form
   const handleChange = (event) => {
     const { name, value } = event.target;
     setInputs((values) => ({ ...values, [name]: value }));
   };
 
-  // Hàm thay đổi ảnh đại diện
+  const fileInputRef = useRef(null);
+  const defaultAvatar = "https://static-00.iconduck.com/assets.00/avatar-icon-512x512-gu21ei4u.png";
+
   const handleAvatarChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -62,7 +58,6 @@ const ManagePersonalProfile = () => {
     }
   };
 
-  // Hàm xử lý lưu thông tin
   const handleSave = (event) => {
     event.preventDefault();
     let tempError = {
@@ -103,29 +98,35 @@ const ManagePersonalProfile = () => {
       return;
     }
 
-    // Xử lý lưu thông tin (gửi lên backend)
     console.log("Thay đổi thông tin thành công:", inputs);
   };
 
   return (
-    <Container>
-      <Typography variant="h4" sx={{ mb: 4, mt: 4 }}>Quản lý hồ sơ</Typography>
-      
+    <Container maxWidth="sm" sx={{ my: 8 }}>
+      <Typography variant="h4" sx={{ mb: 2, mt: 2 }}>
+        Quản lý hồ sơ
+      </Typography>
       {/* Avatar và sự kiện thay đổi ảnh đại diện */}
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          mb: 4,
+          justifyContent: "center",
+        }}
+      >
         <Avatar
-          src={inputs.avatar || defaultAvatar} // Dùng ảnh đại diện hoặc ảnh mặc định
-          sx={{ width: 100, height: 100, mr: 2, cursor: 'pointer' }}
+          src={inputs.avatar || defaultAvatar}
+          sx={{ width: 100, height: 100, mr: 2, cursor: "pointer" }}
           onClick={() => fileInputRef.current.click()} // Khi nhấp vào avatar, kích hoạt chọn file
         />
         <input
           type="file"
           ref={fileInputRef}
-          style={{ display: 'none' }} // Input file ẩn đi
+          style={{ display: "none" }}
           onChange={handleAvatarChange}
         />
       </Box>
-
       <Box
         component="form"
         onSubmit={handleSave}
@@ -145,13 +146,17 @@ const ManagePersonalProfile = () => {
           onChange={handleChange}
           error={!!error.username}
           helperText={error.username}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "12px",
+            },
+          }}
           slotProps={{
             input: {
               readOnly: true,
             },
           }}
         />
-
         <TextField
           id="outlined-password-input"
           label="Mật khẩu"
@@ -162,13 +167,17 @@ const ManagePersonalProfile = () => {
           onChange={handleChange}
           error={!!error.password}
           helperText={error.password}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "12px",
+            },
+          }}
           slotProps={{
             input: {
               readOnly: true,
             },
           }}
         />
-
         <Grid2 container spacing={1}>
           <Grid2 size={{ xs: 12, sm: 6 }}>
             <TextField
@@ -180,9 +189,13 @@ const ManagePersonalProfile = () => {
               onChange={handleChange}
               error={!!error.lastName}
               helperText={error.lastName}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "12px",
+                },
+              }}
             />
           </Grid2>
-
           <Grid2 size={{ xs: 12, sm: 6 }}>
             <TextField
               id="outlined-firstname"
@@ -193,10 +206,14 @@ const ManagePersonalProfile = () => {
               onChange={handleChange}
               error={!!error.firstName}
               helperText={error.firstName}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: "12px",
+                },
+              }}
             />
           </Grid2>
         </Grid2>
-
         <TextField
           id="outlined-email"
           label="Email"
@@ -206,11 +223,15 @@ const ManagePersonalProfile = () => {
           onChange={handleChange}
           error={!!error.email}
           helperText={error.email}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "12px",
+            },
+          }}
           InputProps={{
-            readOnly: true, // Email không thể thay đổi
+            readOnly: true,
           }}
         />
-
         <TextField
           id="outlined-phone"
           label="Số điện thoại"
@@ -220,8 +241,12 @@ const ManagePersonalProfile = () => {
           onChange={handleChange}
           error={!!error.phone}
           helperText={error.phone}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "12px",
+            },
+          }}
         />
-
         <TextField
           id="outlined-birthdate"
           label="Ngày sinh"
@@ -230,8 +255,18 @@ const ManagePersonalProfile = () => {
           fullWidth
           value={inputs.birthDate}
           onChange={handleChange}
+          sx={{
+            "& .MuiOutlinedInput-root": {
+              borderRadius: "12px",
+            },
+          }}
           InputLabelProps={{
             shrink: true,
+          }}
+          slotProps={{
+            input: {
+              readOnly: true,
+            },
           }}
         />
 
