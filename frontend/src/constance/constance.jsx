@@ -1,6 +1,6 @@
 import { AccountBoxOutlined, CategoryOutlined, Dashboard, WarehouseOutlined } from "@mui/icons-material";
 import { BoxIcon, CartIcon, OrderIcon, OrderTextIcon, VoucherIcon } from "../icons/CustomIcons";
-import { Cart, ManageAccount, ManageInventory, ManageOrder, ManageProduct, ManageVoucher, Voucher, Dashboard as DashboardPage, ManageSpecification } from "../_root/pages";
+import { ManageAccount, ManageInventory, ManageOrder, ManageProduct, ManageVoucher, Voucher, Dashboard as DashboardPage, ManageCriteria } from "../_root/pages";
 import Orders from "../_root/pages/customer/Orders";
 import CartPage from "../pages/ShoppingCart";
 
@@ -16,10 +16,10 @@ export const adminNav = [
     element: <ManageProduct/>
   },
   {
-    segment: 'manage-specification',
+    segment: 'manage-criteria',
     title: 'Phân loại',
     icon: <CategoryOutlined />,
-    element: <ManageSpecification/>
+    element: <ManageCriteria/>
   },
   {
     segment: 'manage-inventory',

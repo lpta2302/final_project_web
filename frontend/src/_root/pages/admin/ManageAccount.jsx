@@ -1,6 +1,6 @@
 import { DataGrid, GridActionsCellItem, GridToolbar } from '@mui/x-data-grid';
 import { PageContainer } from '@toolpad/core';
-import { renderEditStatus, renderStatus, STATUS_OPTIONS } from './customRenderer/status.jsx';
+import { renderEditCustomerStatus, renderCustomerStatus, STATUS_OPTIONS } from './customRenderer/customerStatus.jsx';
 import { useDeleteAccount, useReadAllAccount, useUpdateAccountStatus } from '../../../api/queries.js';
 import { Delete } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
@@ -35,8 +35,8 @@ function ManageAccount() {
     { field: 'phoneNumber', headerName: 'Số điện thoại', width: 150 },
     { field: 'dateOfBirth', headerName: 'Ngày sinh', width: 150 },
     {
-      field: 'accountStatus', headerName: 'Trạng thái', width: 150, renderCell: renderStatus,
-      renderEditCell: renderEditStatus,
+      field: 'accountStatus', headerName: 'Trạng thái', width: 150, renderCell: renderCustomerStatus,
+      renderEditCell: renderEditCustomerStatus,
       type: 'singleSelect',
       valueOptions: STATUS_OPTIONS,
       editable: true,
@@ -105,7 +105,7 @@ function ManageAccount() {
         justifyContent='flex-end'
       >
         <ManagePageSearch
-          {...{searchValue, setSearchValue, handleSearch}}
+          {...{ searchValue, setSearchValue, handleSearch }}
         />
       </Box>
       <DataGridConfirmDialog

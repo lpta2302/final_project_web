@@ -1,3 +1,5 @@
+/* eslint-disable react-refresh/only-export-components */
+/* eslint-disable react/prop-types */
 import Chip from '@mui/material/Chip';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
@@ -12,59 +14,61 @@ import {
   useGridRootProps,
 } from '@mui/x-data-grid';
 import PropTypes from 'prop-types';
-import { DoNotDisturbAltOutlined, Warning } from '@mui/icons-material';
+import { ErrorOutlined, HourglassTopOutlined, WarningOutlined } from '@mui/icons-material';
 
-export const STATUS_OPTIONS = ['active', 'inactive', 'suspended'];
+export const STATUS_OPTIONS = ['available', 'sold out', 'unavailable', 'incoming'];
 
 const StyledChip = styled(Chip)(({ theme }) => ({
   justifyContent: 'left',
   '& .icon': {
     color: 'inherit',
   },
-  '&.': {
-    color: (theme.vars || theme).palette.info.dark,
-    border: `1px solid ${(theme.vars || theme).palette.info.main}`,
+  '&.incoming': {
+    color: (theme.vars || theme).palette.secondary.dark,
+    border: `1px solid ${(theme.vars || theme).palette.secondary.main}`,
   },
-  '&.active': {
+  '&.available': {
     color: (theme.vars || theme).palette.success.dark,
     border: `1px solid ${(theme.vars || theme).palette.success.main}`,
   },
-  '&.suspended': {
+  '&.unavailable': {
     color: (theme.vars || theme).palette.warning.dark,
     border: `1px solid ${(theme.vars || theme).palette.warning.main}`,
   },
-  '&.inactive': {
+  '&.sold-out': {
     color: (theme.vars || theme).palette.error.dark,
     border: `1px solid ${(theme.vars || theme).palette.error.main}`,
   },
 }));
 
-const Status =(props) => {
-    const { status } = props;
-  
-    let icon = null;
-    if (status === 'inactive') {
-      icon = <DoNotDisturbAltOutlined className="icon" />;
-    } else if (status === 'active') {
-      icon = <DoneIcon className="icon" />;
-    } else if (status === 'suspended') {
-      icon = <Warning className="icon" />;
-    }
-  
-    return (
-      <StyledChip
-        className={status}
-        icon={icon}
-        size="small"
-        label={status}
-        variant="outlined" 
-        sx={{alignItems: 'center', fontFamily: 'Nunito', userSelect: 'none', textTransform: 'capitalize'}}
-      />
-    );
-  };
+const Status = (props) => {
+  const { status } = props;
+
+  let icon = null;
+  if (status === 'sold out') {
+    icon = <ErrorOutlined className="icon" />;
+  } else if (status === 'available') {
+    icon = <DoneIcon className="icon" />;
+  } else if (status === 'unavailable') {
+    icon = <WarningOutlined className="icon" />;
+  } else if (status === 'incoming') {
+    icon = <HourglassTopOutlined className="icon" />;
+  }
+
+  return (
+    <StyledChip
+      className={status.replace(' ','-')}
+      icon={icon}
+      size="small"
+      label={status}
+      variant="outlined"
+      sx={{ alignItems: 'center', fontFamily: 'Nunito', userSelect: 'none', textTransform: 'capitalize' }}
+    />
+  );
+};
 
 Status.propTypes = {
-    status: PropTypes.string
+  status: PropTypes.string
 }
 
 function EditStatus(props) {
@@ -111,12 +115,14 @@ function EditStatus(props) {
     >
       {STATUS_OPTIONS.map((option) => {
         let IconComponent = null;
-        if (option === 'active') {
+        if (option === 'available') {
           IconComponent = DoneIcon;
-        } else if (option === 'inactive') {
-          IconComponent = DoNotDisturbAltOutlined;
-        } else if (option === 'suspended') {
-          IconComponent = Warning;
+        } else if (option === 'sold out') {
+          IconComponent = ErrorOutlined;
+        } else if (option === 'unavailable') {
+          IconComponent = WarningOutlined;
+        } else if(option === 'incoming'){
+          IconComponent = HourglassTopOutlined;
         }
 
         return (
@@ -124,7 +130,7 @@ function EditStatus(props) {
             <ListItemIcon sx={{ minWidth: 36 }}>
               <IconComponent fontSize="small" />
             </ListItemIcon>
-            <ListItemText primary={option} sx={{ overflow: 'hidden' , textTransform: 'capitalize'}} />
+            <ListItemText primary={option} sx={{ overflow: 'hidden', textTransform: 'capitalize' }} />
           </MenuItem>
         );
       })}
@@ -132,7 +138,7 @@ function EditStatus(props) {
   );
 }
 
-export function renderStatus(params) {
+export function renderProductStatus(params) {
   if (params.value == null) {
     return '';
   }
@@ -140,6 +146,6 @@ export function renderStatus(params) {
   return <Status status={params.value} />;
 }
 
-export function renderEditStatus(params) {
+export function renderEditProductStatus(params) {
   return <EditStatus {...params} />;
 }
