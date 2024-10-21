@@ -37,21 +37,18 @@ export const orderOfUser = async (req, res) => {
   }
 };
 
-// [PATCH] /category/edit
+// [PATCH] /order/edit/:orderId
 export const edit = async (req, res) => {
   try {
-    const id = req.params.id;
+    const orderId = req.params.orderId;
 
-    await Category.updateOne({ _id: id }, req.body);
+    await Order.updateOne({ _id: orderId }, { processStatus: "completed" });
 
-    res.json({
-      code: 200,
-      message: "Sửa category thành công",
-    });
+    res.json(true);
   } catch (error) {
     res.status(500).json({
       code: 500,
-      message: "Sửa category thất bại",
+      message: "Sửa đơn hàng thất bại",
     });
   }
 };
