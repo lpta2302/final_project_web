@@ -13,9 +13,9 @@ import "./globalStyle.css";
 import AdminLayout from "./_root/AdminLayout";
 import AdminHomePage from "./_root/pages/admin/AdminHomePage";
 import { adminNav, customerNav } from "./constance/constance.jsx";
-import HomePageClient from "./pages/HomePageClient.jsx";
-import GridProduct from "./pages/GridProduct.jsx";
-import CheckoutPage from "./pages/Checkoutpage.jsx";
+import HomePageClient from "./_root/pages/customer/HomePageClient.jsx";
+import GridProduct from "./_root/pages/customer/GridProduct.jsx";
+import CheckoutPage from "./_root/pages/customer/Checkoutpage.jsx";
 const theme = createTheme({
   palette: {
     white: {

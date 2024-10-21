@@ -21,7 +21,7 @@ import {
   Dashboard as DashboardPage,
 } from "../_root/pages";
 import Orders from "../_root/pages/customer/Orders";
-import CartPage from "../pages/ShoppingCart";
+import CartPage from "../_root/pages/customer/ShoppingCart";
 
 export const adminNav = [
   {

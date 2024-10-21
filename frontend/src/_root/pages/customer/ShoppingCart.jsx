@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Container,
   Typography,
@@ -12,6 +12,7 @@ import {
   TextField,
   Box,
   Paper,
+  Grid,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Link } from "react-router-dom";
@@ -27,27 +28,73 @@ const CartPage = () => {
     },
     {
       id: 2,
-      name: "Anh Lâm vip vãi loằn",
+      name: "Router TP-Link Archer AX23 (1275 Mbps/ Wifi 6/ 2.4/5 GHz)",
       price: 949000,
       quantity: 1,
     },
     {
       id: 3,
-      name: "Anh Lâm kiệt gì cũng bắt hết vậy?",
+      name: "Router TP-Link Archer AX23 (1275 Mbps/ Wifi 6/ 2.4/5 GHz)",
       price: 949000,
       quantity: 1,
     },
     {
       id: 4,
-      name: "Vãi loằn anh Lâm",
+      name: "Router TP-Link Archer AX23 (1275 Mbps/ Wifi 6/ 2.4/5 GHz)",
       price: 949000,
       quantity: 1,
     },
+    {
+      id: 5,
+      name: "Router TP-Link Archer AX23 (1275 Mbps/ Wifi 6/ 2.4/5 GHz)",
+      price: 949000,
+      quantity: 1,
+    },
+    {
+      id: 6,
+      name: "Router TP-Link Archer AX23 (1275 Mbps/ Wifi 6/ 2.4/5 GHz)",
+      price: 949000,
+      quantity: 1,
+    },
+    {
+      id: 7,
+      name: "Router TP-Link Archer AX23 (1275 Mbps/ Wifi 6/ 2.4/5 GHz)",
+      price: 949000,
+      quantity: 1,
+    },
+    {
+      id: 8,
+      name: "Router TP-Link Archer AX23 (1275 Mbps/ Wifi 6/ 2.4/5 GHz)",
+      price: 949000,
+      quantity: 1,
+    },
+    {
+      id: 9,
+      name: "Router TP-Link Archer AX23 (1275 Mbps/ Wifi 6/ 2.4/5 GHz)",
+      price: 949000,
+      quantity: 1,
+    }, // Add more items if needed
   ]);
 
   const [discountCode, setDiscountCode] = useState("");
-  const [shippingFee, setShippingFee] = useState(0);
+  const [shippingFee, setShippingFee] = useState(0); // Set initial shipping fee as 0
   const [discountValue, setDiscountValue] = useState(0);
+
+  useEffect(() => {
+    // Giả sử đây là API lấy phí ship từ BE
+    const fetchShippingFee = async () => {
+      try {
+        // Thay thế URL bên dưới bằng API thực tế
+        const response = await fetch("/api/shipping-fee");
+        const data = await response.json();
+        setShippingFee(data.fee); // Cập nhật phí ship từ dữ liệu API
+      } catch (error) {
+        console.error("Lỗi khi lấy phí ship từ backend:", error);
+      }
+    };
+
+    fetchShippingFee();
+  }, []); // Gọi API khi component được load
 
   const handleQuantityChange = (id, operation) => {
     setCartItems((prevItems) =>
@@ -92,8 +139,8 @@ const CartPage = () => {
       </Typography>
 
       {cartItems.length === 0 ? (
-        <div
-          style={{
+        <Box
+          sx={{
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
@@ -102,9 +149,9 @@ const CartPage = () => {
           }}
         >
           <SentimentDissatisfiedIcon
-            style={{ fontSize: 80, color: "#757575", marginBottom: "16px" }}
+            sx={{ fontSize: 80, color: "#757575", marginBottom: "16px" }}
           />
-          <Typography variant="h6" style={{ fontSize: "30px" }} gutterBottom>
+          <Typography variant="h6" sx={{ fontSize: "30px" }} gutterBottom>
             Giỏ hàng của bạn hiện đang trống!
           </Typography>
           <Button
@@ -115,36 +162,25 @@ const CartPage = () => {
           >
             Quay lại Trang chủ
           </Button>
-        </div>
+        </Box>
       ) : (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-          }}
-        >
+        <Grid container spacing={2}>
           {/* Phần giỏ hàng bên trái */}
-          <Box
-            sx={{
-              flex: 0.7,
-              marginRight: "20px",
-              width: "850px",
-              marginLeft: "0px",
-              paddingLeft: "0px",
-              float: "left",
-            }}
-          >
-            <TableContainer sx={{ maxHeight: "400px", overflowX: "auto" }}>
-              <Table stickyHeader>
+          <Grid item xs={12} md={8}>
+            <TableContainer sx={{ maxHeight: "600px", overflowX: "auto" }}>
+              {" "}
+              {/* Tăng chiều cao */}
+              <Table stickyHeader sx={{ minWidth: "900px" }}>
+                {" "}
+                {/* Tăng chiều rộng của bảng */}
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ width: "100px" }}>ẢNH</TableCell>
-                    <TableCell sx={{ width: "30%" }}>SẢN PHẨM</TableCell>
-                    <TableCell sx={{ width: "20%" }}>GIÁ</TableCell>
-                    <TableCell sx={{ width: "20%" }}>SỐ LƯỢNG</TableCell>
-                    <TableCell sx={{ width: "20%" }}>TỔNG CỘNG</TableCell>
-                    <TableCell sx={{ width: "10%" }}></TableCell>
+                    <TableCell>ẢNH</TableCell>
+                    <TableCell>SẢN PHẨM</TableCell>
+                    <TableCell>GIÁ</TableCell>
+                    <TableCell sx={{ marginLeft: "0px" }}>SỐ LƯỢNG</TableCell>
+                    <TableCell>TỔNG CỘNG</TableCell>
+                    <TableCell></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -159,18 +195,17 @@ const CartPage = () => {
                       </TableCell>
                       <TableCell
                         sx={{
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          maxWidth: "250px",
+                          wordWrap: "break-word", // Cho phép nội dung xuống dòng khi quá dài
+                          maxWidth: "250px", // Giới hạn chiều rộng của cột
                         }}
                       >
                         {item.name}
                       </TableCell>
-                      <TableCell sx={{ width: "20%" }}>
+                      <TableCell sx={{ minWidth: "120px" }}>
                         {item.price.toLocaleString()} đ
-                      </TableCell>
-                      <TableCell sx={{ width: "20%" }}>
+                      </TableCell>{" "}
+                      {/* Tăng chiều rộng cột giá */}
+                      <TableCell sx={{ minWidth: "180px" }}>
                         <Button
                           onClick={() =>
                             handleQuantityChange(item.id, "decrease")
@@ -187,10 +222,10 @@ const CartPage = () => {
                           +
                         </Button>
                       </TableCell>
-                      <TableCell>
+                      <TableCell sx={{ minWidth: "150px" }}>
                         {(item.price * item.quantity).toLocaleString()} đ
                       </TableCell>
-                      <TableCell sx={{ width: "10%" }}>
+                      <TableCell>
                         <Button
                           onClick={() => handleDeleteItem(item.id)}
                           startIcon={<DeleteIcon />}
@@ -204,19 +239,11 @@ const CartPage = () => {
                 </TableBody>
               </Table>
             </TableContainer>
-          </Box>
+          </Grid>
 
           {/* Phần mã giảm giá và tổng tiền bên phải */}
-          <Box sx={{ flex: 0.3 }}>
-            <Paper
-              sx={{
-                padding: "10px",
-                borderRadius: "10px",
-                marginLeft: "10px",
-
-                width: "350px",
-              }}
-            >
+          <Grid item xs={12} md={4}>
+            <Paper sx={{ padding: "10px", borderRadius: "10px" }}>
               <Typography variant="h6" gutterBottom>
                 Áp dụng mã giảm giá
               </Typography>
@@ -240,15 +267,9 @@ const CartPage = () => {
               <Typography variant="h6" gutterBottom>
                 Phí ship
               </Typography>
-              <TextField
-                label="Nhập phí ship"
-                variant="outlined"
-                type="number"
-                fullWidth
-                value={shippingFee}
-                onChange={(e) => setShippingFee(parseInt(e.target.value))}
-                sx={{ marginBottom: "20px" }}
-              />
+              <Typography sx={{ marginBottom: "20px" }}>
+                {shippingFee.toLocaleString()} đ
+              </Typography>
 
               <Typography variant="h6" gutterBottom>
                 Tổng cộng
@@ -265,8 +286,8 @@ const CartPage = () => {
                 Tiếp tục thanh toán
               </Button>
             </Paper>
-          </Box>
-        </Box>
+          </Grid>
+        </Grid>
       )}
     </Container>
   );

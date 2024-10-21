@@ -16,7 +16,7 @@ import {
   TextField, // For Search Input
   Button, // For Search Button
 } from "@mui/material";
-import { TopAppBar } from "../components";
+import { TopAppBar } from "../../../components";
 
 // Search Component
 const SearchBar = ({ onSearchChange }) => {

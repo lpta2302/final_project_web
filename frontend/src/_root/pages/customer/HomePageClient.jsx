@@ -18,13 +18,15 @@ import {
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { TopAppBar } from "../components";
+import { TopAppBar } from "../../../components";
 import { useNavigate } from "react-router-dom";
 import {
   Category as CategoryIcon,
   BrandingWatermark as BrandIcon,
   KeyboardArrowDown,
 } from "@mui/icons-material";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 // Sample data for products
 const products = [
@@ -136,14 +138,86 @@ const sliderSettings = {
     },
   ],
 };
+const NextArrow = (props) => {
+  const { onClick } = props;
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#fff",
+        borderRadius: "50%",
+        padding: "10px",
+        boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+        cursor: "pointer",
+      }}
+    >
+      <ArrowForwardIcon />
+    </div>
+  );
+};
 
+const PrevArrow = (props) => {
+  const { onClick } = props;
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#fff",
+        borderRadius: "50%",
+        padding: "10px",
+        boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+        cursor: "pointer",
+      }}
+    >
+      <ArrowBackIcon />
+    </div>
+  );
+};
 const BannerSlider = () => {
   const settings = {
     dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 1,
+    slidesToShow: 1, // Mặc định hiển thị 1 slide trên màn hình nhỏ
     slidesToScroll: 1,
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />,
+    responsive: [
+      {
+        breakpoint: 1024, // Màn hình từ 1024px trở xuống
+        settings: {
+          slidesToShow: 3, // Hiển thị 3 slide trên màn hình lớn
+          slidesToScroll: 3,
+        },
+      },
+      {
+        breakpoint: 768, // Màn hình từ 768px trở xuống
+        settings: {
+          slidesToShow: 2, // Hiển thị 2 slide trên màn hình tablet
+          slidesToScroll: 2,
+        },
+      },
+      {
+        breakpoint: 480, // Màn hình từ 480px trở xuống (mobile)
+        settings: {
+          slidesToShow: 1, // Hiển thị 1 slide trên màn hình nhỏ
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 320, // Kích thước nhỏ nhất 320px
+        settings: {
+          slidesToShow: 1, // Hiển thị 1 slide cho màn hình nhỏ nhất
+          slidesToScroll: 1,
+        },
+      },
+    ],
   };
 
   return (
@@ -154,19 +228,28 @@ const BannerSlider = () => {
           key={banner.id}
           style={{ textDecoration: "none" }}
         >
-          <Card>
+          <Card
+            sx={{
+              padding: "8px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+              borderRadius: "12px",
+              textAlign: "center",
+              width: "100%", // Đảm bảo chiếm toàn bộ chiều rộng màn hình
+              maxWidth: "100%",
+            }}
+          >
             <CardMedia
               component="img"
-              height="500"
               image={banner.image}
               alt={banner.title}
-              sx={{ cursor: "pointer", marginTop: "10px" }}
+              sx={{
+                width: "100%", // Chiều rộng đầy đủ
+                height: "auto", // Chiều cao tự điều chỉnh
+                objectFit: "cover", // Ảnh không bị méo
+                maxHeight: "320px", // Giới hạn chiều cao phù hợp
+                borderRadius: "8px", // Bo góc ảnh cho đẹp
+              }}
             />
-            <CardContent>
-              <Typography variant="h5" align="center">
-                {banner.title}
-              </Typography>
-            </CardContent>
           </Card>
         </Link>
       ))}
@@ -275,7 +358,7 @@ const SubNavbar = () => {
           sx={{
             marginRight: 3,
             "&:hover": {
-              color: "#ff4081",
+              color: "primary",
             },
           }}
         >
@@ -328,7 +411,7 @@ const SubNavbar = () => {
           color="inherit"
           sx={{
             "&:hover": {
-              color: "#ff4081",
+              color: "primary",
             },
           }}
         >
