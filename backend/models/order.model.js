@@ -1,11 +1,11 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const orderScheme = new mongoose.Schema(
   {
     userId: String,
     processStatus: {
       type: String,
-      enum: ["pending", "completed", "canceled"],
+      enum: ["pending", "completed"],
     },
     paymentStatus: {
       type: String,
