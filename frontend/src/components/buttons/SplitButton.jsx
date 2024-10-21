@@ -93,6 +93,6 @@ export default function SplitButton({options, selecting, setSelecting}) {
 
 SplitButton.propTypes ={
     options: PropTypes.array.isRequired,
-    selecting: PropTypes.bool, 
+    selecting: PropTypes.string, 
     setSelecting: PropTypes.func
 }

@@ -4,6 +4,8 @@ import ForgotPassword from './forms/ForgotPassword'
 
 import TopAppBar from './navbar/TopAppBar'
 
+import CustomGridToolbar from './toolbar/CustomGridToolbar'
+
 import ExpandableSearch from './inputs/ExpandableSearch'
 import ManagePageSearch from './inputs/ManagePageSearch'
 import Search from './inputs/Search'
@@ -18,5 +20,6 @@ export {
     ExpandableSearch,
     Search,
     ManagePageSearch,
-    SplitButton
+    SplitButton,
+    CustomGridToolbar
 }

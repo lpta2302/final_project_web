@@ -1,12 +1,13 @@
-import { DataGrid, GridActionsCellItem, GridToolbar } from '@mui/x-data-grid';
+import { DataGrid, GridActionsCellItem, GridRowEditStopReasons } from '@mui/x-data-grid';
 import { PageContainer } from '@toolpad/core';
 import { useEffect, useState } from 'react';
 import DataGridConfirmDialog from '../../../components/dialogs/DataGridConfirmDialog.jsx';
-import { ManagePageSearch, SplitButton } from "../../../components";
+import { CustomGridToolbar, ManagePageSearch, SplitButton } from "../../../components";
 import { enqueueSnackbar as toaster } from 'notistack';
-import { Box, Button, ButtonGroup } from '@mui/material';
+import { Box } from '@mui/material';
 import { Delete } from '@mui/icons-material';
-import { useDeleteBrand, useDeleteCategory, useDeleteSpecification, useDeleteTag, useReadAllBrand, useReadAllCategory, useReadAllSpecification, useReadAllTag } from '../../../api/queries.js';
+import { useDeleteBrand, useDeleteCategory, useDeleteTag, useReadAllBrand, useReadAllCategory, useReadAllTag } from '../../../api/queries.js';
+
 
 const criteria = {
   brand: {
@@ -14,24 +15,27 @@ const criteria = {
     delete: useDeleteBrand,
     columns: [
       { field: 'brandCode', headerName: 'Id', width: 150 },
-      { field: 'brandName', headerName: 'Hãng sản xuất', width: 200 }
-    ]
+      { field: 'brandName', headerName: 'Hãng sản xuất', width: 200, editable: true}
+    ],
+    require: ['brandName']
   },
   category: {
     read: useReadAllCategory,
     delete: useDeleteCategory,
     columns: [
-      { field: 'categoryCode', headerName: 'Id', width: 150 },
-      { field: 'categoryName', headerName: 'Loại sản phẩm', width: 200 }
-    ]
+      { field: 'categoryCode', headerName: 'Id', width: 150},
+      { field: 'categoryName', headerName: 'Loại sản phẩm', width: 200, editable: true,}
+    ],
+    require: ['categoryName']
   },
   tag: {
     read: useReadAllTag,
     delete: useDeleteTag,
     columns: [
       { field: 'tagCode', headerName: 'Id', width: 150 },
-      { field: 'tagName', headerName: 'Tên thẻ', width: 200 }
-    ]
+      { field: 'tagName', headerName: 'Tên thẻ', width: 200, editable: true}
+    ],
+    require: ['tagName']
   },
   // specification:{
   //   read: useReadAllSpecification,
@@ -49,10 +53,15 @@ function ManageCriteria() {
   const [criterion, setCriterion] = useState('category')
   const [searchValue, setSearchValue] = useState('')
   const [rows, setRows] = useState()
-  const { data } = criteria[criterion].read();
+  const [rowModesModel, setRowModesModel] = useState({})
+
+  const currentCriterion = criteria[criterion]
+
+  const { data } = currentCriterion.read();
   const [dialogPayload, setDialogPayload] = useState({ state: false, id: null });
-  const { mutateAsync: handleDelete } = criteria[criterion].delete();
+  const { mutateAsync: handleDelete } = currentCriterion.delete();
   // const { mutateAsync: updateAccountStatus } = useUpdateAccountStatus();
+  
 
 
   const breadcrumbs = [
@@ -61,11 +70,10 @@ function ManageCriteria() {
   ]
 
   useEffect(() => setRows(data), [data,criterion])
-  console.log(data);
   
 
   const columns = [
-    ...criteria[criterion].columns,
+    ...currentCriterion.columns,
     {
       field: 'actions',
       type: 'actions',
@@ -102,22 +110,41 @@ function ManageCriteria() {
     setDialogPayload({ state: false, id: null });
   }
 
-  const handleUpdate = async (updatedRow) => {
-    console.log(updatedRow);
+  const handleUpdate = async (newRow) => {
+    console.log(newRow);
 
+    const validation = currentCriterion.require.every(col => newRow[col] && newRow[col].trim()!=='');
+    console.log("🚀 ~ handleUpdate ~ validation:", validation)
+    
+    if (!validation) {
+      if (newRow.isNew) {
+        setRows(rows.filter(row=>row.id !== newRow.id))
+        return;
+      } else{
+        toaster('Name is required for new entries!', { variant: 'error' });
+        throw new Error('Name is required');
+      }
+    }
+    
     // await updateAccountStatus(updatedRow)
-    // toaster("Cập nhật trạng thái tài khoản thành công", { variant: 'success' })
+    toaster("Cập nhật trạng thái tài khoản thành công", { variant: 'success' })
+    const updatedRow = { ...newRow, isNew: false };
     return updatedRow;
   }
 
-  const handleUpdateError = () => {
-    toaster("Cập nhật trạng thái tài khoản thất bại", { variant: 'error' })
+  const handleUpdateError = (error) => {
+    console.error(error);
   }
 
   const handleSearch = () => {
     console.log(searchValue);
-
   }
+
+  const handleRowModesModelChange = (newRowModesModel) => {
+    setRowModesModel(newRowModesModel);
+  };
+
+  
 
 
   return (
@@ -151,13 +178,17 @@ function ManageCriteria() {
         content="Sản phẩm, bao gồm cả thông tin sẽ bị xóa vĩnh viễn và không thể khôi phục."
       />
       <DataGrid
-        getRowId={(row) => row[criterion+'Code']}
+        getRowId={(row) => row[criterion+'Code']? row[criterion+'Code'] : row.id}
         rows={rows}
         columns={columns}
-        slots={{ toolbar: GridToolbar }}
-        checkboxSelection
+        editMode='row'
+        rowModesModel={rowModesModel}
+        slots={{ toolbar: CustomGridToolbar }}
+        slotProps={{toolbar: {setRows, setRowModesModel, columnFields: columns.map(column=>column.field)}}}
         processRowUpdate={handleUpdate}
+        onCellEditStop={(...arg)=>{console.log(arg)}}
         onProcessRowUpdateError={handleUpdateError}
+        onRowModesModelChange={handleRowModesModelChange}
       />
 
     </PageContainer>
