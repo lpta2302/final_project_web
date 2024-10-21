@@ -53,25 +53,6 @@ export const edit = async (req, res) => {
   }
 };
 
-// [DELETE] /category/delete/:id
-export const deleteOrder = async (req, res) => {
-  try {
-    const id = req.params.id;
-
-    await Category.deleteOne({ _id: id });
-
-    res.json({
-      code: 200,
-      message: "Xóa category thành công",
-    });
-  } catch (error) {
-    res.status(500).json({
-      code: 500,
-      message: "Xóa category thất bại",
-    });
-  }
-};
-
 // [GET] /category/search
 export const search = async (req, res) => {
   try {
