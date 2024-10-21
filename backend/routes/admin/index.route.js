@@ -7,6 +7,8 @@ import specRoutes from "./specification.route.js";
 import brandRoutes from "./brand.route.js";
 import voucherRoutes from "./voucher.route.js";
 import authRoutes from "./auth.route.js";
+import carouselRoutes from "./carousel.route.js";
+import reviewRoutes from "./reviews.route.js";
 
 export default (app) => {
   app.use("/product", authenticateJWT, productRoutes);
@@ -18,4 +20,6 @@ export default (app) => {
   app.use("/spec", specRoutes);
   app.use("/brand", brandRoutes);
   app.use("/voucher", voucherRoutes);
+  app.use("/carousel", carouselRoutes);
+  app.use("/reviews", reviewRoutes);
 };
