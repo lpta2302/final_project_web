@@ -54,3 +54,21 @@ export const edit = async (req, res) => {
     });
   }
 };
+
+// [GET] /client/order/edit/:idOrder
+export const detail = async (req, res) => {
+  try {
+    const orderId = req.params.orderID;
+
+    console.log(orderId);
+
+    const record = await Order.findOne({ _id: orderId });
+
+    res.json(record);
+  } catch (error) {
+    res.status(400).json({
+      code: 400,
+      message: error,
+    });
+  }
+};
