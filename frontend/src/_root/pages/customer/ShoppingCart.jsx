@@ -13,10 +13,17 @@ import {
   Box,
   Paper,
   Grid,
+  useMediaQuery,
+  Card,
+  CardContent,
+  CardMedia,
+  IconButton,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Link } from "react-router-dom";
 import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import { Link } from "react-router-dom";
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([
@@ -25,76 +32,30 @@ const CartPage = () => {
       name: "Router TP-Link Archer AX23 (1275 Mbps/ Wifi 6/ 2.4/5 GHz)",
       price: 949000,
       quantity: 1,
+      image:
+        "https://www.tnc.com.vn/uploads/product/XUYEN_102020/DELL-S2421HN.jpg",
     },
-    {
-      id: 2,
-      name: "Router TP-Link Archer AX23 (1275 Mbps/ Wifi 6/ 2.4/5 GHz)",
-      price: 949000,
-      quantity: 1,
-    },
-    {
-      id: 3,
-      name: "Router TP-Link Archer AX23 (1275 Mbps/ Wifi 6/ 2.4/5 GHz)",
-      price: 949000,
-      quantity: 1,
-    },
-    {
-      id: 4,
-      name: "Router TP-Link Archer AX23 (1275 Mbps/ Wifi 6/ 2.4/5 GHz)",
-      price: 949000,
-      quantity: 1,
-    },
-    {
-      id: 5,
-      name: "Router TP-Link Archer AX23 (1275 Mbps/ Wifi 6/ 2.4/5 GHz)",
-      price: 949000,
-      quantity: 1,
-    },
-    {
-      id: 6,
-      name: "Router TP-Link Archer AX23 (1275 Mbps/ Wifi 6/ 2.4/5 GHz)",
-      price: 949000,
-      quantity: 1,
-    },
-    {
-      id: 7,
-      name: "Router TP-Link Archer AX23 (1275 Mbps/ Wifi 6/ 2.4/5 GHz)",
-      price: 949000,
-      quantity: 1,
-    },
-    {
-      id: 8,
-      name: "Router TP-Link Archer AX23 (1275 Mbps/ Wifi 6/ 2.4/5 GHz)",
-      price: 949000,
-      quantity: 1,
-    },
-    {
-      id: 9,
-      name: "Router TP-Link Archer AX23 (1275 Mbps/ Wifi 6/ 2.4/5 GHz)",
-      price: 949000,
-      quantity: 1,
-    }, // Add more items if needed
+    // Add more items if needed...
   ]);
 
   const [discountCode, setDiscountCode] = useState("");
-  const [shippingFee, setShippingFee] = useState(0); // Set initial shipping fee as 0
+  const [shippingFee, setShippingFee] = useState(0);
   const [discountValue, setDiscountValue] = useState(0);
 
+  const isMobile = useMediaQuery("(max-width:600px)"); // Kiểm tra nếu màn hình nhỏ hơn 600px
+
   useEffect(() => {
-    // Giả sử đây là API lấy phí ship từ BE
     const fetchShippingFee = async () => {
       try {
-        // Thay thế URL bên dưới bằng API thực tế
         const response = await fetch("/api/shipping-fee");
         const data = await response.json();
-        setShippingFee(data.fee); // Cập nhật phí ship từ dữ liệu API
+        setShippingFee(data.fee);
       } catch (error) {
         console.error("Lỗi khi lấy phí ship từ backend:", error);
       }
     };
-
     fetchShippingFee();
-  }, []); // Gọi API khi component được load
+  }, []);
 
   const handleQuantityChange = (id, operation) => {
     setCartItems((prevItems) =>
@@ -133,8 +94,12 @@ const CartPage = () => {
     totalAmount + shippingFee - discountValue;
 
   return (
-    <Container sx={{ marginTop: "50px" }}>
-      <Typography variant="h4" gutterBottom>
+    <Container sx={{ marginTop: "50px", paddingX: isMobile ? "8px" : "24px" }}>
+      <Typography
+        variant="h4"
+        gutterBottom
+        align={isMobile ? "center" : "left"}
+      >
         Giỏ hàng
       </Typography>
 
@@ -167,78 +132,186 @@ const CartPage = () => {
         <Grid container spacing={2}>
           {/* Phần giỏ hàng bên trái */}
           <Grid item xs={12} md={8}>
-            <TableContainer sx={{ maxHeight: "600px", overflowX: "auto" }}>
-              {" "}
-              {/* Tăng chiều cao */}
-              <Table stickyHeader sx={{ minWidth: "900px" }}>
-                {" "}
-                {/* Tăng chiều rộng của bảng */}
-                <TableHead>
-                  <TableRow>
-                    <TableCell>ẢNH</TableCell>
-                    <TableCell>SẢN PHẨM</TableCell>
-                    <TableCell>GIÁ</TableCell>
-                    <TableCell sx={{ marginLeft: "0px" }}>SỐ LƯỢNG</TableCell>
-                    <TableCell>TỔNG CỘNG</TableCell>
-                    <TableCell></TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {cartItems.map((item) => (
-                    <TableRow key={item.id}>
-                      <TableCell>
-                        <img
-                          src="https://www.tnc.com.vn/uploads/product/XUYEN_102020/DELL-S2421HN.jpg"
-                          width="100"
-                          alt={item.name}
-                        />
-                      </TableCell>
-                      <TableCell
+            {isMobile ? (
+              cartItems.map((item) => (
+                <Card
+                  key={item.id}
+                  sx={{ display: "flex", marginBottom: "16px" }}
+                >
+                  <CardMedia
+                    component="img"
+                    sx={{ width: 100 }}
+                    image={item.image}
+                    alt={item.name}
+                  />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      width: "100%",
+                    }}
+                  >
+                    <CardContent>
+                      <Typography variant="h6">{item.name}</Typography>
+                      <Typography variant="body2">
+                        Giá: {item.price.toLocaleString()} đ
+                      </Typography>
+                      <Box
                         sx={{
-                          wordWrap: "break-word", // Cho phép nội dung xuống dòng khi quá dài
-                          maxWidth: "250px", // Giới hạn chiều rộng của cột
+                          display: "flex",
+                          alignItems: "center",
+                          marginTop: "8px",
                         }}
                       >
-                        {item.name}
-                      </TableCell>
-                      <TableCell sx={{ minWidth: "120px" }}>
-                        {item.price.toLocaleString()} đ
-                      </TableCell>{" "}
-                      {/* Tăng chiều rộng cột giá */}
-                      <TableCell sx={{ minWidth: "180px" }}>
-                        <Button
+                        <IconButton
                           onClick={() =>
                             handleQuantityChange(item.id, "decrease")
                           }
                         >
-                          -
-                        </Button>
-                        {item.quantity}
-                        <Button
+                          <RemoveIcon />
+                        </IconButton>
+                        <Typography>{item.quantity}</Typography>
+                        <IconButton
                           onClick={() =>
                             handleQuantityChange(item.id, "increase")
                           }
                         >
-                          +
-                        </Button>
-                      </TableCell>
-                      <TableCell sx={{ minWidth: "150px" }}>
+                          <AddIcon />
+                        </IconButton>
+                      </Box>
+                      <Typography variant="body2" sx={{ marginTop: "8px" }}>
+                        Tổng cộng:{" "}
                         {(item.price * item.quantity).toLocaleString()} đ
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          onClick={() => handleDeleteItem(item.id)}
-                          startIcon={<DeleteIcon />}
-                          color="error"
-                        >
-                          Xóa
-                        </Button>
-                      </TableCell>
+                      </Typography>
+                    </CardContent>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        padding: "8px",
+                      }}
+                    >
+                      <Button
+                        onClick={() => handleDeleteItem(item.id)}
+                        startIcon={<DeleteIcon />}
+                        color="error"
+                      >
+                        Xóa
+                      </Button>
+                    </Box>
+                  </Box>
+                </Card>
+              ))
+            ) : (
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>ẢNH</TableCell>
+                      <TableCell>SẢN PHẨM</TableCell>
+                      <TableCell>GIÁ</TableCell>
+                      <TableCell>SỐ LƯỢNG</TableCell>
+                      <TableCell>TỔNG CỘNG</TableCell>
+                      <TableCell></TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  </TableHead>
+                  <TableBody>
+                    {cartItems.map((item) => (
+                      <TableRow key={item.id}>
+                        {/* Ảnh sản phẩm */}
+                        <TableCell
+                          sx={{
+                            padding: "8px",
+                            width: { xs: "50px", sm: "70px", md: "90px" }, // Giảm kích thước ảnh hơn
+                          }}
+                        >
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            style={{
+                              width: "100%",
+                              maxWidth: { xs: "50px", sm: "70px", md: "90px" }, // Giới hạn chiều rộng tối đa của ảnh
+                              height: "auto",
+                            }}
+                          />
+                        </TableCell>
+                        {/* Cột sản phẩm với font chữ điều chỉnh */}
+                        <TableCell
+                          sx={{
+                            wordWrap: "break-word",
+                            minWidth: "200px",
+                            maxWidth: { xs: "120px", sm: "180px", md: "250px" }, // Điều chỉnh độ rộng của cột tên sản phẩm
+                            flexGrow: 1,
+                            fontSize: { xs: "10px", sm: "12px", md: "14px" }, // Giảm kích thước font chữ
+                          }}
+                        >
+                          {item.name}
+                        </TableCell>
+                        {/* Cột giá */}
+                        <TableCell
+                          sx={{
+                            whiteSpace: "nowrap",
+                            fontSize: { xs: "10px", sm: "12px", md: "14px" }, // Điều chỉnh font chữ
+                          }}
+                        >
+                          {item.price.toLocaleString()} đ
+                        </TableCell>
+                        {/* Cột số lượng */}
+                        <TableCell
+                          sx={{
+                            whiteSpace: "nowrap",
+                            fontSize: { xs: "10px", sm: "12px", md: "14px" }, // Điều chỉnh font chữ
+                          }}
+                        >
+                          <Button
+                            onClick={() =>
+                              handleQuantityChange(item.id, "decrease")
+                            }
+                            sx={{
+                              fontSize: { xs: "10px", sm: "12px", md: "14px" },
+                            }} // Font chữ của button
+                          >
+                            -
+                          </Button>
+                          {item.quantity}
+                          <Button
+                            onClick={() =>
+                              handleQuantityChange(item.id, "increase")
+                            }
+                            sx={{
+                              fontSize: { xs: "10px", sm: "12px", md: "14px" },
+                            }} // Font chữ của button
+                          >
+                            +
+                          </Button>
+                        </TableCell>
+                        {/* Cột tổng cộng */}
+                        <TableCell
+                          sx={{
+                            whiteSpace: "nowrap",
+                            fontSize: { xs: "10px", sm: "12px", md: "14px" }, // Điều chỉnh font chữ
+                          }}
+                        >
+                          {(item.price * item.quantity).toLocaleString()} đ
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            onClick={() => handleDeleteItem(item.id)}
+                            startIcon={<DeleteIcon />}
+                            color="error"
+                            sx={{
+                              fontSize: { xs: "10px", sm: "12px", md: "14px" },
+                            }} // Font chữ của nút xóa
+                          >
+                            Xóa
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
           </Grid>
 
           {/* Phần mã giảm giá và tổng tiền bên phải */}

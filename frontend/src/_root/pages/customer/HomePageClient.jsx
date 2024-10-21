@@ -14,6 +14,7 @@ import {
   Box,
   Menu,
   MenuItem,
+  Rating,
 } from "@mui/material";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -27,51 +28,169 @@ import {
 } from "@mui/icons-material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Stack from "@mui/material/Stack";
 
 // Sample data for products
 const products = [
   {
     id: 1,
-    title: "Laptop Dell XPS 13",
-    image:
-      "https://laptopdell.com.vn/wp-content/uploads/2022/07/laptop_lenovo_legion_s7_8.jpg",
-    price: 1000,
+    title: "Laptop Dell XPS",
+    description: "Powerful laptop for professionals.",
+    originalPrice: 12000000, // Giá gốc
+    discountPrice: 10000000, // Giá đã giảm
+    status: "In Stock",
+    category: "gaming",
+    specs: "Core i5, 8GB RAM",
+    specification: "i5",
+    rating: 4.5,
+    imageUrl: "https://via.placeholder.com/300",
+
+    brand: "dell",
+    tag: "bestSeller",
   },
   {
     id: 2,
-    title: "Laptop HP Spectre x360",
-    image:
-      "https://www.tnc.com.vn/uploads/news/20230309_SEO/dell-xps-13-plus-1678233879.png",
-    price: 1200,
+    title: "Laptop HP Spectre",
+    description: "Sleek design and powerful performance.",
+    originalPrice: 17000000,
+    discountPrice: 15000000,
+    status: "In Stock",
+    category: "office",
+    specs: "Core i7, 16GB RAM",
+    specification: "i7",
+    rating: 4.7,
+    imageUrl: "https://via.placeholder.com/300",
+
+    brand: "hp",
+    tag: "new",
   },
   {
     id: 3,
-    title: "Máy tính để bàn iMac",
-    image:
-      "https://phongvu.vn/cong-nghe/wp-content/uploads/sites/2/2020/09/Dell-XPS-15-1024x572.jpg",
-    price: 1500,
+    title: "Laptop Dell XPS",
+    description: "Powerful laptop for professionals.",
+    originalPrice: 12000000, // Giá gốc
+    discountPrice: 10000000, // Giá đã giảm
+    status: "In Stock",
+    category: "gaming",
+    specs: "Core i9, 8GB RAM",
+    specification: "i9",
+    rating: 4.5,
+    imageUrl: "https://via.placeholder.com/300",
+
+    brand: "asus",
+    tag: "bestSeller",
   },
   {
     id: 4,
-    title: "Máy tính Jack 5 củ",
-    image:
-      "https://phongvu.vn/cong-nghe/wp-content/uploads/sites/2/2020/09/Dell-XPS-15-1024x572.jpg",
-    price: 1500,
+    title: "Laptop HP Spectre",
+    description: "Sleek design and powerful performance.",
+    originalPrice: 17000000,
+    discountPrice: 15000000,
+    status: "In Stock",
+    category: "office",
+    specs: "Core i7, 16GB RAM",
+    specification: "i7",
+    rating: 4.7,
+    imageUrl: "https://via.placeholder.com/300",
+
+    brand: "hp",
+    tag: "new",
   },
-  // Cập nhật id cho các sản phẩm còn lại
   {
     id: 5,
-    title: "Máy tính Jack 6 củ",
-    image:
-      "https://phongvu.vn/cong-nghe/wp-content/uploads/sites/2/2020/09/Dell-XPS-15-1024x572.jpg",
-    price: 1600,
+    title: "Laptop Acer XPS",
+    description: "Powerful laptop for professionals.",
+    originalPrice: 12000000, // Giá gốc
+    discountPrice: 10000000, // Giá đã giảm
+    status: "In Stock",
+    category: "gaming",
+    specs: "Core i5, 8GB RAM",
+    specification: "i5",
+    rating: 4.5,
+    imageUrl: "https://via.placeholder.com/300",
+
+    brand: "acer",
+    tag: "bestSeller",
   },
   {
     id: 6,
-    title: "Máy tính Jack 7 củ",
-    image:
-      "https://phongvu.vn/cong-nghe/wp-content/uploads/sites/2/2020/09/Dell-XPS-15-1024x572.jpg",
-    price: 1700,
+    title: "Laptop HP Spectre",
+    description: "Sleek design and powerful performance.",
+    originalPrice: 17000000,
+    discountPrice: 15000000,
+    status: "In Stock",
+    category: "office",
+    specs: "Core i7, 16GB RAM",
+    specification: "i7",
+    rating: 4.7,
+    imageUrl: "https://via.placeholder.com/300",
+
+    brand: "hp",
+    tag: "new",
+  },
+  {
+    id: 7,
+    title: "Laptop Dell XPS",
+    description: "Powerful laptop for professionals.",
+    originalPrice: 12000000, // Giá gốc
+    discountPrice: 10000000, // Giá đã giảm
+    status: "In Stock",
+    category: "office",
+    specs: "Core i3, 8GB RAM",
+    specification: "i3",
+    rating: 4.5,
+    imageUrl: "https://via.placeholder.com/300",
+
+    brand: "dell",
+    tag: "bestSeller",
+  },
+  {
+    id: 8,
+    title: "Laptop HP Spectre",
+    description: "Sleek design and powerful performance.",
+    originalPrice: 17000000,
+    discountPrice: 15000000,
+    status: "In Stock",
+    category: "gaming",
+    specs: "Core i7, 16GB RAM",
+    specification: "i7",
+    rating: 4.7,
+    imageUrl: "https://via.placeholder.com/300",
+
+    brand: "hp",
+    tag: "new",
+  },
+  {
+    id: 9,
+    title: "Laptop SamSung",
+    description: "Powerful laptop for professionals.",
+    originalPrice: 12000000, // Giá gốc
+    discountPrice: 10000000, // Giá đã giảm
+    status: "In Stock",
+    category: "gaming",
+    specs: "Core i5, 8GB RAM",
+    specification: "i5",
+    rating: 4.5,
+    imageUrl: "https://via.placeholder.com/300",
+
+    brand: "samsung",
+    tag: "bestSeller",
+  },
+  {
+    id: 10,
+    title: "Laptop HP Spectre",
+    description: "Sleek design and powerful performance.",
+    originalPrice: 17000000,
+    discountPrice: 15000000,
+    status: "In Stock",
+    category: "office",
+    specs: "Core i9, 16GB RAM",
+    specification: "i9",
+    rating: 4.7,
+    imageUrl: "https://via.placeholder.com/300",
+
+    brand: "hp",
+    tag: "new",
   },
 ];
 
@@ -293,21 +412,32 @@ const ProductCard = ({ product, handleAddToCart }) => {
               align="center"
               sx={{ height: "30px" }}
             >
-              Giá: ${product.price}
+              Tình trạng: {product.status}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              align="center"
+              sx={{ height: "30px", fontSize: "20px", color: "red" }}
+            >
+              {product.originalPrice} VND
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              align="center"
+              sx={{ height: "30px" }}
+            >
+              <Rating
+                name="read-only"
+                value={product.rating || 0}
+                readOnly
+                sx={{ mt: 1 }}
+              />
             </Typography>
           </CardContent>
         </Card>
       </Link>
-      <Button
-        size="small"
-        variant="contained"
-        color="primary"
-        fullWidth
-        sx={{ mt: 1 }}
-        onClick={() => handleAddToCart(product)}
-      >
-        Thêm vào giỏ hàng
-      </Button>
     </div>
   );
 };
@@ -350,188 +480,173 @@ const SubNavbar = () => {
         boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
       }}
     >
-      <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
-        {/* Danh mục */}
-        <IconButton
-          onMouseEnter={handleCategoryMouseEnter}
-          color="inherit"
-          sx={{
-            marginRight: 3,
-            "&:hover": {
-              color: "primary",
-            },
-          }}
+      <>
+        {/* Stack chứa các IconButton, sắp xếp theo chiều dọc */}
+        <Stack
+          direction="column"
+          spacing={2}
+          sx={{ alignItems: "flex-start", flexGrow: 1 }}
         >
-          <CategoryIcon fontSize="medium" sx={{ marginRight: "5px" }} />
-          <Typography variant="h6" display="inline">
-            Danh mục
-          </Typography>
-          <KeyboardArrowDown />
-        </IconButton>
-        <Menu
-          anchorEl={categoryAnchorEl}
-          open={Boolean(categoryAnchorEl)}
-          onClose={handleMenuClose}
-          MenuListProps={{
-            onMouseLeave: handleMenuClose,
-          }}
-          sx={{
-            minWidth: "200px", // Điều chỉnh độ rộng tối thiểu của menu
-          }}
-        >
-          <MenuItem
-            onClick={() => handleCategoryClick("Laptop")}
-            sx={{ minWidth: "200px" }}
-          >
-            Laptop
-          </MenuItem>
-          <MenuItem
-            onClick={() => handleCategoryClick("Chuột")}
-            sx={{ minWidth: "200px" }}
-          >
-            Chuột
-          </MenuItem>
-          <MenuItem
-            onClick={() => handleCategoryClick("Tai nghe")}
-            sx={{ minWidth: "200px" }}
-          >
-            Tai nghe
-          </MenuItem>
-          <MenuItem
-            onClick={() => handleCategoryClick("Loa")}
-            sx={{ minWidth: "200px" }}
-          >
-            Loa
-          </MenuItem>
-        </Menu>
+          {/* Danh mục */}
 
-        {/* Thương hiệu */}
-        <IconButton
-          onMouseEnter={handleBrandMouseEnter}
-          color="inherit"
-          sx={{
-            "&:hover": {
-              color: "primary",
-            },
-          }}
-        >
-          <BrandIcon fontSize="medium" sx={{ marginRight: "5px" }} />
-          <Typography variant="h6" display="inline">
-            Thương hiệu
-          </Typography>
-          <KeyboardArrowDown />
-        </IconButton>
-        <Menu
-          anchorEl={brandAnchorEl}
-          open={Boolean(brandAnchorEl)}
-          onClose={handleMenuClose}
-          MenuListProps={{
-            onMouseLeave: handleMenuClose,
-          }}
-          sx={{ minWidth: "200px" }}
-        >
-          <MenuItem
-            onClick={() => handleBrandClick("Dell")}
-            sx={{ minWidth: "200px" }}
+          <IconButton
+            onMouseEnter={handleCategoryMouseEnter}
+            color="inherit"
+            sx={{
+              "&:hover": {
+                color: "primary.main",
+              },
+            }}
           >
-            Dell
-          </MenuItem>
-          <MenuItem
-            onClick={() => handleBrandClick("Apple")}
-            sx={{ minWidth: "200px" }}
+            <CategoryIcon fontSize="medium" sx={{ marginRight: "5px" }} />
+            <Typography variant="h6" display="inline">
+              Danh mục
+            </Typography>
+            <KeyboardArrowDown />
+          </IconButton>
+          <Menu
+            anchorEl={categoryAnchorEl}
+            open={Boolean(categoryAnchorEl)}
+            onClose={handleMenuClose}
+            MenuListProps={{
+              onMouseLeave: handleMenuClose,
+            }}
+            sx={{
+              minWidth: "200px",
+            }}
           >
-            Apple
-          </MenuItem>
-          <MenuItem
-            onClick={() => handleBrandClick("HP")}
-            sx={{ minWidth: "200px" }}
-          >
-            HP
-          </MenuItem>
-        </Menu>
-      </Box>
+            <MenuItem onClick={() => handleCategoryClick("Laptop")}>
+              Laptop
+            </MenuItem>
+            <MenuItem onClick={() => handleCategoryClick("Chuột")}>
+              Chuột
+            </MenuItem>
+            <MenuItem onClick={() => handleCategoryClick("Tai nghe")}>
+              Tai nghe
+            </MenuItem>
+            <MenuItem onClick={() => handleCategoryClick("Loa")}>Loa</MenuItem>
+          </Menu>
+
+          {/* Thương hiệu */}
+          <Box>
+            <IconButton
+              onMouseEnter={handleBrandMouseEnter}
+              color="inherit"
+              sx={{
+                "&:hover": {
+                  color: "primary.main",
+                },
+              }}
+            >
+              <BrandIcon fontSize="medium" sx={{ marginRight: "5px" }} />
+              <Typography variant="h6" display="inline">
+                Thương hiệu
+              </Typography>
+              <KeyboardArrowDown />
+            </IconButton>
+            <Menu
+              anchorEl={brandAnchorEl}
+              open={Boolean(brandAnchorEl)}
+              onClose={handleMenuClose}
+              MenuListProps={{
+                onMouseLeave: handleMenuClose,
+              }}
+              sx={{ minWidth: "200px" }}
+            >
+              <MenuItem onClick={() => handleBrandClick("Dell")}>Dell</MenuItem>
+              <MenuItem onClick={() => handleBrandClick("Apple")}>
+                Apple
+              </MenuItem>
+              <MenuItem onClick={() => handleBrandClick("HP")}>HP</MenuItem>
+            </Menu>
+          </Box>
+        </Stack>
+      </>
     </Toolbar>
   );
 };
 
 const HomePage = ({ handleAddToCart }) => {
   return (
-    <Container>
-      <TopAppBar />
+    <>
       <SubNavbar />
-      <BannerSlider />
-      {/* Popular Products Section */}
-      <Typography
-        variant="h4"
-        align="left"
-        sx={{ margin: "30px 0", fontSize: "24px" }}
-      >
-        Sản phẩm thịnh hành
-      </Typography>
-      <Slider {...sliderSettings}>
-        {products.map((product) => (
-          <ProductCard
-            product={product}
-            key={product.id}
-            handleAddToCart={handleAddToCart}
-          />
-        ))}
-      </Slider>
+      <Container>
+        <TopAppBar />
 
-      {/* Promotion Products Section */}
-      <Typography
-        variant="h4"
-        align="left"
-        sx={{ margin: "30px 0", fontSize: "24px" }}
-      >
-        Sản phẩm khuyến mãi
-      </Typography>
-      <Slider {...sliderSettings}>
-        {products.map((product) => (
-          <ProductCard
-            product={product}
-            key={product.id}
-            handleAddToCart={handleAddToCart}
-          />
-        ))}
-      </Slider>
+        <BannerSlider />
+        {/* Popular Products Section */}
+        <Typography
+          variant="h4"
+          align="left"
+          sx={{ margin: "30px 0", fontSize: "24px", fontWeight: "600" }}
+        >
+          Sản phẩm thịnh hành
+        </Typography>
+        <Slider {...sliderSettings}>
+          {products.map((product) => (
+            <ProductCard
+              product={product}
+              key={product.id}
+              handleAddToCart={handleAddToCart}
+            />
+          ))}
+        </Slider>
 
-      {/* Best-selling Products Section */}
-      <Typography
-        variant="h4"
-        align="left"
-        sx={{ margin: "30px 0", fontSize: "24px" }}
-      >
-        Laptop bán chạy
-      </Typography>
-      <Slider {...sliderSettings}>
-        {products.map((product) => (
-          <ProductCard
-            product={product}
-            key={product.id}
-            handleAddToCart={handleAddToCart}
-          />
-        ))}
-      </Slider>
+        {/* Promotion Products Section */}
+        <Typography
+          variant="h4"
+          align="left"
+          sx={{ margin: "30px 0", fontSize: "24px", fontWeight: "600" }}
+        >
+          Sản phẩm khuyến mãi
+        </Typography>
+        <Slider {...sliderSettings}>
+          {products.map((product) => (
+            <ProductCard
+              product={product}
+              key={product.id}
+              handleAddToCart={handleAddToCart}
+            />
+          ))}
+        </Slider>
 
-      {/* Featured Products Section */}
-      <Typography
-        variant="h4"
-        align="left"
-        sx={{ margin: "30px 0", fontSize: "24px" }}
-      >
-        Sản phẩm nổi bật
-      </Typography>
-      <Slider {...sliderSettings}>
-        {products.map((product) => (
-          <ProductCard
-            product={product}
-            key={product.id}
-            handleAddToCart={handleAddToCart}
-          />
-        ))}
-      </Slider>
-    </Container>
+        {/* Best-selling Products Section */}
+        <Typography
+          variant="h4"
+          align="left"
+          sx={{ margin: "30px 0", fontSize: "24px", fontWeight: "600" }}
+        >
+          Laptop bán chạy
+        </Typography>
+        <Slider {...sliderSettings}>
+          {products.map((product) => (
+            <ProductCard
+              product={product}
+              key={product.id}
+              handleAddToCart={handleAddToCart}
+            />
+          ))}
+        </Slider>
+
+        {/* Featured Products Section */}
+        <Typography
+          variant="h4"
+          align="left"
+          sx={{ margin: "30px 0", fontSize: "24px", fontWeight: "600" }}
+        >
+          Sản phẩm nổi bật
+        </Typography>
+        <Slider {...sliderSettings}>
+          {products.map((product) => (
+            <ProductCard
+              product={product}
+              key={product.id}
+              handleAddToCart={handleAddToCart}
+            />
+          ))}
+        </Slider>
+      </Container>
+    </>
   );
 };
 
