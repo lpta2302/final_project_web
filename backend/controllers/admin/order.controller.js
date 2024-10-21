@@ -7,12 +7,27 @@ export const index = async (req, res) => {
   res.json(order);
 };
 
-// [POST] /order/detail/:orderId
+// [GET] /order/detail/:orderId
 export const detail = async (req, res) => {
   try {
     const orderId = req.params.orderId;
 
     const order = await Order.findOne({ _id: orderId });
+    res.json(order);
+  } catch (error) {
+    res.status(500).json({
+      code: 500,
+      message: "Thêm category thất bại",
+    });
+  }
+};
+
+// [GET] /order/user/:orderId
+export const orderOfUser = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const order = await Order.find({ userId: userId });
     res.json(order);
   } catch (error) {
     res.status(500).json({
