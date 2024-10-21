@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { Container, Typography, Tabs, Tab, Box, List, ListItem, ListItemText, Button, Paper } from '@mui/material';
+import { Container, Typography, Tabs, Tab, Box, List, ListItem, ListItemText, Button, Paper, Grid } from '@mui/material';
 
 const sampleOrders = {
   processing: [
-    { id: 1, orderCode: 'DH001', date: '2024-01-10', total: '500,000 VND', status: 'Đang xử lý' },
-    { id: 2, orderCode: 'DH002', date: '2024-01-12', total: '1,200,000 VND', status: 'Đang xử lý' }
+    { id: 1, orderCode: 'DH001', date: '2024-01-10', total: '500,000 VND', status: 'Đang xử lý', products: ['Sản phẩm A', 'Sản phẩm B', 'Sản phẩm C'] },
+    { id: 2, orderCode: 'DH002', date: '2024-01-12', total: '1,200,000 VND', status: 'Đang xử lý', products: ['Sản phẩm D'] }
   ],
   purchased: [
-    { id: 3, orderCode: 'DH003', date: '2023-12-10', total: '2,000,000 VND', status: 'Đã mua' }
+    { id: 3, orderCode: 'DH003', date: '2023-12-10', total: '2,000,000 VND', status: 'Đã giao hàng', products: ['Sản phẩm E', 'Sản phẩm F'] }
   ],
   cancelled: [
-    { id: 4, orderCode: 'DH004', date: '2023-12-05', total: '300,000 VND', status: 'Đã hủy' }
+    { id: 4, orderCode: 'DH004', date: '2023-12-05', total: '300,000 VND', status: 'Đã hủy', products: ['Sản phẩm G'] }
   ]
 };
 
@@ -28,25 +28,62 @@ const ManagePersonalOrder = () => {
 
     return (
       <List>
-        {orders.map((order) => (
-          <Paper key={order.id} sx={{ mb: 2, p: 2 }}>
-            <ListItem>
-              <ListItemText
-                primary={`Mã đơn hàng: ${order.orderCode}`}
-                secondary={`Ngày tạo: ${order.date} - Tổng tiền: ${order.total}`}
-              />
-              <Typography variant="body2" sx={{ color: order.status === 'Đang xử lý' ? 'primary.main' : 'text.secondary', mr: 2 }}>{order.status}</Typography>
-              <Button variant="outlined" color="primary" sx={{ mr: 1 }}>Xem chi tiết</Button>
-              {currentTab === 0 && <Button variant="outlined" color="error">Hủy đơn hàng</Button>}
-            </ListItem>
-          </Paper>
-        ))}
+        {orders.map((order) => {
+          const { products, date } = order;
+          const displayProduct = products[0];
+          const additionalProductsCount = products.length > 1 ? `và ${products.length - 1} sản phẩm khác` : '';
+
+          const statusStyles = {
+            'Đã giao hàng': { backgroundColor: 'lightgreen', color: 'darkgreen' },
+            'Đang xử lý': { backgroundColor: 'lightyellow', color: 'goldenrod' },
+            'Đã hủy': { backgroundColor: '#ffcccb', color: '#b22222' }
+          };
+
+          return (
+            <Paper key={order.id} sx={{ mb: 2, p: 2 }}>
+              <ListItem sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <ListItemText
+                  primary={displayProduct}
+                  secondary={additionalProductsCount}
+                  sx={{ textAlign: 'center' }}
+                />
+                
+                <Grid container justifyContent="center" alignItems="center" sx={{ mt: 1 }}>
+                  <Grid item xs={12} sx={{ textAlign: 'center' }}>
+                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                      {date}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        ...statusStyles[order.status],
+                        borderRadius: '4px',
+                        p: 0.5,
+                        fontWeight: 'bold',
+                        textAlign: 'center',
+                        marginTop: 1,
+                        display: 'inline-block',
+                      }}
+                    >
+                      {order.status}
+                    </Typography>
+                  </Grid>
+                </Grid>
+                
+                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1, width: '100%' }}>
+                  <Button variant="outlined" color="primary" sx={{ mr: 1 }}>Xem chi tiết</Button>
+                  {currentTab === 0 && <Button variant="outlined" color="error">Hủy đơn hàng</Button>}
+                </Box>
+              </ListItem>
+            </Paper>
+          );
+        })}
       </List>
     );
   };
 
   return (
-    <Container>
+    <Container maxWidth="md">
       <Typography variant="h4" sx={{ mb: 4, mt: 4 }}>Quản lý đơn hàng</Typography>
       <Tabs value={currentTab} onChange={handleTabChange} centered>
         <Tab label="Đơn hàng đang xử lý" />
