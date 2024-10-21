@@ -15,9 +15,11 @@ const carouselController = {
       const carousel = await Carousel(req.body);
       await carousel.save();
 
-      return true;
+      return res.status(200).json({
+        data: carousel,
+      });
     } catch (err) {
-      return false;
+      return res.status(500).json({ message: false });
     }
   },
 
@@ -26,9 +28,11 @@ const carouselController = {
     try {
       const carousel = await Carousel.find();
 
-      return true;
+      return res.status(200).json({
+        data: carousel,
+      });
     } catch (err) {
-      return false;
+      return res.status(500).json({ message: false });
     }
   },
 
@@ -37,9 +41,11 @@ const carouselController = {
     try {
       const carousel = await Carousel.findByIdAndDelete(req.params.id);
 
-      return true;
+      return res.status(200).json({
+        data: carousel,
+      });
     } catch (err) {
-      return false;
+      return res.status(500).json({ message: false });
     }
   },
 
@@ -51,9 +57,11 @@ const carouselController = {
         req.body
       );
 
-      return true;
+      return res.status(200).json({
+        data: carousel,
+      });
     } catch (err) {
-      return false;
+      return res.status(500).json({ message: false });
     }
   },
 };

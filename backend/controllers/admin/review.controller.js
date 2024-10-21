@@ -4,7 +4,7 @@ const reviewController = {
   // [GET] /reviews/:id
   showReviews: async (req, res) => {
     try {
-      const reviews = await Review.find({ product: req.params.id });
+      const reviews = await Review.find({ spec: req.params.id });
 
       res.status(200).json({
         data: reviews,
@@ -30,7 +30,7 @@ const reviewController = {
   // [GET] /reviews/search/:id
   searchReviews: async (req, res) => {
     try {
-      const reviews = await Review.find({ product: req.params.id });
+      const reviews = await Review.find({ spec: req.params.id });
 
       const search = req.query.search || "";
 

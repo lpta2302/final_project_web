@@ -1,24 +1,42 @@
 import Review from "../../models/review.model.js";
+import Order from "../../models/order.model.js";
+import Cart from "../../models/cart.model.js";
 
 const reviewController = {
   // [POST] /client/reviews/:id
   addReviews: async (req, res) => {
     try {
+      const order = await Order.findOne({
+        userId: req.body.clientId,
+        processStatus: "pending",
+      });
+
+      console.log("Order: " + order);
+
+      const cart = await Cart.findById(order.cart).populate("cartItems.spec");
+
+      console.log("CartItems:", cart.cartItems);
+
+      if (!order || !cart) {
+        return res.status(400).json({ message: false });
+      }
+
+      const specInCart = cart.cartItems.some((item) => {
+        return item.spec._id.toString() === req.params.id;
+      });
+
+      console.log("Spec: " + specInCart);
+
+      if (!specInCart) {
+        return res.status(400).json({ message: false });
+      }
+
       const review = new Review({
         clientId: req.body.clientId,
-        product: req.params.id, // Đảm bảo trường 'product' nhận giá trị từ 'productId'
+        spec: req.params.id,
         description: req.body.description,
         star: req.body.star,
       });
-
-      const isExist = await Review.findOne({
-        clientId: req.body.clientId,
-        product: req.params.id,
-      });
-
-      if (isExist) {
-        return false;
-      }
 
       await review.save();
 

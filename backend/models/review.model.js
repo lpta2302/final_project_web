@@ -5,7 +5,7 @@ const reviewSchema = new mongoose.Schema(
     clientId: {
       type: String,
     },
-    product: {
+    spec: {
       type: String,
     },
     description: {
