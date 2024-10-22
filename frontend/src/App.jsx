@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import AuthProvider from "./context/AuthContext";
 import RootLayout from './_root/RootLayout';
-import { HomePage } from './_root/pages';
+import { HomePage, Profile } from './_root/pages';
 import './globalStyle.css'
 import AdminLayout from './_root/AdminLayout';
 import AdminHomePage from './_root/pages/admin/AdminHomePage';
@@ -16,6 +16,10 @@ import { Login } from './components/index.js';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { SnackbarProvider } from 'notistack'
+import ManagePersonalProfile from "./pages/ManagePersonalProfile.jsx";
+import ManagePersonalOrder from "./pages/ManagePersonalOrder.jsx";
+import Favorite from "./pages/Favorite.jsx";
+import Product from "./pages/Product.jsx";
 
 const theme = createTheme({
   palette: {
@@ -78,6 +82,14 @@ function App() {
               <Routes>
                 <Route element={<RootLayout />}>
                   <Route index element={<HomePage />} path='/' />
+
+                  <Route path="/profile" element={<Profile/>} />
+                  <Route path="/manage-profile" element={<ManagePersonalProfile/>} />
+                  <Route path="/manage-order" element={<ManagePersonalOrder/>} />
+                  <Route path="/favorite" element={<Favorite/>} />
+                  <Route path="/product/productId" element={<Product/>} />
+                  
+                  
                   {customerNav.map(navItem =>
                     <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
                   )}

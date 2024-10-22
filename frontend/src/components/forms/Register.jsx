@@ -114,7 +114,6 @@ const Register = ({setModalType}) => {
         <Typography
           variant="h5"
           sx={{
-            fontSize: "1.5rem",
             fontFamily: "Nunito",
             color: "primary.main",
             fontWeight: "bold",
@@ -142,7 +141,6 @@ const Register = ({setModalType}) => {
             fullWidth
             autoFocus
             sx={{
-              fontSize: "1rem",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
               },
@@ -161,7 +159,6 @@ const Register = ({setModalType}) => {
             fullWidth
             required
             sx={{
-              fontSize: "1rem",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
               },
@@ -180,7 +177,6 @@ const Register = ({setModalType}) => {
                 required
                 fullWidth
                 sx={{
-                  fontSize: "1rem",
                   "& .MuiOutlinedInput-root": {
                     borderRadius: "12px",
                   },
@@ -199,7 +195,6 @@ const Register = ({setModalType}) => {
                 required
                 fullWidth
                 sx={{
-                  fontSize: "1rem",
                   "& .MuiOutlinedInput-root": {
                     borderRadius: "12px",
                   },
@@ -219,7 +214,6 @@ const Register = ({setModalType}) => {
             required
             fullWidth
             sx={{
-              fontSize: "1rem",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
               },
@@ -237,7 +231,6 @@ const Register = ({setModalType}) => {
             required
             fullWidth
             sx={{
-              fontSize: "1rem",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
               },
@@ -254,7 +247,6 @@ const Register = ({setModalType}) => {
             name="birthDate"
             fullWidth
             sx={{
-              fontSize: "1rem",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
               },
@@ -289,7 +281,6 @@ const Register = ({setModalType}) => {
             sx={{
               mt: 1,
               height: "3rem",
-              fontSize: "1rem",
               borderRadius: "12px",
             }}
             disabled={!isAgree} 
@@ -305,7 +296,7 @@ const Register = ({setModalType}) => {
           <Typography
             onClick={()=>setModalType('login')}
             color='primary.main'
-            sx={{ ml: 1, fontSize: "1rem", textDecoration: 'underline', '&:hover': { cursor: 'pointer' } }}
+            sx={{ ml: 1, textDecoration: 'underline', '&:hover': { cursor: 'pointer' } }}
           >
             Đăng nhập ngay
           </Typography>
