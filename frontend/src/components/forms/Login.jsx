@@ -160,7 +160,7 @@ const Login = ({ setModalType, isAdmin }) => {
           </Button>
         </Box>
         {
-          isAdmin &&
+          !isAdmin &&
           <Box
           sx={{ display: 'flex', mt: 4, mb: 2}}
         >

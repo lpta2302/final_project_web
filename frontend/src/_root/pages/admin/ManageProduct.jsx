@@ -1,47 +1,51 @@
 import { DataGrid, GridActionsCellItem, GridToolbar } from '@mui/x-data-grid';
 import { PageContainer } from '@toolpad/core';
-import { renderEditStatus, renderStatus, STATUS_OPTIONS } from './customRenderer/status.jsx';
-import { useDeleteAccount, useReadAllProduct, useUpdateAccountStatus } from '../../../api/queries.js';
-import { Delete } from '@mui/icons-material';
+import { renderEditProductStatus, renderProductStatus, STATUS_OPTIONS } from './customRenderer/productStatus.jsx';
 import { useEffect, useState } from 'react';
 import DataGridConfirmDialog from '../../../components/dialogs/DataGridConfirmDialog.jsx';
 import { ManagePageSearch } from "../../../components";
 import { enqueueSnackbar as toaster } from 'notistack';
 import { Box } from '@mui/material';
+import { Delete } from '@mui/icons-material';
+import { useDeleteProduct, useReadAllProduct } from '../../../api/queries.js';
 
-
-function ManageAccount() {
-  const [searchValue, setSearchValue] = useState('')
-  const [rows, setRows] = useState()
-  const { data } = useReadAllProduct();
-  const [dialogPayload, setDialogPayload] = useState({ state: false, id: null });
-  const { mutateAsync: deleteAccount } = useDeleteAccount();
-  const { mutateAsync: updateAccountStatus } = useUpdateAccountStatus();
-  
-  
-  const breadcrumbs = [
-    { path: '/', title: 'Home' },
-    { path: '/manage-product', title: 'Quản lý sản phẩm' },
-  ]
-  
-  useEffect(() => setRows(data), [data])
-  console.log(data);
-
-  const columns = [
-    { field: 'productCode', headerName: 'Mã sản phẩm', width: 150 },
+const columnFields = [
+  { field: 'productCode', headerName: 'Id', width: 150 },
     { field: 'productName', headerName: 'Tên sản phẩm', width: 200 },
     { field: 'description', headerName: 'Mô tả', width: 300 },
     {
       field: 'productStatus',
       headerName: 'Trạng thái',
       width: 150,
-      renderCell: renderStatus,
-      renderEditCell: renderEditStatus,
+      renderCell: renderProductStatus,
+      renderEditCell: renderEditProductStatus,
       type: 'singleSelect',
       valueOptions: STATUS_OPTIONS,
       editable: true,
       align: 'center'
     },
+]
+
+
+function ManageAccount() {
+  const [searchValue, setSearchValue] = useState('')
+  const [rows, setRows] = useState()
+  const { data, isPending: isLoading } = useReadAllProduct();
+  const [dialogPayload, setDialogPayload] = useState({ state: false, id: null });
+  const { mutateAsync: deleteAccount } = useDeleteProduct();
+  // const { mutateAsync: updateAccountStatus } = useUpdateAccountStatus();
+
+
+  const breadcrumbs = [
+    { path: '/', title: 'Home' },
+    { path: '/manage-product', title: 'Quản lý sản phẩm' },
+  ]
+
+  useEffect(() => setRows(data), [data])
+  console.log(data);
+
+  const columns = [
+    ...columnFields,
     // {
     //   field: 'imageURLs',
     //   headerName: 'Hình ảnh',
@@ -52,10 +56,9 @@ function ManageAccount() {
     // },
     // {
     //   field: 'category',
-    //   headerName: 'Danh mục',
+    //   headerName: 'Phân loại',
     //   width: 150,
-    //   valueGetter: (params) => console.log(params)
-    //   ,
+    //   valueGetter: (value, row) => console.log(row),
     // },
     // {
     //   field: 'brand',
@@ -69,29 +72,28 @@ function ManageAccount() {
     //   width: 200,
     //   renderCell: (params) => params.value.map(spec => spec.name).join(', '),
     // },
-    // {
-    //   field: 'actions',
-    //   type: 'actions',
-    //   headerName: '',
-    //   width: 100,
-    //   align: 'center',
-    //   cellClassName: 'actions',
-    //   getActions: ({ id }) => {
-    //     return [
-    //       <GridActionsCellItem
-    //         icon={<Delete color='error' />}
-    //         label="Delete"
-    //         onClick={() => setDialogPayload({ state: true, id: id })}
-    //         color="inherit"
-    //         key="delete"
-    //       />
-    //     ];
-    //   }
-    // }
+    {
+      field: 'actions',
+      type: 'actions',
+      headerName: '',
+      width: 100,
+      align: 'center',
+      cellClassName: 'actions',
+      getActions: ({ row:{_id: id}}) => {
+        return [
+          <GridActionsCellItem
+            icon={<Delete color='error' />}
+            label="Delete"
+            onClick={() => setDialogPayload({ state: true, id: id })}
+            color="inherit"
+            key="delete"
+          />
+        ];
+      }
+    }
   ];
 
   const handleDeleteClick = async (isAccept) => {
-    console.log(isAccept);
 
     const { id } = dialogPayload
 
@@ -107,8 +109,10 @@ function ManageAccount() {
   }
 
   const handleUpdate = async (updatedRow) => {
-    await updateAccountStatus(updatedRow)
-    toaster("Cập nhật trạng thái tài khoản thành công", { variant: 'success' })
+    console.log(updatedRow);
+    
+    // await updateAccountStatus(updatedRow)
+    // toaster("Cập nhật trạng thái tài khoản thành công", { variant: 'success' })
     return updatedRow;
   }
 
@@ -141,7 +145,7 @@ function ManageAccount() {
         onClick={handleDeleteClick}
         state={dialogPayload.state}
         title="Xác nhận xóa?"
-        content="Người dùng, bao gồm cả thông tin sẽ bị xóa vĩnh viễn và không thể khôi phục."
+        content="Sản phẩm, bao gồm cả thông tin sẽ bị xóa vĩnh viễn và không thể khôi phục."
       />
       <DataGrid
         getRowId={(row) => row.productCode}
@@ -149,9 +153,9 @@ function ManageAccount() {
         columns={columns}
         slots={{ toolbar: GridToolbar }}
         checkboxSelection
-        // onCellEditStop={handleUpdate}
         processRowUpdate={handleUpdate}
         onProcessRowUpdateError={handleUpdateError}
+        loading={isLoading}
       />
 
     </PageContainer>

@@ -47,12 +47,20 @@ const theme = createTheme({
         },
       },
     },
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#fff'
+        }
+      }
+    }
   },
 });
 
 const queryClient = new QueryClient();
 
 function App() {
+
   return (
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={true} />

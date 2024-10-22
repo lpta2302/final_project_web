@@ -1,46 +1,208 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createAccount, deleteAccount, readAllAccount, readAllProducts, updateAccountStatus } from "./api";
-import { READ_ALL_ACCOUNTS } from "./queryKeys";
-
+import { createAccount, deleteRecord, readAll, updateAccountStatus } from "./api";
+import {
+    READ_ALL_ACCOUNTS,
+    READ_ALL_PRODUCTS,
+    READ_ALL_TAGS,
+    READ_ALL_CATEGORIES,
+    READ_ALL_BRANDS,
+    READ_ALL_VOUCHERS,
+    READ_ALL_SPECIFICATION,
+    READ_ALL_WISHLISTS,
+    READ_ALL_CARTS,
+    READ_ALL_ADDRESSES,
+    READ_ALL_REVIEWS,
+    READ_ALL_ORDERS,
+    READ_ALL_CAROUSEL
+} from "./queryKeys";
 
 //----------------------------- Account -----------------------------
 export const useCreateAccount = () => {
     return useMutation({
-        mutationFn: (user) => createAccount(user)
+        mutationFn: (user) => createAccount(user),
     });
-}
+};
 
 export const useReadAllAccount = () => {
     return useQuery({
         queryKey: [READ_ALL_ACCOUNTS],
-        queryFn: () => readAllAccount(),
-    })
-}
+        queryFn: () => readAll('account'),
+    });
+};
 
 export const useUpdateAccountStatus = () => {
-    const queryClient = useQueryClient()
+    const queryClient = useQueryClient();
     return useMutation({
         mutationFn: (user) => updateAccountStatus(user),
         onSuccess: () => {
-            queryClient.invalidateQueries([READ_ALL_ACCOUNTS])
-        }
-    })
-}
+            queryClient.invalidateQueries([READ_ALL_ACCOUNTS]);
+        },
+    });
+};
 
 export const useDeleteAccount = () => {
-    const queryClient = useQueryClient()
+    const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (user) => deleteAccount(user),
+        mutationFn: (userId) => deleteRecord(userId, 'account'),
         onSuccess: () => {
-            queryClient.invalidateQueries([READ_ALL_ACCOUNTS])
-        }
-    })
-}
+            queryClient.invalidateQueries([READ_ALL_ACCOUNTS]);
+        },
+    });
+};
 
-//----------------------------- Manage Product -----------------------------
+//----------------------------- Product -----------------------------
 export const useReadAllProduct = () => {
     return useQuery({
-        queryKey: [READ_ALL_ACCOUNTS],
-        queryFn: () => readAllProducts(),
-    })
-}
+        queryKey: [READ_ALL_PRODUCTS],
+        queryFn: () => readAll('product'),
+    });
+};
+
+export const useDeleteProduct = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (productId) => deleteRecord(productId, 'product'),
+        onSuccess: () => {
+            queryClient.invalidateQueries([READ_ALL_PRODUCTS]);
+        },
+    });
+};
+
+//----------------------------- Tag -----------------------------
+export const useReadAllTag = () => {
+    return useQuery({
+        queryKey: [READ_ALL_TAGS],
+        queryFn: () => readAll('tag'),
+    });
+};
+
+export const useDeleteTag = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (tagId) => deleteRecord(tagId, 'tag'),
+        onSuccess: () => {
+            queryClient.invalidateQueries([READ_ALL_TAGS]);
+        },
+    });
+};
+
+//----------------------------- Category -----------------------------
+export const useReadAllCategory = () => {
+    return useQuery({
+        queryKey: [READ_ALL_CATEGORIES],
+        queryFn: () => readAll('category'),
+    });
+};
+
+export const useDeleteCategory = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (categoryId) => deleteRecord(categoryId, 'category'),
+        onSuccess: () => {
+            queryClient.invalidateQueries([READ_ALL_CATEGORIES]);
+        },
+    });
+};
+
+//----------------------------- Brand -----------------------------
+export const useReadAllBrand = () => {
+    return useQuery({
+        queryKey: [READ_ALL_BRANDS],
+        queryFn: () => readAll('brand'),
+    });
+};
+
+export const useDeleteBrand = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (brandId) => deleteRecord(brandId, 'brand'),
+        onSuccess: () => {
+            queryClient.invalidateQueries([READ_ALL_BRANDS]);
+        },
+    });
+};
+
+//----------------------------- Voucher -----------------------------
+export const useReadAllVoucher = () => {
+    return useQuery({
+        queryKey: [READ_ALL_VOUCHERS],
+        queryFn: () => readAll('voucher'),
+    });
+};
+
+export const useDeleteVoucher = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (voucherId) => deleteRecord(voucherId, 'voucher'),
+        onSuccess: () => {
+            queryClient.invalidateQueries([READ_ALL_VOUCHERS]);
+        },
+    });
+};
+
+//----------------------------- Specification -----------------------------
+export const useReadAllSpecification = () => {
+    return useQuery({
+        queryKey: [READ_ALL_SPECIFICATION],
+        queryFn: () => readAll('spec'),
+    });
+};
+
+export const useDeleteSpecification = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (specId) => deleteRecord(specId, 'spec'),
+        onSuccess: () => {
+            queryClient.invalidateQueries([READ_ALL_SPECIFICATION]);
+        },
+    });
+};
+
+//----------------------------- Carousel -----------------------------
+export const useReadAllCarousel = () => {
+    return useQuery({
+        queryKey: [READ_ALL_CAROUSEL],
+        queryFn: () => readAll('carousel'),
+    });
+};
+
+//----------------------------- Order -----------------------------
+export const useReadAllOrder = () => {
+    return useQuery({
+        queryKey: [READ_ALL_ORDERS],
+        queryFn: () => readAll('order'),
+    });
+};
+
+//----------------------------- Review -----------------------------
+export const useReadAllReview = () => {
+    return useQuery({
+        queryKey: [READ_ALL_REVIEWS],
+        queryFn: (id) => readAll('review',id),
+    });
+};
+
+//----------------------------- Address -----------------------------
+export const useReadAllAddress = () => {
+    return useQuery({
+        queryKey: [READ_ALL_ADDRESSES],
+        queryFn: (accountId) => readAll('address', accountId),
+    });
+};
+
+//----------------------------- Cart -----------------------------
+export const useReadAllCart = () => {
+    return useQuery({
+        queryKey: [READ_ALL_CARTS],
+        queryFn: (userId) => readAll('cart',userId),
+    });
+};
+
+//----------------------------- Wishlist -----------------------------
+export const useReadAllWishlist = () => {
+    return useQuery({
+        queryKey: [READ_ALL_WISHLISTS],
+        queryFn: (userId) => readAll('wishList',userId),
+    });
+};
+

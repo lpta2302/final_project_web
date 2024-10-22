@@ -1,4 +1,30 @@
+import { DELETE, READ_ALL_URL } from './API_URL';
 import axios from './myAxios'
+
+//----------------------------- General -----------------------------
+export async function readAll(readType, id) {
+    try {
+        console.log(READ_ALL_URL(id)[readType]);
+
+        const data = (await axios.get(READ_ALL_URL(id)[readType])).data;
+        return data;
+    } catch (error) {
+        console.error(error);
+        return error;
+    }
+}
+
+export async function deleteRecord(id, deleteType) {
+    try {
+        const status = (await axios.delete(DELETE(id)[deleteType])).status;
+        if (status)
+            return status;
+        throw Error;
+    } catch (error) {
+        console.error(error);
+        return error;
+    }
+}
 
 //----------------------------- Account -----------------------------
 export async function createAccount(user) {
@@ -14,56 +40,12 @@ export async function createAccount(user) {
     }
 }
 
-export async function readAllAccount() {
-    try {
-        const data = (await axios.get('/account/Quan-ly-tai-khoan')).data;
-        return data;
-    } catch (error) {
-        console.error(error);
-        return error;
-    }
-}
-
 export async function updateAccountStatus(user) {
     try {
         const status = (await axios.patch(`/account/Quan-ly-tai-khoan/${user.accountCode}/Chinh-sua-trang-thai-tai-khoan`, user)).status;
-        if(status)
+        if (status)
             return status;
         throw Error;
-    } catch (error) {
-        console.error(error);
-        return error;
-    }
-}
-
-// export async function deleteAccounts(userId) {
-    //     try {
-        //         const data = (await axios.get('/account/Quan-ly-tai-khoan')).data;
-        //         return data;
-        //     } catch (error) {
-            //         console.error(error);
-            //         return error;
-            //     }
-            // }
-            
-export async function deleteAccount(userId) {
-    try {
-        const status = (await axios.delete('/account/Quan-ly-tai-khoan/'+userId)).status;
-        if(status)
-            return status;
-        throw Error;
-    } catch (error) {
-        console.error(error);
-        return error;
-    }
-}
-
-
-//----------------------------- Product -----------------------------
-export async function readAllProducts() {
-    try {
-        const data = (await axios.get('/product')).data;
-        return data;
     } catch (error) {
         console.error(error);
         return error;

@@ -84,6 +84,33 @@ const productController = {
     }
   },
 
+  // [GET] /client/product/relative/:idProduct
+  relativeProduct: async (req, res) => {
+    try {
+      const id = req.params.productId;
+
+      console.log(id);
+
+      const products = await Product.findOne({ _id: id }).populate(
+        "relativeProduct"
+      );
+
+      let result = [];
+
+      if (products.relativeProduct.length > 0) {
+        result = products.relativeProduct;
+      }
+
+      res.json(result);
+    } catch (err) {
+      res.status(500).json({
+        code: 500,
+        message: "Quá trình hiển thị sản phẩm gặp lỗi. Vui lòng thử lại sau.",
+        error: err.message,
+      });
+    }
+  },
+
   // [GET] client/tag/search
   searchTag: async (req, res) => {
     try {
