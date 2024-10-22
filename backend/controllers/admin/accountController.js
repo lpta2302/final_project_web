@@ -1,4 +1,5 @@
 import account from "../../models/account.model.js";
+import wishList from "../../models/wishlist.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"; // Thêm dòng này để sử dụng JWT
 const secretKey = "your-secret-key"; // Khóa bí mật để ký JWT, bạn nên lưu khóa này ở file .env
@@ -31,6 +32,15 @@ const accountController = {
         });
 
         await _account.save();
+        console.log("a");
+
+        const wishlist = new wishList({
+          client: {
+            _id: _account._id,
+          },
+        });
+
+        await wishlist.save();
 
         // Tạo JWT
         const token = jwt.sign(
@@ -116,8 +126,18 @@ const accountController = {
   // [DELETE] // Xóa tài khoản
   deleteAccount: async (req, res) => {
     try {
-      const result_Delete = await account.deleteOne({
+      const _account = await account.findOne({
         accountCode: req.params.accountCode,
+      });
+
+      await account.deleteOne({
+        accountCode: req.params.accountCode,
+      });
+
+      console.log(_account);
+
+      await wishList.deleteOne({
+        client: _account._id,
       });
 
       res.status(200).json(true);

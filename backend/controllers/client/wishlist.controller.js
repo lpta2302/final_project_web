@@ -31,38 +31,6 @@ const wishListController = {
     }
   },
 
-  // [POST] client/wishList/create-wishList
-  createWishList: async (req, res) => {
-    try {
-      const wishlist = new wishList({
-        client: {
-          _id: req.params.id,
-        },
-      });
-
-      const isExist = await wishList.findOne({
-        client: {
-          _id: req.params.id,
-        },
-      });
-
-      console.log(isExist);
-
-      if (isExist) {
-        return res.status(400).json({
-          code: 400,
-          message: "Danh sách yêu thích đã tồn tại.",
-        });
-      }
-
-      await wishlist.save();
-
-      res.status(200).json(wishlist);
-    } catch (err) {
-      res.status(500).json(false);
-    }
-  },
-
   // [PATCH] client/wishList/my-wishList/del-from-wishList
   delfromWishList: async (req, res) => {
     try {

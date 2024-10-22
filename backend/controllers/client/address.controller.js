@@ -1,5 +1,5 @@
 import AccountModel from "../../models/account.model.js";
-import Address from "../../models/adress.model.js";
+import Address from "../../models/address.model.js";
 
 // [GET] /client/address
 export const index = async (req, res) => {
