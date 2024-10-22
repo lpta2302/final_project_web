@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Typography, Tabs, Tab, Box, List, ListItem, ListItemText, Button, Paper, Grid } from '@mui/material';
+import { Container, Typography, Tabs, Tab, Box, ListItem, ListItemText, Button, Paper, Grid } from '@mui/material';
 
 const sampleOrders = {
   processing: [
@@ -27,11 +27,11 @@ const ManagePersonalOrder = () => {
     }
 
     return (
-      <List>
+      <Grid container spacing={2}>
         {orders.map((order) => {
           const { products, date } = order;
           const displayProduct = products[0];
-          const additionalProductsCount = products.length > 1 ? `và ${products.length - 1} sản phẩm khác` : '';
+          const additionalProductsCount = products.length > 1 ? `và ${products.length - 1} sản phẩm khác` : ' ';
 
           const statusStyles = {
             'Đã giao hàng': { backgroundColor: 'lightgreen', color: 'darkgreen' },
@@ -40,45 +40,47 @@ const ManagePersonalOrder = () => {
           };
 
           return (
-            <Paper key={order.id} sx={{ mb: 2, p: 2 }}>
-              <ListItem sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <ListItemText
-                  primary={displayProduct}
-                  secondary={additionalProductsCount}
-                  sx={{ textAlign: 'center' }}
-                />
-                
-                <Grid container justifyContent="center" alignItems="center" sx={{ mt: 1 }}>
-                  <Grid item xs={12} sx={{ textAlign: 'center' }}>
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      {date}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        ...statusStyles[order.status],
-                        borderRadius: '4px',
-                        p: 0.5,
-                        fontWeight: 'bold',
-                        textAlign: 'center',
-                        marginTop: 1,
-                        display: 'inline-block',
-                      }}
-                    >
-                      {order.status}
-                    </Typography>
+            <Grid item xs={6} key={order.id}>
+              <Paper sx={{ p: 2, borderRadius: "16px", height: "100%" }} elevation={10}>
+                <ListItem sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <ListItemText
+                    primary={displayProduct}
+                    secondary={additionalProductsCount}
+                    sx={{ textAlign: 'center' }}
+                  />
+                  
+                  <Grid container justifyContent="center" alignItems="center" sx={{ mt: 1 }}>
+                    <Grid item xs={12} sx={{ textAlign: 'center' }}>
+                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                        {date}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          ...statusStyles[order.status],
+                          borderRadius: '4px',
+                          p: 0.5,
+                          fontWeight: 'bold',
+                          textAlign: 'center',
+                          marginTop: 1,
+                          display: 'inline-block',
+                        }}
+                      >
+                        {order.status}
+                      </Typography>
+                    </Grid>
                   </Grid>
-                </Grid>
-                
-                <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1, width: '100%' }}>
-                  <Button variant="outlined" color="primary" sx={{ mr: 1 }}>Xem chi tiết</Button>
-                  {currentTab === 0 && <Button variant="outlined" color="error">Hủy đơn hàng</Button>}
-                </Box>
-              </ListItem>
-            </Paper>
+                  
+                  <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1, width: '100%' }}>
+                    <Button variant="outlined" color="primary" sx={{ mr: 1 }}>Xem chi tiết</Button>
+                    {currentTab === 0 && <Button variant="outlined" color="error">Hủy đơn hàng</Button>}
+                  </Box>
+                </ListItem>
+              </Paper>
+            </Grid>
           );
         })}
-      </List>
+      </Grid>
     );
   };
 
