@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { Container, Typography, Tabs, Tab, Box, ListItem, ListItemText, Button, Paper, Grid } from '@mui/material';
+import { Container, Typography, Tabs, Tab, Box, List, ListItem, ListItemText, Button, Paper, Grid } from '@mui/material';
 
 const sampleOrders = {
   processing: [
-    { id: 1, orderCode: 'DH001', date: '2024-01-10', total: '500,000 VND', status: 'Đang xử lý', products: ['Sản phẩm A', 'Sản phẩm B', 'Sản phẩm C'] },
-    { id: 2, orderCode: 'DH002', date: '2024-01-12', total: '1,200,000 VND', status: 'Đang xử lý', products: ['Sản phẩm D'] }
+    { id: 1, orderCode: 'DH001', date: '10-01-2024', total: '500,000 VND', status: 'Đang xử lý', products: ['Sản phẩm A', 'Sản phẩm B', 'Sản phẩm C'] },
+    { id: 2, orderCode: 'DH002', date: '12-01-2024', total: '1,200,000 VND', status: 'Đang xử lý', products: ['Sản phẩm D'] }
   ],
   purchased: [
-    { id: 3, orderCode: 'DH003', date: '2023-12-10', total: '2,000,000 VND', status: 'Đã giao hàng', products: ['Sản phẩm E', 'Sản phẩm F'] }
+    { id: 3, orderCode: 'DH003', date: '12-10-2023', total: '2,000,000 VND', status: 'Đã giao hàng', products: ['Sản phẩm E', 'Sản phẩm F'] }
   ],
   cancelled: [
-    { id: 4, orderCode: 'DH004', date: '2023-12-05', total: '300,000 VND', status: 'Đã hủy', products: ['Sản phẩm G'] }
+    { id: 4, orderCode: 'DH004', date: '05-12-2023', total: '300,000 VND', status: 'Đã hủy', products: ['Sản phẩm G'] }
   ]
 };
 
@@ -27,11 +27,11 @@ const ManagePersonalOrder = () => {
     }
 
     return (
-      <Grid container spacing={2}>
+      <List>
         {orders.map((order) => {
           const { products, date } = order;
           const displayProduct = products[0];
-          const additionalProductsCount = products.length > 1 ? `và ${products.length - 1} sản phẩm khác` : ' ';
+          const additionalProductsCount = products.length > 1 ? `và ${products.length - 1} sản phẩm khác` : '';
 
           const statusStyles = {
             'Đã giao hàng': { backgroundColor: 'lightgreen', color: 'darkgreen' },
@@ -40,47 +40,54 @@ const ManagePersonalOrder = () => {
           };
 
           return (
-            <Grid item xs={6} key={order.id}>
-              <Paper sx={{ p: 2, borderRadius: "16px", height: "100%" }} elevation={10}>
-                <ListItem sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <ListItemText
-                    primary={displayProduct}
-                    secondary={additionalProductsCount}
-                    sx={{ textAlign: 'center' }}
-                  />
-                  
-                  <Grid container justifyContent="center" alignItems="center" sx={{ mt: 1 }}>
-                    <Grid item xs={12} sx={{ textAlign: 'center' }}>
-                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                        {date}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          ...statusStyles[order.status],
-                          borderRadius: '4px',
-                          p: 0.5,
-                          fontWeight: 'bold',
-                          textAlign: 'center',
-                          marginTop: 1,
-                          display: 'inline-block',
-                        }}
-                      >
-                        {order.status}
-                      </Typography>
-                    </Grid>
+            <Paper key={order.id} sx={{ mb: 2, p: 2 }} elevation={10}>
+              <ListItem>
+                <Grid container spacing={2} alignItems="center" justifyContent="center">
+                  {/* Product Info */}
+                  <Grid item xs={12} sm={4} sx={{ textAlign: 'center' }}>
+                    <ListItemText
+                      primary={displayProduct}
+                      secondary={additionalProductsCount}
+                    />
                   </Grid>
                   
-                  <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1, width: '100%' }}>
-                    <Button variant="outlined" color="primary" sx={{ mr: 1 }}>Xem chi tiết</Button>
-                    {currentTab === 0 && <Button variant="outlined" color="error">Hủy đơn hàng</Button>}
-                  </Box>
-                </ListItem>
-              </Paper>
-            </Grid>
+                  {/* Date and Status */}
+                  <Grid item xs={12} sm={4} sx={{ textAlign: 'center' }}>
+                    <Typography variant="body2" color="text.secondary">
+                      {date}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        ...statusStyles[order.status],
+                        borderRadius: '4px',
+                        p: 0.5,
+                        fontWeight: 'bold',
+                        display: 'inline-block',
+                        mt: 1,
+                      }}
+                    >
+                      {order.status}
+                    </Typography>
+                  </Grid>
+                  
+                  {/* Action Buttons */}
+                  <Grid item xs={12} sm={4} sx={{ textAlign: 'center' }}>
+                    <Button fullWidth variant="outlined" color="primary" sx={{ mb: 1 }}>
+                      Xem chi tiết
+                    </Button>
+                    {currentTab === 0 && (
+                      <Button fullWidth variant="outlined" color="error">
+                        Hủy đơn hàng
+                      </Button>
+                    )}
+                  </Grid>
+                </Grid>
+              </ListItem>
+            </Paper>
           );
         })}
-      </Grid>
+      </List>
     );
   };
 
