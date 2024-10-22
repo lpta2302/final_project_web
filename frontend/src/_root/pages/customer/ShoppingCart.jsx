@@ -119,12 +119,7 @@ const CartPage = () => {
           <Typography variant="h6" sx={{ fontSize: "30px" }} gutterBottom>
             Giỏ hàng của bạn hiện đang trống!
           </Typography>
-          <Button
-            component={Link}
-            to="/homepageclient"
-            variant="contained"
-            color="primary"
-          >
+          <Button component={Link} to="/" variant="contained" color="primary">
             Quay lại Trang chủ
           </Button>
         </Box>

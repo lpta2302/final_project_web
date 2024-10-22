@@ -16,6 +16,7 @@ import { adminNav, customerNav } from "./constance/constance.jsx";
 import HomePageClient from "./_root/pages/customer/HomePageClient.jsx";
 import GridProduct from "./_root/pages/customer/GridProduct.jsx";
 import CheckoutPage from "./_root/pages/customer/Checkoutpage.jsx";
+import CustomerProfile from "./_root/pages/customer/CustomProfile.jsx";
 const theme = createTheme({
   palette: {
     white: {
@@ -83,6 +84,7 @@ function App() {
 
           <Route path="/productgrid" element={<GridProduct />} />
           <Route path="/checkoutpage" element={<CheckoutPage />} />
+          <Route path="/profile" element={<CustomerProfile />} />
         </Routes>
       </ThemeProvider>
     </Container>
