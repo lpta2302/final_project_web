@@ -7,7 +7,7 @@ const router = Router();
 
 router.post("/add", controller.add);
 router.patch("/delete", controller.deleteProduct);
-router.post("/showCart", controller.showCart);
+router.get("/showCart/:userId", controller.showCart);
 router.patch("/my-cart/:id", cartController.updateCart);
 
 export default router;
