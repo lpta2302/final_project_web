@@ -58,7 +58,7 @@ export const add = async (req, res) => {
   }
 };
 
-// [PATCH] /cart/delete
+// [DELETE] /cart/delete
 export const deleteProduct = async (req, res) => {
   try {
     const { client, spec } = req.body;
@@ -78,27 +78,22 @@ export const deleteProduct = async (req, res) => {
   }
 };
 
-// [POST] /cart/showCart
+// [POST] /cart/showCart/:userId
 export const showCart = async (req, res) => {
   try {
-    const { client } = req.body;
+    const userId = req.params.userId;
 
     // Tìm giỏ hàng của client và populate thông tin spec
-    const cart = await Cart.findOne({ client: client }).populate({
-      path: "cartItems.spec", // Populate spec trong cartItems
-      select: "products price", // Chỉ lấy trường 'products' từ spec
+    const cart = await Cart.findOne({ client: userId }).populate({
+      path: "cartItems.spec",
       populate: {
         path: "products", // Populate product trong spec
-        select: "productName", // Chỉ lấy 'productName' và 'price' từ product
-        model: "product", // Tên của mô hình product
+        select: "productName price", // Chọn các trường cần thiết từ product
       },
     });
 
-    // const spec_ = ... .populate
-    // const productName = spec_ . populate
-
     if (!cart) {
-      return res.status(404).json({ message: false });
+      return res.status(404).json(false);
     }
 
     res.status(200).json(cart);

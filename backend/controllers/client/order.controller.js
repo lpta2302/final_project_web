@@ -9,11 +9,7 @@ export const index = async (req, res) => {
 
     res.json(order);
   } catch (error) {
-    res.status(400).json({
-      code: 400,
-      message: "Đã có lỗi xảy ra",
-      error: error.message,
-    });
+    res.status(400).json(false);
   }
 };
 
@@ -23,13 +19,9 @@ export const add = async (req, res) => {
     const record = new Order(req.body);
     await record.save();
 
-    res.json(true);
+    res.json(record);
   } catch (error) {
-    res.status(400).json({
-      code: 400,
-      message: "Đã có lỗi xảy ra",
-      error: error.message,
-    });
+    res.status(400).json(false);
   }
 };
 
@@ -44,14 +36,18 @@ export const edit = async (req, res) => {
     if (address) updateData.address = address;
     if (voucher) updateData.voucher = voucher;
 
-    await Order.updateOne({ _id: orderId }, updateData);
-
-    res.json(true);
-  } catch (error) {
-    res.status(400).json({
-      code: 400,
-      message: error,
+    // Cập nhật đơn hàng với dữ liệu đã kiểm tra
+    const record = await Order.findByIdAndUpdate(orderId, updateData, {
+      new: true,
     });
+
+    if (!record) {
+      return res.status(404).json(false);
+    }
+
+    res.json(record);
+  } catch (error) {
+    res.status(400).json(false);
   }
 };
 
@@ -66,10 +62,7 @@ export const detail = async (req, res) => {
 
     res.json(record);
   } catch (error) {
-    res.status(400).json({
-      code: 400,
-      message: error,
-    });
+    res.status(400).json(false);
   }
 };
 
@@ -86,19 +79,11 @@ export const deleteOrder = async (req, res) => {
 
     if (record.processStatus === "pending") {
       await Order.deleteOne({ _id: orderId });
-      return res.json({ success: true, message: "Order successfully deleted" });
+      return res.json(true);
     } else {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Only pending orders can be deleted",
-        });
+      return res.status(400).json(false);
     }
   } catch (error) {
-    res.status(400).json({
-      code: 400,
-      message: error,
-    });
+    res.status(400).json(false);
   }
 };

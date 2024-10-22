@@ -40,24 +40,20 @@ const reviewController = {
 
       await review.save();
 
-      return res.status(200).json({
-        data: review,
-      });
+      return res.status(200).json(review);
     } catch (err) {
-      return res.status(500).json({ message: false });
+      return res.status(500).json(false);
     }
   },
 
   // [DELETE] /client/reviews/:id
   delReviews: async (req, res) => {
     try {
-      const review = await Review.findByIdAndDelete(req.params.id);
+      await Review.findByIdAndDelete(req.params.id);
 
-      res.status(200).json({
-        data: review,
-      });
+      res.status(200).json(true);
     } catch (err) {
-      return res.status(500).json({ message: false });
+      return res.status(500).json(false);
     }
   },
 
@@ -79,11 +75,9 @@ const reviewController = {
         new: true,
       });
 
-      return res.status(200).json({
-        data: review,
-      });
+      return res.status(200).json(review);
     } catch (err) {
-      return res.status(500).json({ message: false });
+      return res.status(500).json(false);
     }
   },
 };
