@@ -17,7 +17,7 @@ export const add = async (req, res) => {
 
     res.status(200).json(record);
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };
 
@@ -26,11 +26,13 @@ export const edit = async (req, res) => {
   try {
     const id = req.params.id;
 
-    await Voucher.updateOne({ _id: id }, req.body);
+    const result = await Voucher.findOneAndUpdate({ _id: id }, req.body, {
+      new: true,
+    });
 
-    res.json(req.body);
+    res.json(result);
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };
 
@@ -41,9 +43,9 @@ export const deleteVoucher = async (req, res) => {
 
     const voucher = await Voucher.deleteOne({ _id: id });
 
-    res.status(200).json(voucher);
+    res.status(200).json(true);
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };
 
@@ -89,6 +91,6 @@ export const search = async (req, res) => {
     // Trả về kết quả
     res.status(200).json(voucher);
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };

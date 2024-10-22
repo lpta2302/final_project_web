@@ -9,7 +9,7 @@ const specController = {
       res.status(200).json(specsList);
     } catch (err) {
       // Xử lý lỗi
-      res.status(500).json({ message: false });
+      res.status(500).json(false);
     }
   },
 
@@ -22,7 +22,7 @@ const specController = {
       const specExist = await Spec.findOne({ specCode: specCode });
 
       if (specExist) {
-        return res.status(400).json({ message: false });
+        return res.status(400).json(false);
       }
 
       const newSpec = new Spec({
@@ -52,20 +52,24 @@ const specController = {
       );
       const spec = await Spec.findByIdAndDelete(req.params.specId);
 
-      res.status(200).json(spec);
+      res.status(200).json(true);
     } catch (err) {
-      res.status(500).json({ message: false });
+      res.status(500).json(false);
     }
   },
 
   // [PATCH] /spec
   updateSpec: async (req, res) => {
     try {
-      await Spec.updateOne({ _id: req.params.specId }, { $set: req.body });
+      const result = await Spec.findOneAndUpdate(
+        { _id: req.params.specId },
+        { $set: req.body },
+        { new: true }
+      );
 
-      res.status(200).json(req.body);
+      res.status(200).json(result);
     } catch (err) {
-      res.status(500).json({ message: false });
+      res.status(500).json(false);
     }
   },
 
@@ -141,7 +145,7 @@ const specController = {
       res.status(200).json(filteredSpecifications);
     } catch (err) {
       // Xử lý lỗi
-      res.status(500).json({ message: false });
+      res.status(500).json(false);
     }
   },
 };

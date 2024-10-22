@@ -53,9 +53,11 @@ export const editProduct = async (req, res) => {
     console.log(id);
     console.log(req.body);
 
-    await Product.updateOne({ _id: id }, req.body);
+    const result = await Product.findOneAndUpdate({ _id: id }, req.body, {
+      new: true,
+    });
 
-    res.status(200).json(req.body);
+    res.status(200).json(result);
   } catch (error) {
     res.status(400).json({
       message: false,
@@ -73,7 +75,7 @@ export const deleteProduct = async (req, res) => {
 
     const product = await Product.findByIdAndDelete(req.params.id);
 
-    res.status(200).json(product);
+    res.status(200).json(true);
   } catch (error) {
     res.status(400).json({
       message: false,
@@ -132,6 +134,6 @@ export const search = async (req, res) => {
     // Trả về danh sách sản phẩm
     res.status(200).json(products);
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };

@@ -54,7 +54,7 @@ export const add = async (req, res) => {
       return res.status(200).json(record);
     }
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };
 
@@ -74,7 +74,7 @@ export const deleteProduct = async (req, res) => {
 
     res.status(200).json(true);
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };
 
@@ -103,7 +103,7 @@ export const showCart = async (req, res) => {
 
     res.status(200).json(cart);
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };
 
@@ -116,10 +116,7 @@ const cartController = {
       let cart = await Cart.findById(cartId);
 
       if (!cart) {
-        return res.status(404).json({
-          code: 404,
-          message: "Giỏ hàng không tồn tại.",
-        });
+        return res.status(400).json(false);
       }
 
       if (cartItems && cartItems.length > 0) {
@@ -155,10 +152,7 @@ const cartController = {
         });
 
         if (!voucherExist) {
-          return res.status(404).json({
-            code: 404,
-            message: "Voucher không tồn tại.",
-          });
+          return res.status(400).json(false);
         }
 
         // Add the voucher to the cart if it doesn't already exist
@@ -172,7 +166,7 @@ const cartController = {
 
       return res.status(200).json(cart);
     } catch (err) {
-      res.status(500).json({ message: false });
+      res.status(500).json(false);
     }
   },
 };

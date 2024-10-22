@@ -10,7 +10,7 @@ export const index = async (req, res) => {
 
     res.json(address);
   } catch (error) {
-    res.status(400).json({ message: false });
+    res.status(500).json(false);
   }
 };
 
@@ -40,7 +40,7 @@ export const post = async (req, res) => {
 
     res.status(200).json(record);
   } catch (error) {
-    res.status(400).json({ message: false });
+    res.status(500).json(false);
   }
 };
 
@@ -53,7 +53,7 @@ export const edit = async (req, res) => {
 
     res.status(200).json(req.body);
   } catch (error) {
-    res.status(400).json({ message: false });
+    res.status(500).json(false);
   }
 };
 
@@ -82,6 +82,6 @@ export const deleteAddress = async (req, res) => {
 
     res.status(200).json(true);
   } catch (error) {
-    res.status(400).json({ message: false });
+    res.status(500).json(false);
   }
 };

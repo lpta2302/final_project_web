@@ -10,7 +10,7 @@ const accountController = {
       const isAccount = await account.findOne({ email: req.body.email });
 
       if (isAccount) {
-        return res.status(400).json({ message: false });
+        return res.status(400).json(false);
       } else {
         // Mã hóa mật khẩu trước khi lưu
         const saltRounds = 10; // Số rounds salt
@@ -45,7 +45,7 @@ const accountController = {
       }
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: false });
+      res.status(500).json(false);
     }
   },
 
@@ -57,7 +57,7 @@ const accountController = {
       const _account = await account.findOne({ username });
 
       if (!_account) {
-        return res.status(400).json({ message: false });
+        return res.status(400).json(false);
       }
 
       const isMatch = await bcrypt.compare(password, _account.password);
@@ -69,10 +69,10 @@ const accountController = {
           return res.status(200).json(_account);
         }
       } else {
-        return res.status(400).json({ message: false });
+        return res.status(400).json(false);
       }
     } catch (err) {
-      res.status(500).json({ message: false });
+      res.status(500).json(false);
     }
   },
 
@@ -83,7 +83,7 @@ const accountController = {
       const listAccount = await account.find();
       res.status(200).json(listAccount);
     } catch (err) {
-      res.status(500).json({ message: false });
+      res.status(500).json(false);
     }
   },
 
@@ -94,24 +94,22 @@ const accountController = {
       const accountDetail = await account.findOne({ accountCode: accountCode });
       res.status(200).json(accountDetail);
     } catch (err) {
-      res.status(500).json({ message: false });
+      res.status(500).json(false);
     }
   },
 
   // [PATCH] // Chỉnh sửa trạng thái của tài khoản
   accountUpdateStatus: async (req, res) => {
     try {
-      const accountDetails = await account.findOne({
-        accountCode: req.params.accountCode,
-      });
+      const updatedAccount = await account.findOneAndUpdate(
+        { accountCode: req.params.accountCode }, // Điều kiện tìm kiếm
+        { accountStatus: req.body.accountStatus }, // Cập nhật giá trị
+        { new: true } // Trả về document đã được cập nhật
+      );
 
-      const accountStatus = await accountDetails.updateOne({
-        accountStatus: req.body.accountStatus,
-      });
-
-      res.status(200).json(accountStatus);
+      res.status(200).json(updatedAccount);
     } catch (err) {
-      res.status(500).json({ message: false });
+      res.status(500).json(false);
     }
   },
 
@@ -122,9 +120,9 @@ const accountController = {
         accountCode: req.params.accountCode,
       });
 
-      res.status(200).json(result_Delete);
+      res.status(200).json(true);
     } catch (err) {
-      res.status(500).json({ message: false });
+      res.status(500).json(false);
     }
   },
 
@@ -173,7 +171,7 @@ const accountController = {
 
       res.status(200).json(_accounts);
     } catch (err) {
-      res.status(500).json({ message: false });
+      res.status(500).json(false);
     }
   },
 };

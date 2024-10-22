@@ -6,11 +6,9 @@ const reviewController = {
     try {
       const reviews = await Review.find({ spec: req.params.id });
 
-      res.status(200).json({
-        data: reviews,
-      });
+      res.status(200).json(reviews);
     } catch (err) {
-      return res.status(500).json({ message: false });
+      return res.status(500).json(false);
     }
   },
 
@@ -19,11 +17,9 @@ const reviewController = {
     try {
       const detailReviews = await Review.findByIdAndDelete(req.params.id);
 
-      res.status(200).json({
-        data: detailReviews,
-      });
+      res.status(200).json(true);
     } catch (err) {
-      return res.status(500).json({ message: false });
+      return res.status(500).json(false);
     }
   },
 
@@ -62,7 +58,7 @@ const reviewController = {
       // Trả về các reviews đã được lọc và sắp xếp
       return res.status(200).json(filteredReviews);
     } catch (err) {
-      return res.status(500).json({ message: false });
+      return res.status(500).json(false);
     }
   },
 };
