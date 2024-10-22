@@ -29,6 +29,8 @@ import {
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Stack from "@mui/material/Stack";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
 // Sample data for products
 const products = [
@@ -377,6 +379,12 @@ const BannerSlider = () => {
 };
 
 const ProductCard = ({ product, handleAddToCart }) => {
+  const [liked, setLiked] = useState(false);
+
+  const handleLikeClick = () => {
+    setLiked(!liked); // Thay đổi trạng thái thích/bỏ thích
+  };
+
   return (
     <div style={{ padding: "0 10px", marginBottom: "10px" }}>
       <Link
@@ -435,9 +443,17 @@ const ProductCard = ({ product, handleAddToCart }) => {
                 sx={{ mt: 1 }}
               />
             </Typography>
+            {/* Thêm nút thích */}
           </CardContent>
         </Card>
       </Link>
+      <IconButton
+        onClick={handleLikeClick}
+        color={liked ? "error" : "default"} // Màu đỏ nếu đã thích
+        sx={{ display: "block", margin: "0 auto" }}
+      >
+        {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+      </IconButton>
     </div>
   );
 };

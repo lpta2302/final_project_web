@@ -35,7 +35,22 @@ const CartPage = () => {
       image:
         "https://www.tnc.com.vn/uploads/product/XUYEN_102020/DELL-S2421HN.jpg",
     },
-    // Add more items if needed...
+    {
+      id: 2,
+      name: "Router TP-Link Archer AX23 (1275 Mbps/ Wifi 6/ 2.4/5 GHz)",
+      price: 149000,
+      quantity: 1,
+      image:
+        "https://www.tnc.com.vn/uploads/product/XUYEN_102020/DELL-S2421HN.jpg",
+    },
+    {
+      id: 3,
+      name: "Router TP-Link Archer AX23 (1275 Mbps/ Wifi 6/ 2.4/5 GHz)",
+      price: 149000,
+      quantity: 1,
+      image:
+        "https://www.tnc.com.vn/uploads/product/XUYEN_102020/DELL-S2421HN.jpg",
+    },
   ]);
 
   const [discountCode, setDiscountCode] = useState("");

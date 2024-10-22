@@ -17,6 +17,7 @@ import HomePageClient from "./_root/pages/customer/HomePageClient.jsx";
 import GridProduct from "./_root/pages/customer/GridProduct.jsx";
 import CheckoutPage from "./_root/pages/customer/Checkoutpage.jsx";
 import CustomerProfile from "./_root/pages/customer/CustomProfile.jsx";
+import VoucherPage from "./_root/pages/customer/Voucher.jsx";
 const theme = createTheme({
   palette: {
     white: {

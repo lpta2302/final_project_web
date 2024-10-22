@@ -38,7 +38,7 @@ const appBar = {
     {
       title: "Khuyến mãi",
       icon: VoucherIcon,
-      path: "/vouchers",
+      path: "/voucherspage",
     },
     {
       title: "Đơn của tôi",

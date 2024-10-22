@@ -22,6 +22,7 @@ import {
 } from "../_root/pages";
 import Orders from "../_root/pages/customer/Orders";
 import CartPage from "../_root/pages/customer/ShoppingCart";
+import VoucherPage from "../_root/pages/customer/Voucher";
 
 export const adminNav = [
   {
@@ -78,8 +79,8 @@ export const customerNav = [
   {
     title: "Khuyến mãi",
     icon: <VoucherIcon />,
-    segment: "/vouchers",
-    element: <Voucher />,
+    segment: "/voucherspage",
+    element: <VoucherPage />,
   },
   {
     title: "Đơn của tôi",
