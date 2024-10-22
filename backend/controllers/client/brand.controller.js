@@ -5,12 +5,9 @@ export const index = async (req, res) => {
   try {
     const brand = await _Brand.find({});
 
-    res.json(brand);
+    res.status(200).json(brand);
   } catch (error) {
-    res.status(400).json({
-      code: 400,
-      error: error.message,
-    });
+    res.status(500).json({ message: false });
   }
 };
 
@@ -23,12 +20,9 @@ export const getProduct = async (req, res) => {
     const brand = await _Brand.findOne({ _id: idBrand }).populate("products");
     console.log(brand);
 
-    res.json(brand);
+    res.status(200).json(brand);
   } catch (error) {
-    res.status(400).json({
-      code: 400,
-      error: error.message,
-    });
+    res.status(500).json({ message: false });
   }
 };
 
@@ -48,11 +42,8 @@ export const search = async (req, res) => {
 
     const brands = await _Brand.find(searchConditions).populate("products");
 
-    res.json(brands);
+    res.status(200).json(brands);
   } catch (error) {
-    res.status(400).json({
-      code: 400,
-      error: error.message,
-    });
+    res.status(500).json({ message: false });
   }
 };

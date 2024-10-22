@@ -4,7 +4,7 @@ import Category from "../../models/category.model.js";
 export const index = async (req, res) => {
   const category = await Category.find({});
 
-  res.json(category);
+  res.status(200).json(category);
 };
 
 // [POST] /category/add
@@ -16,25 +16,15 @@ export const add = async (req, res) => {
       categoryCode: req.body.categoryCode,
     });
     if (exitCategory) {
-      res.json({
-        code: 500,
-        message: "Mã category đã tồn tại!",
-      });
-      return;
+      return res.status(400).json({ message: false });
     }
 
     const record = new Category(req.body);
     await record.save();
 
-    res.json({
-      code: 200,
-      message: "Tạo category thành công",
-    });
+    res.json(record);
   } catch (error) {
-    res.status(500).json({
-      code: 500,
-      message: "Thêm category thất bại",
-    });
+    res.status(500).json({ message: false });
   }
 };
 
@@ -45,15 +35,9 @@ export const edit = async (req, res) => {
 
     await Category.updateOne({ _id: id }, req.body);
 
-    res.json({
-      code: 200,
-      message: "Sửa category thành công",
-    });
+    res.status(200).json(req.body);
   } catch (error) {
-    res.status(500).json({
-      code: 500,
-      message: "Sửa category thất bại",
-    });
+    res.status(500).json({ message: false });
   }
 };
 
@@ -62,17 +46,11 @@ export const deleteCategory = async (req, res) => {
   try {
     const id = req.params.id;
 
-    await Category.deleteOne({ _id: id });
+    const category = await Category.deleteOne({ _id: id });
 
-    res.json({
-      code: 200,
-      message: "Xóa category thành công",
-    });
+    res.status(200).json(category);
   } catch (error) {
-    res.status(500).json({
-      code: 500,
-      message: "Xóa category thất bại",
-    });
+    res.status(500).json({ message: false });
   }
 };
 
@@ -99,11 +77,8 @@ export const search = async (req, res) => {
     const categories = await Category.find(filter);
 
     // Trả về kết quả
-    res.json(categories);
+    res.status(200).json(categories);
   } catch (error) {
-    res.status(500).json({
-      code: 500,
-      message: "Tìm kiếm category thất bại",
-    });
+    res.status(500).json({ message: false });
   }
 };

@@ -4,7 +4,7 @@ import Order from "../../models/order.model.js";
 export const index = async (req, res) => {
   const order = await Order.find({});
 
-  res.json(order);
+  res.status(200).json(order);
 };
 
 // [GET] /order/detail/:orderId
@@ -13,12 +13,9 @@ export const detail = async (req, res) => {
     const orderId = req.params.orderId;
 
     const order = await Order.findOne({ _id: orderId });
-    res.json(order);
+    res.status(200).json(order);
   } catch (error) {
-    res.status(500).json({
-      code: 500,
-      message: "Thêm category thất bại",
-    });
+    res.status(500).json({ message: false });
   }
 };
 
@@ -28,12 +25,9 @@ export const orderOfUser = async (req, res) => {
     const userId = req.params.userId;
 
     const order = await Order.find({ userId: userId });
-    res.json(order);
+    res.status(200).json(order);
   } catch (error) {
-    res.status(500).json({
-      code: 500,
-      message: "Thêm category thất bại",
-    });
+    res.status(500).json({ message: false });
   }
 };
 
@@ -44,12 +38,9 @@ export const edit = async (req, res) => {
 
     await Order.updateOne({ _id: orderId }, { processStatus: "completed" });
 
-    res.json(true);
+    res.status(200).json(true);
   } catch (error) {
-    res.status(500).json({
-      code: 500,
-      message: "Sửa đơn hàng thất bại",
-    });
+    res.status(500).json({ message: false });
   }
 };
 
@@ -58,17 +49,11 @@ export const deleteOrder = async (req, res) => {
   try {
     const id = req.params.id;
 
-    await Category.deleteOne({ _id: id });
+    const category = await Category.deleteOne({ _id: id });
 
-    res.json({
-      code: 200,
-      message: "Xóa category thành công",
-    });
+    res.status(200).json(category);
   } catch (error) {
-    res.status(500).json({
-      code: 500,
-      message: "Xóa category thất bại",
-    });
+    res.status(500).json({ message: false });
   }
 };
 
@@ -95,11 +80,8 @@ export const search = async (req, res) => {
     const categories = await Category.find(filter);
 
     // Trả về kết quả
-    res.json(categories);
+    res.status(200).json(categories);
   } catch (error) {
-    res.status(500).json({
-      code: 500,
-      message: "Tìm kiếm category thất bại",
-    });
+    res.status(500).json({ message: false });
   }
 };

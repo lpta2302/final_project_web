@@ -35,6 +35,8 @@ export const add = async (req, res) => {
         { client: client }, // Điều kiện để tìm giỏ hàng
         { cartItems: exitCart.cartItems } // Cập nhật lại danh sách cartItems sau khi thêm hoặc tăng số lượng
       );
+
+      return res.status(200).json(true);
     } else {
       // Nếu giỏ hàng chưa tồn tại, tạo mới giỏ hàng với sản phẩm đầu tiên
       const newCart = {
@@ -49,18 +51,10 @@ export const add = async (req, res) => {
 
       const record = new Cart(newCart);
       await record.save();
+      return res.status(200).json(record);
     }
-
-    res.json({
-      code: 200,
-      message: "Thêm sản phẩm thành công",
-    });
   } catch (error) {
-    res.status(400).json({
-      code: 400,
-      message: "Thêm sản phẩm thất bại",
-      error: error.message,
-    });
+    res.status(500).json({ message: false });
   }
 };
 
@@ -78,16 +72,9 @@ export const deleteProduct = async (req, res) => {
       }
     );
 
-    res.json({
-      code: 200,
-      message: "Xóa sản phẩm thành công",
-    });
+    res.status(200).json(true);
   } catch (error) {
-    res.status(400).json({
-      code: 400,
-      message: "Xóa sản phẩm thất bại",
-      error: error.message,
-    });
+    res.status(500).json({ message: false });
   }
 };
 
@@ -111,23 +98,12 @@ export const showCart = async (req, res) => {
     // const productName = spec_ . populate
 
     if (!cart) {
-      return res.status(404).json({
-        code: 404,
-        message: "Giỏ hàng không tồn tại",
-      });
+      return res.status(404).json({ message: false });
     }
 
-    res.json({
-      code: 200,
-      message: "Lấy thông tin giỏ hàng thành công",
-      cart: cart,
-    });
+    res.status(200).json(cart);
   } catch (error) {
-    res.status(500).json({
-      code: 500,
-      message: "Lỗi khi lấy thông tin giỏ hàng",
-      error: error.message,
-    });
+    res.status(500).json({ message: false });
   }
 };
 
@@ -168,7 +144,6 @@ const cartController = {
 
       // Add voucher to the cart if voucherId is provided
       if (voucherId) {
-        console.log("Tam");
         const voucherExist = await Voucher.findOne({
           _id: voucherId,
           clients: {
@@ -195,17 +170,9 @@ const cartController = {
       // Save the updated cart
       await cart.save();
 
-      return res.status(200).json({
-        code: 200,
-        message: "Giỏ hàng đã được cập nhật thành công.",
-        data: cart,
-      });
+      return res.status(200).json(cart);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message: "Quá trình cập nhật giỏ hàng gặp lỗi. Vui lòng thử lại.",
-        error: err.message,
-      });
+      res.status(500).json({ message: false });
     }
   },
 };

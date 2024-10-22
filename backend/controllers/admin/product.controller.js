@@ -5,7 +5,7 @@ import Brand from "../../models/brand.model.js";
 export const index = async (req, res) => {
   const product = await Product.find({});
 
-  res.json(product);
+  res.status(200).json(product);
 };
 
 // [POST] /products/postProduct
@@ -18,25 +18,19 @@ export const postProduct = async (req, res) => {
     });
 
     if (exitProductCode) {
-      res.json({
-        code: 400,
-        message: "Mã sản phẩm đã tồn tại",
+      return res.status(400).json({
+        message: false,
       });
-      return;
     }
 
     const savedProduct = await record.save();
     const brand = await Brand.findById(req.body.brand);
     await brand.updateOne({ $push: { products: savedProduct._id } });
 
-    res.json({
-      code: 200,
-      message: "Tạo sản phẩm thành công",
-    });
+    res.status(200).json(savedProduct);
   } catch (error) {
-    res.json({
-      code: 400,
-      message: "Tên sản phẩm đã tồn tại",
+    return res.status(400).json({
+      message: false,
     });
   }
 };
@@ -50,14 +44,10 @@ export const editProduct = async (req, res) => {
 
     await Product.updateOne({ _id: id }, req.body);
 
-    res.json({
-      code: 200,
-      message: "Sửa sản phẩm thành công",
-    });
+    res.status(200).json(req.body);
   } catch (error) {
-    res.json({
-      code: 400,
-      message: "Sửa sản phẩm thất bại",
+    res.status(400).json({
+      message: false,
     });
   }
 };
@@ -70,16 +60,12 @@ export const deleteProduct = async (req, res) => {
       { $pull: { products: req.params.id } }
     );
 
-    await Product.findByIdAndDelete(req.params.id);
+    const product = await Product.findByIdAndDelete(req.params.id);
 
-    res.json({
-      code: 200,
-      message: "Xóa sản phẩm thành công",
-    });
+    res.status(200).json(product);
   } catch (error) {
-    res.json({
-      code: 400,
-      message: "Xóa sản phẩm thất bại",
+    res.status(400).json({
+      message: false,
     });
   }
 };
@@ -92,14 +78,10 @@ export const detail = async (req, res) => {
 
     const record = await Product.findOne({ _id: id });
 
-    res.json({
-      code: 200,
-      record: record,
-    });
+    res.status(200).json(record);
   } catch (error) {
-    res.json({
-      code: 400,
-      message: "Đã có lỗi xảy ra",
+    res.status(400).json({
+      message: false,
     });
   }
 };
@@ -137,8 +119,8 @@ export const search = async (req, res) => {
     const products = await Product.find(filter);
 
     // Trả về danh sách sản phẩm
-    res.json(products);
+    res.status(200).json(products);
   } catch (error) {
-    res.status(500).json({ message: "Có lỗi xảy ra", error });
+    res.status(500).json({ message: false });
   }
 };

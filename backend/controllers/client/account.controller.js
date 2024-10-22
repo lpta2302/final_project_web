@@ -6,18 +6,9 @@ const accountController = {
     try {
       const client = await Account.findById(req.params.id);
 
-      res.status(200).json({
-        code: 200,
-        message: "Hiển thị thông tin cá nhân thành công.",
-        data: client,
-      });
+      res.status(200).json(client);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message:
-          "Quá trình hiển thị thông tin cá nhân gặp lỗi. Vui lòng thử lại.",
-        error: err.message,
-      });
+      res.status(500).json({ message: false });
     }
   },
 
@@ -48,17 +39,9 @@ const accountController = {
         new: true,
       });
 
-      res.status(200).json({
-        code: 200,
-        message: "Sửa thông tin cá nhân thành công.",
-        data: client,
-      });
+      res.status(200).json(client);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message: "Quá trình cập nhật thông tin gặp lỗi. Vui lòng thử lại.",
-        error: err.message,
-      });
+      res.status(500).json({ message: false });
     }
   },
 };

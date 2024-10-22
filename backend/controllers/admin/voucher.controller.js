@@ -4,7 +4,7 @@ import Voucher from "../../models/voucher.model.js";
 export const index = async (req, res) => {
   const voucher = await Voucher.find({});
 
-  res.json(voucher);
+  res.status(200).json(voucher);
 };
 
 // [POST] /voucher/add
@@ -15,15 +15,9 @@ export const add = async (req, res) => {
     const record = new Voucher(req.body);
     await record.save();
 
-    res.json({
-      code: 200,
-      message: "Tạo voucher thành công",
-    });
+    res.status(200).json(record);
   } catch (error) {
-    res.status(500).json({
-      code: 500,
-      message: "Thêm voucher thất bại",
-    });
+    res.status(500).json({ message: false });
   }
 };
 
@@ -34,15 +28,9 @@ export const edit = async (req, res) => {
 
     await Voucher.updateOne({ _id: id }, req.body);
 
-    res.json({
-      code: 200,
-      message: "Sửa voucher thành công",
-    });
+    res.json(req.body);
   } catch (error) {
-    res.status(500).json({
-      code: 500,
-      message: "Sửa voucher thất bại",
-    });
+    res.status(500).json({ message: false });
   }
 };
 
@@ -51,17 +39,11 @@ export const deleteVoucher = async (req, res) => {
   try {
     const id = req.params.id;
 
-    await Voucher.deleteOne({ _id: id });
+    const voucher = await Voucher.deleteOne({ _id: id });
 
-    res.json({
-      code: 200,
-      message: "Xóa voucher thành công",
-    });
+    res.status(200).json(voucher);
   } catch (error) {
-    res.status(500).json({
-      code: 500,
-      message: "Xóa voucher thất bại",
-    });
+    res.status(500).json({ message: false });
   }
 };
 
@@ -105,11 +87,8 @@ export const search = async (req, res) => {
     const voucher = await Voucher.find(filter);
 
     // Trả về kết quả
-    res.json(voucher);
+    res.status(200).json(voucher);
   } catch (error) {
-    res.status(500).json({
-      code: 500,
-      message: "Tìm kiếm voucher thất bại",
-    });
+    res.status(500).json({ message: false });
   }
 };

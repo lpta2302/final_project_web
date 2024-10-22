@@ -10,10 +10,7 @@ export const index = async (req, res) => {
 
     res.json(address);
   } catch (error) {
-    res.status(400).json({
-      code: 400,
-      error: error.message,
-    });
+    res.status(400).json({ message: false });
   }
 };
 
@@ -41,16 +38,9 @@ export const post = async (req, res) => {
       }
     );
 
-    res.status(200).json({
-      code: 200,
-      message: "Tạo địa chỉ mới thành công",
-    });
+    res.status(200).json(record);
   } catch (error) {
-    res.status(400).json({
-      code: 400,
-      error: error.message,
-      message: "Tạo địa chỉ mới thất bại",
-    });
+    res.status(400).json({ message: false });
   }
 };
 
@@ -61,16 +51,9 @@ export const edit = async (req, res) => {
 
     await Address.updateOne({ _id: id }, req.body);
 
-    res.status(200).json({
-      code: 200,
-      message: "Cập nhập địa chỉ thành công",
-    });
+    res.status(200).json(req.body);
   } catch (error) {
-    res.status(400).json({
-      code: 400,
-      error: error.message,
-      message: "Cập nhập địa chỉ mới thất bại",
-    });
+    res.status(400).json({ message: false });
   }
 };
 
@@ -81,10 +64,7 @@ export const deleteAddress = async (req, res) => {
     const address = await Address.findOne({ _id: req.params.id });
 
     if (!address) {
-      return res.status(404).json({
-        code: 404,
-        message: "Địa chỉ không tồn tại",
-      });
+      return res.status(404).json({ message: false });
     }
 
     // Xóa ObjectId của địa chỉ khỏi tài khoản
@@ -100,15 +80,8 @@ export const deleteAddress = async (req, res) => {
     // Xóa địa chỉ
     await Address.deleteOne({ _id: req.params.id });
 
-    res.status(200).json({
-      code: 200,
-      message: "Xóa địa chỉ thành công",
-    });
+    res.status(200).json(true);
   } catch (error) {
-    res.status(400).json({
-      code: 400,
-      error: error.message,
-      message: "Xóa địa chỉ thất bại",
-    });
+    res.status(400).json({ message: false });
   }
 };

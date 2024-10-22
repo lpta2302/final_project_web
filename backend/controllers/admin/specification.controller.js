@@ -6,19 +6,10 @@ const specController = {
   showSpec: async (req, res) => {
     try {
       const specsList = await Spec.find();
-      res.status(200).json({
-        code: 200,
-        message: "Hiển thị thành công",
-        specsList: specsList,
-      });
+      res.status(200).json(specsList);
     } catch (err) {
       // Xử lý lỗi
-      res.status(500).json({
-        code: 500,
-        message:
-          "Quá trình hiển thị thông số kỹ thuật bị lỗi. Vui lòng thử lại.",
-        error: err.message,
-      });
+      res.status(500).json({ message: false });
     }
   },
 
@@ -31,10 +22,7 @@ const specController = {
       const specExist = await Spec.findOne({ specCode: specCode });
 
       if (specExist) {
-        return res.status(400).json({
-          code: 400,
-          message: "Thông số đã tồn tại. Vui lòng hãy tạo cái mới",
-        });
+        return res.status(400).json({ message: false });
       }
 
       const newSpec = new Spec({
@@ -49,16 +37,9 @@ const specController = {
       const productOrigin = await Product.findById(products);
       await productOrigin.updateOne({ $push: { specs: newSpec._id } });
 
-      res.status(200).json({
-        code: 200,
-        message: "Thêm thành công",
-      });
+      res.status(200).json(newSpec);
     } catch (err) {
-      res.json({
-        code: 500,
-        message: "Quá trình thêm thông số kỹ thuật bị lỗi. Vui lòng thử lại.",
-        error: err.message,
-      });
+      res.json({ message: false });
     }
   },
 
@@ -69,18 +50,11 @@ const specController = {
         { specs: req.params.specId }, // Tìm
         { $pull: { specs: req.params.specId } } // Lấy ra khỏi array
       );
-      await Spec.findByIdAndDelete(req.params.specId);
+      const spec = await Spec.findByIdAndDelete(req.params.specId);
 
-      res.status(200).json({
-        code: 200,
-        message: "Xóa thông số kỹ thuật thành công",
-      });
+      res.status(200).json(spec);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message: "Quá trình xóa thông số kỹ thuật bị lỗi. Vui lòng thử lại.",
-        error: err.message,
-      });
+      res.status(500).json({ message: false });
     }
   },
 
@@ -89,16 +63,9 @@ const specController = {
     try {
       await Spec.updateOne({ _id: req.params.specId }, { $set: req.body });
 
-      res.status(200).json({
-        code: 200,
-        message: "Cập nhật thông số kỹ thuật thành công",
-      });
+      res.status(200).json(req.body);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message: "Quá trình sửa thông số kỹ thuật bị lỗi. Vui lòng thử lại.",
-        error: err.message,
-      });
+      res.status(500).json({ message: false });
     }
   },
 
@@ -135,11 +102,11 @@ const specController = {
       // Điều kiện lọc cho giá (nếu có phạm vi cụ thể)
       let priceQuery = {};
       if (priceRange !== "All") {
-        const [minPrice, maxPrice] = priceRange.split("-");
+        const [minPrice, maxPrice] = priceRange.split("-").map(Number);
         priceQuery = {
           price: {
-            $gte: mongoose.Types.Decimal128.fromString(minPrice),
-            $lte: mongoose.Types.Decimal128.fromString(maxPrice),
+            $gte: minPrice,
+            $lte: maxPrice,
           },
         };
       }
@@ -171,19 +138,10 @@ const specController = {
       });
 
       // Trả về kết quả tìm kiếm
-      res.status(200).json({
-        code: 200,
-        message: "Tìm kiếm thành công",
-        data: filteredSpecifications, // Trả về filteredSpecifications thay vì _specifications
-      });
+      res.status(200).json(filteredSpecifications);
     } catch (err) {
       // Xử lý lỗi
-      res.status(500).json({
-        code: 500,
-        message:
-          "Quá trình tìm kiếm thông số kỹ thuật bị lỗi. Vui lòng thử lại.",
-        error: err.message,
-      });
+      res.status(500).json({ message: false });
     }
   },
 };

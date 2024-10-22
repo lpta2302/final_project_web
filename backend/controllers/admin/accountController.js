@@ -10,10 +10,7 @@ const accountController = {
       const isAccount = await account.findOne({ email: req.body.email });
 
       if (isAccount) {
-        return res.status(400).json({
-          code: 400,
-          message: "Email đã tồn tại",
-        });
+        return res.status(400).json({ message: false });
       } else {
         // Mã hóa mật khẩu trước khi lưu
         const saltRounds = 10; // Số rounds salt
@@ -44,18 +41,11 @@ const accountController = {
           }
         );
 
-        res.status(200).json({
-          code: 200,
-          message: "Đăng ký thành công",
-          token: token,
-        });
+        res.status(200).json(token);
       }
     } catch (error) {
       console.error(error);
-      res.status(500).json({
-        code: 500,
-        message: "Đã có lỗi xảy ra trong quá trình đăng ký",
-      });
+      res.status(500).json({ message: false });
     }
   },
 
@@ -67,28 +57,22 @@ const accountController = {
       const _account = await account.findOne({ username });
 
       if (!_account) {
-        return res
-          .status(400)
-          .json("Tài khoản không tồn tại. Vui lòng tiến hành đăng ký");
+        return res.status(400).json({ message: false });
       }
 
       const isMatch = await bcrypt.compare(password, _account.password);
 
       if (isMatch && _account.accountStatus == "active") {
-        if (account.accountRole == "client") {
-          return res.status(200).json("Bạn đăng nhập thành công.");
+        if (_account.accountRole == "client") {
+          return res.status(200).json(_account);
         } else {
-          return res
-            .status(200)
-            .json("Chào mừng ngài quay trở lại, administrator");
+          return res.status(200).json(_account);
         }
       } else {
-        return res.status(400).json("Sai Mật Khẩu. Vui lòng nhập lại");
+        return res.status(400).json({ message: false });
       }
     } catch (err) {
-      res
-        .status(500)
-        .json("Quá trình đăng nhập thất bại, vui lòng thử lại. " + err);
+      res.status(500).json({ message: false });
     }
   },
 
@@ -99,11 +83,7 @@ const accountController = {
       const listAccount = await account.find();
       res.status(200).json(listAccount);
     } catch (err) {
-      res
-        .status(500)
-        .json(
-          "Không thể hiển thị danh sách tài khoản, vui lòng thử lại. " + err
-        );
+      res.status(500).json({ message: false });
     }
   },
 
@@ -114,11 +94,7 @@ const accountController = {
       const accountDetail = await account.findOne({ accountCode: accountCode });
       res.status(200).json(accountDetail);
     } catch (err) {
-      res
-        .status(500)
-        .json(
-          "Không thể hiển thị chi tiết tài khoản, vui lòng thử lại. " + err
-        );
+      res.status(500).json({ message: false });
     }
   },
 
@@ -135,11 +111,7 @@ const accountController = {
 
       res.status(200).json(accountStatus);
     } catch (err) {
-      res
-        .status(500)
-        .json(
-          "Không thể cập nhật trạng thái tài khoản, vui lòng thử lại. " + err
-        );
+      res.status(500).json({ message: false });
     }
   },
 
@@ -150,9 +122,9 @@ const accountController = {
         accountCode: req.params.accountCode,
       });
 
-      res.status(200).json("Đã xóa thành công" + result_Delete);
+      res.status(200).json(result_Delete);
     } catch (err) {
-      res.status(500).json("Quá trình xóa gặp lỗi, vui lòng thử lại. " + err);
+      res.status(500).json({ message: false });
     }
   },
 
@@ -201,7 +173,7 @@ const accountController = {
 
       res.status(200).json(_accounts);
     } catch (err) {
-      res.status(500).json("Quá trình tìm kiếm xảy ra lỗi, vui lòng thử lại.");
+      res.status(500).json({ message: false });
     }
   },
 };
