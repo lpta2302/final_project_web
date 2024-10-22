@@ -8,7 +8,7 @@ const accountController = {
 
       res.status(200).json(client);
     } catch (err) {
-      res.status(500).json({ message: false });
+      res.status(500).json(false);
     }
   },
 
@@ -41,7 +41,7 @@ const accountController = {
 
       res.status(200).json(client);
     } catch (err) {
-      res.status(500).json({ message: false });
+      res.status(500).json(false);
     }
   },
 };
