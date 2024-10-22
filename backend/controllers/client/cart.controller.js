@@ -54,11 +54,11 @@ export const add = async (req, res) => {
       return res.status(200).json(record);
     }
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };
 
-// [PATCH] /cart/delete
+// [DELETE] /cart/delete
 export const deleteProduct = async (req, res) => {
   try {
     const { client, spec } = req.body;
@@ -74,7 +74,7 @@ export const deleteProduct = async (req, res) => {
 
     res.status(200).json(true);
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };
 
@@ -94,11 +94,8 @@ export const showCart = async (req, res) => {
       },
     });
 
-    // const spec_ = ... .populate
-    // const productName = spec_ . populate
-
     if (!cart) {
-      return res.status(404).json({ message: false });
+      return res.status(404).json(false);
     }
 
     res.status(200).json(cart);

@@ -7,7 +7,7 @@ export const index = async (req, res) => {
 
     res.status(200).json(brand);
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };
 
@@ -22,7 +22,7 @@ export const getProduct = async (req, res) => {
 
     res.status(200).json(brand);
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };
 
@@ -44,6 +44,6 @@ export const search = async (req, res) => {
 
     res.status(200).json(brands);
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };

@@ -10,7 +10,7 @@ export const index = async (req, res) => {
 
     res.json(address);
   } catch (error) {
-    res.status(400).json({ message: false });
+    res.status(400).json(false);
   }
 };
 
@@ -40,7 +40,7 @@ export const post = async (req, res) => {
 
     res.status(200).json(record);
   } catch (error) {
-    res.status(400).json({ message: false });
+    res.status(400).json(false);
   }
 };
 
@@ -49,11 +49,11 @@ export const edit = async (req, res) => {
   try {
     const id = req.params.id;
 
-    await Address.updateOne({ _id: id }, req.body);
+    const record = await Address.findByIdAndUpdate({ _id: id }, req.body);
 
-    res.status(200).json(req.body);
+    res.status(200).json(record);
   } catch (error) {
-    res.status(400).json({ message: false });
+    res.status(400).json(false);
   }
 };
 
@@ -64,7 +64,7 @@ export const deleteAddress = async (req, res) => {
     const address = await Address.findOne({ _id: req.params.id });
 
     if (!address) {
-      return res.status(404).json({ message: false });
+      return res.status(404).json(false);
     }
 
     // Xóa ObjectId của địa chỉ khỏi tài khoản
@@ -82,6 +82,6 @@ export const deleteAddress = async (req, res) => {
 
     res.status(200).json(true);
   } catch (error) {
-    res.status(400).json({ message: false });
+    res.status(400).json(false);
   }
 };
