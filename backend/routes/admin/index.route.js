@@ -12,11 +12,11 @@ import carouselRoutes from "./carousel.route.js";
 import reviewRoutes from "./reviews.route.js";
 
 export default (app) => {
-  app.use("/product", authenticateJWT, productRoutes);
+  app.use("/product", productRoutes);
   app.use("/account", accountRoutes);
   app.use("/auth", authRoutes);
-  app.use("/category", authenticateJWT, categoryRoutes);
-  app.use("/tag", authenticateJWT, tagRoutes);
+  app.use("/category", categoryRoutes);
+  app.use("/tag", tagRoutes);
   app.use("/category", categoryRoutes);
   app.use("/spec", specRoutes);
   app.use("/brand", brandRoutes);

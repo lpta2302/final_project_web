@@ -11,32 +11,48 @@ export const index = async (req, res) => {
 // [POST] /products/postProduct
 export const postProduct = async (req, res) => {
   try {
-    const record = new Product(req.body);
-
-    const exitProductCode = await Product.findOne({
+    // Kiểm tra nếu productCode đã tồn tại
+    const existingProductCode = await Product.findOne({
       productCode: req.body.productCode,
     });
 
-    if (exitProductCode) {
-      res.json({
+    if (existingProductCode) {
+      return res.status(400).json({
         code: 400,
         message: "Mã sản phẩm đã tồn tại",
       });
-      return;
     }
 
+    // Kiểm tra nếu productName đã tồn tại
+    const existingProductName = await Product.findOne({
+      productName: req.body.productName,
+    });
+
+    if (existingProductName) {
+      return res.status(400).json({
+        code: 400,
+        message: "Tên sản phẩm đã tồn tại",
+      });
+    }
+
+    // Tạo sản phẩm mới
+    const record = new Product(req.body);
     const savedProduct = await record.save();
+
+    // Thêm sản phẩm vào danh sách sản phẩm của thương hiệu
     const brand = await Brand.findById(req.body.brand);
     await brand.updateOne({ $push: { products: savedProduct._id } });
 
-    res.json({
+    res.status(200).json({
       code: 200,
       message: "Tạo sản phẩm thành công",
+      product: savedProduct, // Có thể trả về thông tin sản phẩm vừa tạo
     });
   } catch (error) {
-    res.json({
-      code: 400,
-      message: "Tên sản phẩm đã tồn tại",
+    res.status(500).json({
+      code: 500,
+      message: "Lỗi hệ thống, không thể tạo sản phẩm",
+      error: error.message, // Trả về chi tiết lỗi (tuỳ chọn)
     });
   }
 };

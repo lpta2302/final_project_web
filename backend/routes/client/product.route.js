@@ -16,4 +16,6 @@ productRouter.get("/details/:id", productController.showDetailsProduct);
 // Xem sản phẩm
 productRouter.get("/", productController.showProduct);
 
+productRouter.get("/relative/:productId", productController.relativeProduct);
+
 export default productRouter;
