@@ -33,7 +33,7 @@ export async function createAccount(user) {
 
     // Nếu backend trả về false, ném lỗi đăng ký thất bại
     if (!data || data === false) {
-      throw new Error("Đăng ký thất bại. Email đã tồn tại.");
+      throw new Error("Đăng ký thất bại.");
     }
 
     return data; // Trả về token khi thành công

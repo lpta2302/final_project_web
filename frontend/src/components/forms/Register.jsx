@@ -1,4 +1,4 @@
-import { forwardRef, useState } from "react";
+import { useState } from "react";
 import {
   Container,
   Paper,
@@ -11,10 +11,9 @@ import {
   Link,
   Grid2,
 } from "@mui/material";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PropTypes from "prop-types";
 import { useCreateAccount } from "../../api/queries";
-import { enqueueSnackbar as toaster } from 'notistack';
+import { enqueueSnackbar as toaster } from "notistack";
 import LoadingOverlay from "../dialogs/LoadingOverlay";
 
 const Register = ({ setModalType }) => {
@@ -97,31 +96,31 @@ const Register = ({ setModalType }) => {
     });
 
     setIsLoading(true);
-try {
-  const response = await register(inputs);
+    try {
+      const response = await register(inputs);
 
-  // Kiểm tra nếu response là false (thất bại) hoặc không có token
-  if (!response || typeof response !== 'string') {
-    toaster('Đăng ký thất bại. Vui lòng thử lại.', { variant: 'error' });
-  } else {
-    // Nếu nhận được token, đăng ký thành công
-    toaster('Đăng ký thành công!', { variant: 'success' });
+      // Kiểm tra nếu response là false (thất bại) hoặc không có token
+      if (!response || typeof response !== "string") {
+        toaster("Tên tài khoản hoặc email đã tồn tại. Vui lòng thử lại.", {
+          variant: "error",
+        });
+      } else {
+        // Nếu nhận được token, đăng ký thành công
+        toaster("Đăng ký thành công!", { variant: "success" });
 
-    // Lưu token vào localStorage
-    localStorage.setItem('token', response);
-  }
-} catch (error) {
-  console.error('Lỗi trong quá trình đăng ký:', error);
-  toaster('Đã xảy ra lỗi. Vui lòng thử lại.', { variant: 'error' });
-} finally {
-  setIsLoading(false);
-}
-
-
+        // Lưu token vào localStorage
+        localStorage.setItem("token", response);
+      }
+    } catch (error) {
+      console.error("Lỗi trong quá trình đăng ký:", error);
+      toaster("Đã xảy ra lỗi. Vui lòng thử lại.", { variant: "error" });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <Container maxWidth="sm" sx={{ my: 8, overflow: 'auto' }}>
+    <Container maxWidth="sm" sx={{ my: 8, overflow: "auto" }}>
       <Paper
         elevation={10}
         sx={{
