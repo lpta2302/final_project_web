@@ -46,8 +46,14 @@ export const postProduct = async (req, res) => {
     await brand.updateOne({ $push: { products: savedProduct._id } });
 
     // Thêm tag vào bảng tag
-    const tag = await Tag.findById(req.body.tag);
-    await tag.updateOne({ $push: { products: savedProduct._id } });
+    if (Array.isArray(req.body.tag) && req.body.tag.length > 0) {
+      for (const tagId of req.body.tag) {
+        const tag = await Tag.findById(tagId);
+        if (tag) {
+          await tag.updateOne({ $push: { products: savedProduct._id } });
+        }
+      }
+    }
 
     res.status(200).json(savedProduct);
   } catch (error) {
