@@ -3,6 +3,7 @@ import Brand from "../../models/brand.model.js";
 import Category from "../../models/category.model.js";
 import SeenProd from "../../models/seen.model.js";
 import Specs from "../../models/specification.model.js";
+import Tag from "../../models/tag.model.js";
 import wishList from "../../models/wishlist.model.js";
 
 // [GET] /products
@@ -20,7 +21,7 @@ export const postProduct = async (req, res) => {
       productCode: req.body.productCode,
     });
 
-    if (exitProductCode) {
+    if (existingProductCode) {
       return res.status(400).json(false);
     }
 
@@ -44,8 +45,13 @@ export const postProduct = async (req, res) => {
     const brand = await Brand.findById(req.body.brand);
     await brand.updateOne({ $push: { products: savedProduct._id } });
 
+    // Thêm tag vào bảng tag
+    const tag = await Tag.findById(req.body.tag);
+    await tag.updateOne({ $push: { products: savedProduct._id } });
+
     res.status(200).json(savedProduct);
   } catch (error) {
+    console.log(error);
     return res.status(400).json(false);
   }
 };
