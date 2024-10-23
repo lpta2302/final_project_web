@@ -75,7 +75,7 @@ export const editProduct = async (req, res) => {
   }
 };
 
-// [DELETE] /products/deleteProduct
+// [DELETE] /products/deleteProduct/:id
 export const deleteProduct = async (req, res) => {
   try {
     // Xóa brand
@@ -92,6 +92,12 @@ export const deleteProduct = async (req, res) => {
 
     // Xóa Seen Product
     await SeenProd.updateMany(
+      { products: req.params.id },
+      { $pull: { products: req.params.id } }
+    );
+
+    // Xóa Tag Product
+    await Tag.updateOne(
       { products: req.params.id },
       { $pull: { products: req.params.id } }
     );
