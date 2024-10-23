@@ -97,7 +97,7 @@ export const deleteProduct = async (req, res) => {
     );
 
     // Xóa Tag Product
-    await Tag.updateOne(
+    await Tag.updateMany(
       { products: req.params.id },
       { $pull: { products: req.params.id } }
     );
