@@ -10,6 +10,7 @@ import authRoutes from "./auth.route.js";
 import orderRoutes from "./order.route.js";
 import carouselRoutes from "./carousel.route.js";
 import reviewRoutes from "./reviews.route.js";
+import statsRoutes from "./stats.route.js";
 
 export default (app) => {
   app.use("/product", productRoutes);
@@ -24,4 +25,5 @@ export default (app) => {
   app.use("/order", orderRoutes);
   app.use("/carousel", carouselRoutes);
   app.use("/reviews", reviewRoutes);
+  app.use("/stats", statsRoutes);
 };

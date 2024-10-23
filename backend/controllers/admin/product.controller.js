@@ -181,3 +181,85 @@ export const search = async (req, res) => {
     res.status(500).json(false);
   }
 };
+
+// [GET] /stats/specs-per-product
+export const getProductSpecsStatistics = async (req, res) => {
+  try {
+    const sort = req.query.sort === "asc" ? 1 : -1;
+    const stats = await Product.aggregate([
+      {
+        $lookup: {
+          from: "specifications", // Bảng tham chiếu
+          localField: "specs", // Trường specs trong Product
+          foreignField: "_id", // Liên kết với _id trong specifications
+          as: "specifications", // Tên trường sẽ chứa các specs liên kết
+        },
+      },
+      {
+        $project: {
+          productName: 1,
+          specsCount: { $size: "$specifications" }, // Số lượng specs
+          specsIDs: "$specs", // Mảng chứa các specs ID
+        },
+      },
+      { $sort: { specsCount: sort } }, // Sắp xếp theo số lượng specs
+    ]);
+
+    res.status(200).json(stats);
+  } catch (err) {
+    res.status(500).json(false);
+  }
+};
+
+// [GET] /stats/product-discount
+export const getProductWithDiscountStatistics = async (req, res) => {
+  try {
+    const sort = req.query.sort === "asc" ? 1 : -1;
+    const stats = await Specs.aggregate([
+      {
+        $group: {
+          _id: {
+            $cond: {
+              if: { $gt: ["$discountPercentage", 0] },
+              then: "Discounted",
+              else: "No Discount",
+            },
+          }, // Nhóm theo có/không giảm giá
+          count: { $sum: 1 }, // Đếm số lượng sản phẩm
+          productIDs: { $push: "$products" }, // Mảng chứa các product ID có giảm giá
+        },
+      },
+      { $sort: { count: sort } }, // Sắp xếp theo số lượng
+    ]);
+
+    res.status(200).json(stats);
+  } catch (err) {
+    res.status(500).json(false);
+  }
+};
+
+// [GET] /stats/total-stock-value
+export const getTotalStockValue = async (req, res) => {
+  try {
+    const stats = await Specs.aggregate([
+      {
+        $group: {
+          _id: null, // Không nhóm theo trường nào cụ thể
+          totalStockValue: {
+            $sum: { $multiply: ["$price", "$stockQuantity"] },
+          }, // Tính tổng giá trị hàng tồn kho
+        },
+      },
+      {
+        $project: {
+          _id: 0, // Không hiển thị _id
+          totalStockValue: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json(stats);
+  } catch (err) {
+    res.status(500).json(false);
+  }
+};
