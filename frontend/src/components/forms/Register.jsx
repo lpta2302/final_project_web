@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PropTypes from "prop-types";
+import { useCreateAccount } from "../../api/queries";
 
 const Register = ({setModalType}) => {
   const [inputs, setInputs] = useState({
@@ -21,7 +22,7 @@ const Register = ({setModalType}) => {
     firstName: "",
     lastName: "",
     email: "",
-    phone: "",
+    phoneNumber: "",
     birthDate: "",
   });
   const [error, setError] = useState({
@@ -30,9 +31,11 @@ const Register = ({setModalType}) => {
     firstName: "",
     lastName: "",
     email: "",
-    phone: "",
+    phoneNumber: "",
   });
   const [isAgree, setIsAgree] = useState(false);
+
+  const {mutateAsync: register } = useCreateAccount();
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -47,7 +50,7 @@ const Register = ({setModalType}) => {
       firstName: "",
       lastName: "",
       email: "",
-      phone: "",
+      phoneNumber: "",
       birthDate: "",
     };
 
@@ -68,10 +71,10 @@ const Register = ({setModalType}) => {
     } else if (!/\S+@\S+\.\S+/.test(inputs.email)) {
       tempError.email = "Email không hợp lệ";
     }
-    if (!inputs.phone) {
-      tempError.phone = "Số điện thoại không được để trống";
-    } else if (!/^\d+$/.test(inputs.phone)) {
-      tempError.phone = "Số điện thoại không hợp lệ";
+    if (!inputs.phoneNumber) {
+      tempError.phoneNumber = "Số điện thoại không được để trống";
+    } else if (!/^\d+$/.test(inputs.phoneNumber)) {
+      tempError.phoneNumber = "Số điện thoại không hợp lệ";
     }
 
     if (Object.values(tempError).some((error) => error)) {
@@ -85,15 +88,18 @@ const Register = ({setModalType}) => {
       firstName: "",
       lastName: "",
       email: "",
-      phone: "",
+      phoneNumber: "",
       birthDate: "",
     });
+    const response = register(inputs);
+    console.log(response);
+    
     console.log("Đăng ký thành công với:", inputs);
   };
 
 
   return (
-    <Container maxWidth="sm" sx={{ my: 8 }}>
+    <Container  maxWidth="sm" sx={{ my: 8, overflow: 'auto' }}>
       <Paper
         elevation={10}
         sx={{
@@ -224,10 +230,10 @@ const Register = ({setModalType}) => {
             helperText={error.email}
           />
           <TextField
-            id="outlined-phone"
+            id="outlined-phoneNumber"
             label="Số điện thoại"
             type="tel"
-            name="phone"
+            name="phoneNumber"
             required
             fullWidth
             sx={{
@@ -235,10 +241,10 @@ const Register = ({setModalType}) => {
                 borderRadius: "12px",
               },
             }}
-            value={inputs.phone}
+            value={inputs.phoneNumber}
             onChange={handleChange}
-            error={!!error.phone}
-            helperText={error.phone}
+            error={!!error.phoneNumber}
+            helperText={error.phoneNumber}
           />
           <TextField
             id="outlined-birthdate"
