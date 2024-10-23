@@ -1,5 +1,8 @@
 import account from "../../models/account.model.js";
 import wishList from "../../models/wishlist.model.js";
+import Address from "../../models/address.model.js";
+import Review from "../../models/review.model.js";
+import Cart from "../../models/cart.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"; // Thêm dòng này để sử dụng JWT
 const secretKey = "your-secret-key"; // Khóa bí mật để ký JWT, bạn nên lưu khóa này ở file .env
@@ -136,6 +139,16 @@ const accountController = {
 
       console.log(_account);
 
+      // Xóa address
+      await Address.deleteMany({ accountId: _account._id });
+
+      // Xóa cart
+      await Cart.deleteOne({ client: _account._id });
+
+      // Xóa Review
+      await Review.deleteMany({ clientId: _account._id });
+
+      // Xóa wishlist
       await wishList.deleteOne({
         client: _account._id,
       });
