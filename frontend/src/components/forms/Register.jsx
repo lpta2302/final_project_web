@@ -25,7 +25,7 @@ const Register = ({ setModalType }) => {
     lastName: "",
     email: "",
     phoneNumber: "",
-    birthDate: "",
+    dateOfBirth: "",
   });
   const [error, setError] = useState({
     username: "",
@@ -54,7 +54,7 @@ const Register = ({ setModalType }) => {
       lastName: "",
       email: "",
       phoneNumber: "",
-      birthDate: "",
+      dateOfBirth: "",
     };
 
     // Validation
@@ -93,20 +93,31 @@ const Register = ({ setModalType }) => {
       lastName: "",
       email: "",
       phoneNumber: "",
-      birthDate: "",
+      dateOfBirth: "",
     });
 
-    try {
-      setIsLoading(true);
-      const response = await register(inputs);
-      toaster('Đăng ký thành công!', { variant: 'success' });
+    setIsLoading(true);
+try {
+  const response = await register(inputs);
 
-      setModalType('login');
-    } catch (err) {
-      toaster(err?.message || 'Đăng ký thất bại. Vui lòng thử lại.', { variant: 'error' });
-    } finally {
-      setIsLoading(false);
-    }
+  // Kiểm tra nếu response là false (thất bại) hoặc không có token
+  if (!response || typeof response !== 'string') {
+    toaster('Đăng ký thất bại. Vui lòng thử lại.', { variant: 'error' });
+  } else {
+    // Nếu nhận được token, đăng ký thành công
+    toaster('Đăng ký thành công!', { variant: 'success' });
+
+    // Lưu token vào localStorage
+    localStorage.setItem('token', response);
+  }
+} catch (error) {
+  console.error('Lỗi trong quá trình đăng ký:', error);
+  toaster('Đã xảy ra lỗi. Vui lòng thử lại.', { variant: 'error' });
+} finally {
+  setIsLoading(false);
+}
+
+
   };
 
   return (
@@ -259,17 +270,17 @@ const Register = ({ setModalType }) => {
             helperText={error.phoneNumber}
           />
           <TextField
-            id="outlined-birthdate"
+            id="outlined-dateOfBirth"
             label="Ngày sinh"
             type="date"
-            name="birthDate"
+            name="dateOfBirth"
             fullWidth
             sx={{
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
               },
             }}
-            value={inputs.birthDate}
+            value={inputs.dateOfBirth}
             onChange={handleChange}
             InputLabelProps={{
               shrink: true,
