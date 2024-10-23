@@ -33,6 +33,9 @@ const theme = createTheme({
     primary: {
       main: "#0672cb",
     },
+    error:{
+      main: "#f53935"
+    }
   },
   typography: {
     fontFamily: "inter",
@@ -72,6 +75,7 @@ function App() {
         <ThemeProvider theme={theme}>
           <SnackbarProvider
             anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+            autoHideDuration={3000}
           >
             <CssBaseline />
             <AuthProvider>
