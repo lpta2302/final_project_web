@@ -8,9 +8,6 @@ const wishListRouter = Router();
 // Thêm sản phẩm vào wishlist
 wishListRouter.post("/add-to-wishList/:id", wishListController.addToWishList);
 
-// Tạo danh sách yêu thích (wishlist)
-wishListRouter.post("/create-wishList/:id", wishListController.createWishList);
-
 // Tìm kiếm sản phẩm trong wishlist
 wishListRouter.get(
   "/my-wishList/:id/search",

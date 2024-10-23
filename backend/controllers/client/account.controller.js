@@ -8,7 +8,7 @@ const accountController = {
 
       res.status(200).json(client);
     } catch (err) {
-      res.status(500).json({ message: false });
+      res.status(500).json(false);
     }
   },
 
@@ -29,10 +29,7 @@ const accountController = {
       );
 
       if (!isValidOperation) {
-        return res.status(400).json({
-          code: 400,
-          message: "Trường thông tin cập nhật không hợp lệ. Vui lòng chọn lại.",
-        });
+        return res.status(400).json(true);
       }
 
       const client = await Account.findByIdAndUpdate(req.params.id, req.body, {
@@ -41,7 +38,7 @@ const accountController = {
 
       res.status(200).json(client);
     } catch (err) {
-      res.status(500).json({ message: false });
+      res.status(500).json(false);
     }
   },
 };

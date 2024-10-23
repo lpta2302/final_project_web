@@ -18,75 +18,23 @@ const wishListController = {
       );
 
       if (isExist) {
-        return res.status(400).json({
-          code: 400,
-          message: "Sản phẩm đã tồn tại trong danh sách yêu thích.",
-        });
+        return res.status(400).json(false);
       }
 
       myWishList.products.push(productId);
 
       await myWishList.save();
 
-      res.status(200).json({
-        code: 200,
-        message: "Thêm sản phẩm vào danh sách yêu thích thành công",
-        data: myWishList,
-      });
+      res.status(200).json(myWishList);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message:
-          "Quá trình thêm sản phẩm vào danh sách yêu thích gặp lỗi. Vui lòng thử lại.",
-        error: err.message,
-      });
-    }
-  },
-
-  // [POST] client/wishList/create-wishList
-  createWishList: async (req, res) => {
-    try {
-      const wishlist = new wishList({
-        client: {
-          _id: req.params.id,
-        },
-      });
-
-      const isExist = await wishList.findOne({
-        client: {
-          _id: req.params.id,
-        },
-      });
-
-      console.log(isExist);
-
-      if (isExist) {
-        return res.status(400).json({
-          code: 400,
-          message: "Danh sách yêu thích đã tồn tại.",
-        });
-      }
-
-      await wishlist.save();
-
-      res.status(200).json({
-        code: 200,
-        message: "Tạo danh sách yêu thích thành công.",
-        data: wishlist,
-      });
-    } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message: "Quá trình tạo danh sách bị lỗi. Vui lòng thử lại",
-        error: err.message,
-      });
+      res.status(500).json(false);
     }
   },
 
   // [PATCH] client/wishList/my-wishList/del-from-wishList
   delfromWishList: async (req, res) => {
     try {
-      const result = await wishList.updateOne(
+      const result = await wishList.findOneAndUpdate(
         {
           client: req.params.id,
         },
@@ -97,18 +45,9 @@ const wishListController = {
         }
       );
 
-      res.status(200).json({
-        code: 200,
-        message: "Xóa sản phẩm ra khỏi danh sách yêu thích thành công.",
-        data: result,
-      });
+      res.status(200).json(result);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message:
-          "Quá trình xóa sản phẩm ra khỏi danh sách yêu thích bị lỗi. Vui lòng thử lại",
-        error: err.message,
-      });
+      res.status(500).json(false);
     }
   },
 
@@ -121,18 +60,9 @@ const wishListController = {
         })
         .populate("products");
 
-      res.status(200).json({
-        code: 200,
-        message: "Hiển thị các sản phẩm trong danh sách yêu thích thành công.",
-        data: products,
-      });
+      res.status(200).json(products);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message:
-          "Quá trình hiển thị sản phẩm trong danh sách yêu thích bị lỗi. Vui lòng thử lại",
-        error: err.message,
-      });
+      res.status(500).json(false);
     }
   },
 
@@ -175,17 +105,9 @@ const wishListController = {
         }
       });
 
-      res.status(200).json({
-        code: 200,
-        message: "Tìm kiếm sản phẩm thành công",
-        data: products, // Trả về danh sách sản phẩm tìm được
-      });
+      res.status(200).json(products);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message: "Quá trình tìm kiếm sản phẩm gặp lỗi. Vui lòng thử lại",
-        error: err.message,
-      });
+      res.status(500).json(false);
     }
   },
 };

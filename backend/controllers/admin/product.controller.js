@@ -1,5 +1,10 @@
 import Product from "../../models/product.model.js";
 import Brand from "../../models/brand.model.js";
+import Category from "../../models/category.model.js";
+import SeenProd from "../../models/seen.model.js";
+import Specs from "../../models/specification.model.js";
+import Tag from "../../models/tag.model.js";
+import wishList from "../../models/wishlist.model.js";
 
 // [GET] /products
 export const index = async (req, res) => {
@@ -16,7 +21,7 @@ export const postProduct = async (req, res) => {
       productCode: req.body.productCode,
     });
 
-    if (exitProductCode) {
+    if (existingProductCode) {
       return res.status(400).json(false);
     }
 
@@ -40,8 +45,19 @@ export const postProduct = async (req, res) => {
     const brand = await Brand.findById(req.body.brand);
     await brand.updateOne({ $push: { products: savedProduct._id } });
 
+    // Thêm tag vào bảng tag
+    if (Array.isArray(req.body.tag) && req.body.tag.length > 0) {
+      for (const tagId of req.body.tag) {
+        const tag = await Tag.findById(tagId);
+        if (tag) {
+          await tag.updateOne({ $push: { products: savedProduct._id } });
+        }
+      }
+    }
+
     res.status(200).json(savedProduct);
   } catch (error) {
+    console.log(error);
     return res.status(400).json(false);
   }
 };
@@ -53,9 +69,11 @@ export const editProduct = async (req, res) => {
     console.log(id);
     console.log(req.body);
 
-    await Product.updateOne({ _id: id }, req.body);
+    const result = await Product.findOneAndUpdate({ _id: id }, req.body, {
+      new: true,
+    });
 
-    res.status(200).json(req.body);
+    res.status(200).json(result);
   } catch (error) {
     res.status(400).json({
       message: false,
@@ -63,17 +81,45 @@ export const editProduct = async (req, res) => {
   }
 };
 
-// [DELETE] /products/deleteProduct
+// [DELETE] /products/deleteProduct/:id
 export const deleteProduct = async (req, res) => {
   try {
+    // Xóa brand
     await Brand.updateOne(
+      { products: req.params.id },
+      { $pull: { products: req.params.id } }
+    );
+
+    // Xóa Category
+    await Category.updateMany(
+      { products: req.params.id },
+      { $pull: { products: req.params.id } }
+    );
+
+    // Xóa Seen Product
+    await SeenProd.updateMany(
+      { products: req.params.id },
+      { $pull: { products: req.params.id } }
+    );
+
+    // Xóa Tag Product
+    await Tag.updateMany(
+      { products: req.params.id },
+      { $pull: { products: req.params.id } }
+    );
+
+    // Xóa Specs
+    await Specs.deleteMany({ products: req.params.id });
+
+    // Xóa WishList
+    await wishList.updateMany(
       { products: req.params.id },
       { $pull: { products: req.params.id } }
     );
 
     const product = await Product.findByIdAndDelete(req.params.id);
 
-    res.status(200).json(product);
+    res.status(200).json(true);
   } catch (error) {
     res.status(400).json({
       message: false,
@@ -132,6 +178,6 @@ export const search = async (req, res) => {
     // Trả về danh sách sản phẩm
     res.status(200).json(products);
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };

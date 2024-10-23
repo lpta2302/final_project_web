@@ -6,17 +6,9 @@ const voucherController = {
     try {
       const vouchers = await Voucher.find();
 
-      res.status(200).json({
-        code: 200,
-        message: "Hiển thị tất cả voucher thành công.",
-        data: vouchers,
-      });
+      res.status(200).json(vouchers);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message: "Quá trình hiển thị gặp lỗi. Vui lòng thử lại.",
-        error: err.message,
-      });
+      res.status(500).json(false);
     }
   },
 
@@ -32,17 +24,9 @@ const voucherController = {
         },
       });
 
-      res.status(200).json({
-        code: 200,
-        message: "Hiển thị thành công Voucher của bạn.",
-        data: myVoucher,
-      });
+      res.status(200).json(myVoucher);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message: "Quá trình hiển thị gặp lỗi. Vui lòng thử lại.",
-        error: err.message,
-      });
+      res.status(500).json(false);
     }
   },
 
@@ -63,14 +47,10 @@ const voucherController = {
       });
 
       if (voucherExist) {
-        return res.status(400).json({
-          code: 400,
-          message:
-            "Bạn không thể thêm Voucher này. Vui lòng chọn Voucher khác.",
-        });
+        return res.status(400).json(false);
       }
 
-      const result = await Voucher.updateOne(
+      const result = await Voucher.findOneAndUpdate(
         { _id: voucherId },
         {
           $push: {
@@ -82,17 +62,9 @@ const voucherController = {
         }
       );
 
-      res.status(200).json({
-        code: 200,
-        message: "Thêm Voucher thành công.",
-        data: result,
-      });
+      res.status(200).json(result);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message: "Quá trình thêm voucher gặp lỗi. Vui lòng thử lại.",
-        error: err.message,
-      });
+      res.status(500).json(false);
     }
   },
 
@@ -112,17 +84,9 @@ const voucherController = {
         }
       );
 
-      res.status(200).json({
-        code: 200,
-        message: "Xóa voucher thành công.",
-        data: result,
-      });
+      res.status(200).json(true);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message: "Quá trình xóa thất bại. Vui lòng thử lại.",
-        error: err.message,
-      });
+      res.status(500).json(false);
     }
   },
 
@@ -154,18 +118,10 @@ const voucherController = {
       }).sort(sortBy);
 
       // Trả về kết quả tìm kiếm
-      res.status(200).json({
-        code: 200,
-        message: "Tìm kiếm voucher thành công",
-        data: vouchers, // Trả về danh sách voucher tìm được
-      });
+      res.status(200).json(vouchers);
     } catch (err) {
       // Xử lý lỗi
-      res.status(500).json({
-        code: 500,
-        message: "Quá trình tìm kiếm gặp lỗi. Vui lòng thử lại.",
-        error: err.message,
-      });
+      res.status(500).json(false);
     }
   },
 };

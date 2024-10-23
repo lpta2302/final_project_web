@@ -15,18 +15,12 @@ export const add = async (req, res) => {
       });
 
       await record.save();
-      return res.status(200).json({
-        code: 200,
-        message: "Thêm sản phẩm vào danh sách yêu thích thành công",
-      });
+      return res.status(200).json(record);
     }
 
     // Kiểm tra sản phẩm đã tồn tại trong danh sách chưa
     if (seen.products.includes(productId)) {
-      return res.status(200).json({
-        code: 200,
-        message: "Sản phẩm đã tồn tại trong danh sách",
-      });
+      return res.status(200).json(true);
     }
 
     // Nếu danh sách đã đủ 10 sản phẩm, xóa sản phẩm đầu tiên
@@ -38,23 +32,16 @@ export const add = async (req, res) => {
     seen.products.push(productId);
 
     // Lưu cập nhật
-    await Seen.updateOne(
+    const record = await Seen.findOneAndUpdate(
       { userId: userId },
       {
         products: seen.products,
       }
     );
 
-    res.status(200).json({
-      code: 200,
-      message: "Cập nhật danh sách xem gần đây thành công",
-    });
+    res.status(200).json(record);
   } catch (error) {
-    res.status(400).json({
-      code: 400,
-      message: "Thêm sản phẩm thất bại",
-      error: error.message,
-    });
+    res.status(400).json(false);
   }
 };
 
@@ -67,21 +54,11 @@ export const getSeenProducts = async (req, res) => {
     const seen = await Seen.findOne({ userId: userId }).populate("products");
 
     if (!seen || seen.products.length === 0) {
-      return res.status(404).json({
-        code: 404,
-        message: "Không tìm thấy danh sách sản phẩm đã xem gần đây",
-      });
+      return res.status(404).json(false);
     }
 
-    res.status(200).json({
-      code: 200,
-      products: seen.products,
-    });
+    res.status(200).json(seen.products);
   } catch (error) {
-    res.status(400).json({
-      code: 400,
-      message: "Lấy danh sách sản phẩm thất bại",
-      error: error.message,
-    });
+    res.status(400).json(false);
   }
 };

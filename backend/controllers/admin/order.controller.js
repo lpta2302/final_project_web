@@ -15,7 +15,7 @@ export const detail = async (req, res) => {
     const order = await Order.findOne({ _id: orderId });
     res.status(200).json(order);
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };
 
@@ -27,7 +27,7 @@ export const orderOfUser = async (req, res) => {
     const order = await Order.find({ userId: userId });
     res.status(200).json(order);
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };
 
@@ -36,11 +36,15 @@ export const edit = async (req, res) => {
   try {
     const orderId = req.params.orderId;
 
-    await Order.updateOne({ _id: orderId }, { processStatus: "completed" });
+    const result = await Order.findOneAndUpdate(
+      { _id: orderId },
+      { processStatus: "completed" },
+      { new: true }
+    );
 
-    res.status(200).json(true);
+    res.status(200).json(result);
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };
 
@@ -51,9 +55,9 @@ export const deleteOrder = async (req, res) => {
 
     const category = await Category.deleteOne({ _id: id });
 
-    res.status(200).json(category);
+    res.status(200).json(true);
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };
 
@@ -82,6 +86,6 @@ export const search = async (req, res) => {
     // Trả về kết quả
     res.status(200).json(categories);
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };

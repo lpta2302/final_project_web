@@ -16,7 +16,7 @@ export const add = async (req, res) => {
       tagCode: req.body.tagCode,
     });
     if (exittag) {
-      return res.status(400).json({ message: false });
+      return res.status(400).json(false);
     }
 
     const record = new Tag(req.body);
@@ -24,7 +24,7 @@ export const add = async (req, res) => {
 
     res.json(record);
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };
 
@@ -33,11 +33,13 @@ export const edit = async (req, res) => {
   try {
     const id = req.params.id;
 
-    await Tag.updateOne({ _id: id }, req.body);
+    const result = await Tag.findOneAndUpdate({ _id: id }, req.body, {
+      new: true,
+    });
 
-    res.status(200).json(req.body);
+    res.status(200).json(result);
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };
 
@@ -48,9 +50,9 @@ export const deletetag = async (req, res) => {
 
     const tag = await Tag.deleteOne({ _id: id });
 
-    res.status(200).json(tag);
+    res.status(200).json(true);
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };
 
@@ -79,6 +81,6 @@ export const search = async (req, res) => {
     // Trả về kết quả
     res.status(200).json(tags);
   } catch (error) {
-    res.status(500).json({ message: false });
+    res.status(500).json(false);
   }
 };

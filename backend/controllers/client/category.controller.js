@@ -7,11 +7,7 @@ export const index = async (req, res) => {
 
     res.json(category);
   } catch (error) {
-    res.status(400).json({
-      code: 400,
-      message: "Đã có lỗi xảy ra",
-      error: error.message,
-    });
+    res.status(400).json(false);
   }
 };
 
@@ -34,10 +30,6 @@ export const search = async (req, res) => {
 
     res.json(category);
   } catch (error) {
-    res.status(400).json({
-      code: 400,
-      message: "Đã có lỗi xảy ra",
-      error: error.message,
-    });
+    res.status(400).json(false);
   }
 };

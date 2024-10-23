@@ -25,7 +25,7 @@ const specificationSchema = new mongoose.Schema(
     },
     products: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "product", // Liên kết tới schema "product"
+      ref: "Product", // Liên kết tới schema "product"
     },
     discountPercentage: Number,
   },

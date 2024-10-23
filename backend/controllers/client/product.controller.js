@@ -6,17 +6,9 @@ const productController = {
     try {
       const products = await Product.find();
 
-      res.status(200).json({
-        code: 200,
-        message: "Hiển thị sản phẩm thành công.",
-        data: products,
-      });
+      res.status(200).json(products);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message: "Quá trình hiển thị sản phẩm gặp lỗi. Vui lòng thử lại sau.",
-        error: err.message,
-      });
+      res.status(500).json(false);
     }
   },
 
@@ -26,17 +18,9 @@ const productController = {
       const productId = req.params.id;
       const specs = await Product.findById(productId).populate("specs");
 
-      res.status(200).json({
-        code: 200,
-        message: "Hiển thị các chi tiết sản phẩm thành công.",
-        data: specs,
-      });
+      res.status(200).json(specs);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message: "Quá trình hiển thị sản phẩm gặp lỗi. Vui lòng thử lại sau.",
-        error: err.message,
-      });
+      res.status(500).json(false);
     }
   },
 
@@ -69,18 +53,10 @@ const productController = {
       }).sort(sortBy);
 
       // Trả về kết quả tìm kiếm
-      res.status(200).json({
-        code: 200,
-        message: "Tìm kiếm sản phẩm thành công",
-        data: products, // Trả về danh sách sản phẩm tìm được
-      });
+      res.status(200).json(products);
     } catch (err) {
       // Xử lý lỗi
-      res.status(500).json({
-        code: 500,
-        message: "Quá trình tìm kiếm sản phẩm bị lỗi. Vui lòng thử lại.",
-        error: err.message,
-      });
+      res.status(500).json(false);
     }
   },
 
@@ -103,11 +79,7 @@ const productController = {
 
       res.json(result);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message: "Quá trình hiển thị sản phẩm gặp lỗi. Vui lòng thử lại sau.",
-        error: err.message,
-      });
+      res.status(500).json(false);
     }
   },
 
@@ -119,17 +91,9 @@ const productController = {
         tag: tagId,
       });
 
-      res.status(200).json({
-        code: 200,
-        message: "Tìm kiếm sản phẩm thành công",
-        data: products, // Trả về danh sách sản phẩm tìm được
-      });
+      res.status(200).json(products);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message: "Quá trình tìm kiếm xảy ra lỗi. Vui lòng thử lại.",
-        error: err.message,
-      });
+      res.status(500).json(false);
     }
   },
 };
