@@ -14,8 +14,10 @@ import {
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PropTypes from "prop-types";
 import { useCreateAccount } from "../../api/queries";
+import { enqueueSnackbar as toaster } from 'notistack';
+import LoadingOverlay from "../dialogs/LoadingOverlay";
 
-const Register = ({setModalType}) => {
+const Register = ({ setModalType }) => {
   const [inputs, setInputs] = useState({
     username: "",
     password: "",
@@ -34,15 +36,16 @@ const Register = ({setModalType}) => {
     phoneNumber: "",
   });
   const [isAgree, setIsAgree] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const {mutateAsync: register } = useCreateAccount();
+  const { mutateAsync: register } = useCreateAccount();
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setInputs((values) => ({ ...values, [name]: value }));
   };
 
-  const handleRegister = (event) => {
+  const handleRegister = async (event) => {
     event.preventDefault();
     let tempError = {
       username: "",
@@ -54,6 +57,7 @@ const Register = ({setModalType}) => {
       birthDate: "",
     };
 
+    // Validation
     if (!inputs.username) {
       tempError.username = "Tên tài khoản không được để trống";
     }
@@ -91,15 +95,22 @@ const Register = ({setModalType}) => {
       phoneNumber: "",
       birthDate: "",
     });
-    const response = register(inputs);
-    console.log(response);
-    
-    console.log("Đăng ký thành công với:", inputs);
+
+    try {
+      setIsLoading(true);
+      const response = await register(inputs);
+      toaster('Đăng ký thành công!', { variant: 'success' });
+
+      setModalType('login');
+    } catch (err) {
+      toaster(err?.message || 'Đăng ký thất bại. Vui lòng thử lại.', { variant: 'error' });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-
   return (
-    <Container  maxWidth="sm" sx={{ my: 8, overflow: 'auto' }}>
+    <Container maxWidth="sm" sx={{ my: 8, overflow: 'auto' }}>
       <Paper
         elevation={10}
         sx={{
@@ -139,6 +150,7 @@ const Register = ({setModalType}) => {
             gap: 2,
           }}
         >
+          {/* Form fields */}
           <TextField
             required
             id="outlined-username"
@@ -175,7 +187,7 @@ const Register = ({setModalType}) => {
             helperText={error.password}
           />
           <Grid2 container spacing={1}>
-            <Grid2 size={{xs: 12, sm: 6}}>
+            <Grid2 size={{ xs: 12, sm: 6 }}>
               <TextField
                 id="outlined-lastname"
                 label="Họ"
@@ -193,7 +205,7 @@ const Register = ({setModalType}) => {
                 helperText={error.lastName}
               />
             </Grid2>
-            <Grid2 size={{xs: 12, sm: 6}}>
+            <Grid2 size={{ xs: 12, sm: 6 }}>
               <TextField
                 id="outlined-firstname"
                 label="Tên"
@@ -271,49 +283,48 @@ const Register = ({setModalType}) => {
                 value="agree"
               />
             }
-            label={
-              <>
-                Tôi đồng ý với{" "}
-                <Link href="/dieu-khoan-bao-mat" target="_blank">
-                  điều khoản bảo mật cá nhân
-                </Link>
-              </>
-            }
+            label="Tôi đồng ý với các điều khoản sử dụng."
           />
           <Button
             type="submit"
+            disabled={!isAgree}
             variant="contained"
-            fullWidth
             sx={{
-              mt: 1,
-              height: "3rem",
               borderRadius: "12px",
+              backgroundColor: "#6c74cc",
             }}
-            disabled={!isAgree} 
           >
-            <PersonAddIcon sx={{ mr: 2 }} />
             Đăng ký
           </Button>
         </Box>
-        <Box
-          sx={{ display: 'flex', mt: 4, mb: 2}}
-        >
-          Bạn đã có tài khoản?
+        <Box mt={2}>
           <Typography
-            onClick={()=>setModalType('login')}
-            color='primary.main'
-            sx={{ ml: 1, textDecoration: 'underline', '&:hover': { cursor: 'pointer' } }}
+            variant="body2"
+            sx={{ textAlign: "center", color: "text.secondary" }}
           >
-            Đăng nhập ngay
+            Đã có tài khoản?{" "}
+            <Link
+              component="button"
+              onClick={() => setModalType("login")}
+              sx={{
+                cursor: "pointer",
+                color: "primary.main",
+                fontWeight: "bold",
+              }}
+            >
+              Đăng nhập
+            </Link>
           </Typography>
         </Box>
       </Paper>
+      {/* Hiển thị overlay loading khi đang xử lý */}
+      <LoadingOverlay visible={isLoading} message="Đang tạo tài khoản..." />
     </Container>
   );
 };
 
 Register.propTypes = {
-  setIsLogin: PropTypes.func
-}
+  setModalType: PropTypes.func,
+};
 
-export default forwardRef(Register);
+export default Register;
