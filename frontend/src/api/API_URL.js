@@ -1,12 +1,12 @@
 export const AUTH_URL = {
     login: '/login',
-    register: 'register',
+    register: '/register',
     forgotPassword: ''
 }
 
 //----------------------------- CREATE -----------------------------
 
-export const CREATE_URL = {
+export const CREATE_URL ={
     product: '/product/postProduct',
     tag: '/tag/add',
     category: '/category/add',
@@ -18,7 +18,7 @@ export const CREATE_URL = {
     address: '/client/address/add',  
     cart: '/client/cart/add',  
     seenProduct: '/client/seen/add',  
-    wishList: '/client/wishList/create-wishList',  
+    wishList: '/client/add-to-wishList',  
 }
 
 //----------------------------- READ -----------------------------
@@ -70,6 +70,7 @@ export const UPDATE_URL = (id) => {
         accountStatus: `account/Quan-ly-tai-khoan/${id}/Chinh-sua-trang-thai-tai-khoan`,
         account: 'account/details/' + id,
         brand: `/brand/${id}`,
+        category: `/category/edit/${id}`,
         carousel: `/carousel/${id}`,
         product: `/product/editProduct/${id}`,
         order: `/order/edit/${id}`,
