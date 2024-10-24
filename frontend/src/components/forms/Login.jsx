@@ -20,7 +20,7 @@ const Login = ({ setModalType, isAdmin }) => {
   const [error, setError] = useState({ username: false, password: false });
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { queryFn: login  } = useLogin();
+  const { mutateAsync: login  } = useLogin();
 
   const handleChange = (event) => {
     const name = event.target.name;
