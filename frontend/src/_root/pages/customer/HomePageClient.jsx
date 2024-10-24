@@ -378,13 +378,12 @@ const BannerSlider = () => {
   );
 };
 
-const ProductCard = ({ product, handleAddToCart }) => {
-  const [liked, setLiked] = useState(false);
-
-  const handleLikeClick = () => {
-    setLiked(!liked); // Thay đổi trạng thái thích/bỏ thích
-  };
-
+const ProductCard = ({
+  product,
+  handleAddToCart,
+  handleToggleFavorite,
+  isFavorite,
+}) => {
   return (
     <div style={{ padding: "0 10px", marginBottom: "10px" }}>
       <Link
@@ -443,16 +442,17 @@ const ProductCard = ({ product, handleAddToCart }) => {
                 sx={{ mt: 1 }}
               />
             </Typography>
-            {/* Thêm nút thích */}
           </CardContent>
         </Card>
       </Link>
+
+      {/* Nút thích */}
       <IconButton
-        onClick={handleLikeClick}
-        color={liked ? "error" : "default"} // Màu đỏ nếu đã thích
+        onClick={() => handleToggleFavorite(product)}
+        color={isFavorite ? "error" : "default"}
         sx={{ display: "block", margin: "0 auto" }}
       >
-        {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+        {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
       </IconButton>
     </div>
   );
@@ -665,5 +665,4 @@ const HomePage = ({ handleAddToCart }) => {
     </>
   );
 };
-
 export default HomePage;
