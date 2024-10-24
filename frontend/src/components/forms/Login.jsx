@@ -52,7 +52,7 @@ const Login = ({ setModalType, isAdmin }) => {
     }
 
     try {
-      const token = await login(inputs)
+      const token = await login(inputs);
   
       if (token) {
         console.log(token)

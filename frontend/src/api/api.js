@@ -3,17 +3,17 @@ import axios from './myAxios'
 
 //----------------------------- General -----------------------------
 export async function createRecord(createType, data) {
-    try {
-        const newData = (await axios.post(CREATE_URL[createType], data)).data;
+  try {
+    const newData = (await axios.post(CREATE_URL[createType], data)).data;
 
-        if (!newData)
-            throw Error;
+    if (!newData)
+      throw Error;
 
-        return newData;
-    } catch (error) {
-        console.error(error);
-        return data;
-    }
+    return newData;
+  } catch (error) {
+    console.error(error);
+    return data;
+  }
 }
 
 export async function readAll(readType, id) {
@@ -30,17 +30,17 @@ export async function readAll(readType, id) {
 
 
 export async function updateRecord(updateType, data) {
-    try {
-        const newData = (await axios.patch(UPDATE_URL(data._id)[updateType], data)).data;
+  try {
+    const newData = (await axios.patch(UPDATE_URL(data._id)[updateType], data)).data;
 
-        if (!newData)
-            throw Error;
+    if (!newData)
+      throw Error;
 
-        return newData;
-    } catch (error) {
-        console.error(error);
-        return data;
-    }
+    return newData;
+  } catch (error) {
+    console.error(error);
+    return data;
+  }
 }
 
 export async function deleteRecord(id, deleteType) {
@@ -57,30 +57,31 @@ export async function deleteRecord(id, deleteType) {
 //----------------------------- Auth -----------------------------
 
 export async function login(loginInfo) {
-    try {
-        const token = (axios.post(AUTH_URL.login, loginInfo)).data;
-        if (!token)
-            throw Error;
+  try {
+    const token = (await axios.post(AUTH_URL.login, loginInfo)).data;
 
-        return token
-    } catch (error) {
-        console.error(error);
-        return error;
-    }
+    if (!token)
+      throw Error;
+
+    return token
+  } catch (error) {
+    console.error(error);
+    return error;
+  }
 }
 
 //----------------------------- Account -----------------------------
 export async function createAccount(user) {
-    try {
-        const data = (await axios.post('/auth/register', user)).data;
-        if (!data)
-            throw Error
+  try {
+    const data = (await axios.post('/auth/register', user)).data;
+    if (!data)
+      throw Error
 
-        return data;
-    } catch (error) {
-        console.error(error);
-        return error;
-    }
+    return data;
+  } catch (error) {
+    console.error(error);
+    return error;
+  }
 }
 
 export async function updateAccountStatus(user) {
