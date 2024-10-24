@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
 import PropTypes from "prop-types";
-import { useReadAllAccount } from "../../api/queries";
+import { useLogin } from "../../api/queries";
 import { enqueueSnackbar as toaster } from 'notistack';
 
 const Login = ({ setModalType, isAdmin }) => {
@@ -20,7 +20,7 @@ const Login = ({ setModalType, isAdmin }) => {
   const [error, setError] = useState({ username: false, password: false });
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { data: accounts } = useReadAllAccount();
+  const { queryFn: login  } = useLogin();
 
   const handleChange = (event) => {
     const name = event.target.name;
@@ -52,16 +52,14 @@ const Login = ({ setModalType, isAdmin }) => {
     }
 
     try {
-      const matchedAccount = accounts.find(account => 
-        account.username === inputs.username && account.password === inputs.password
-      );
+      const token = await login(inputs)
   
-      if (matchedAccount) {
-        console.log(matchedAccount)
+      if (token) {
+        console.log(token)
         toaster('Đăng nhập thành công!', { variant: 'success' });
-        console.log("Login successful with account:", matchedAccount);
+        console.log("Login successful with account:", token);
       } else {
-        console.log(matchedAccount)
+        console.log(token)
         toaster('Tên tài khoản hoặc mật khẩu không đúng!', { variant: 'error' });
         setError({ username: true, password: true });
         setErrorMessage("Tên tài khoản hoặc mật khẩu không đúng");
