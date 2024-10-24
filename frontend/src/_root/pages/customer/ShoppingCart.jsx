@@ -57,7 +57,7 @@ const CartPage = () => {
   const [shippingFee, setShippingFee] = useState(0);
   const [discountValue, setDiscountValue] = useState(0);
 
-  const isMobile = useMediaQuery("(max-width:600px)"); // Kiểm tra nếu màn hình nhỏ hơn 600px
+  const isMobile = useMediaQuery("(max-width:600px)");
 
   useEffect(() => {
     const fetchShippingFee = async () => {
@@ -143,77 +143,79 @@ const CartPage = () => {
           {/* Phần giỏ hàng bên trái */}
           <Grid item xs={12} md={8}>
             {isMobile ? (
-              cartItems.map((item) => (
-                <Card
-                  key={item.id}
-                  sx={{ display: "flex", marginBottom: "16px" }}
-                >
-                  <CardMedia
-                    component="img"
-                    sx={{ width: 100 }}
-                    image={item.image}
-                    alt={item.name}
-                  />
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      width: "100%",
-                    }}
+              <Box sx={{ maxHeight: "400px", overflowY: "auto" }}>
+                {cartItems.map((item) => (
+                  <Card
+                    key={item.id}
+                    sx={{ display: "flex", marginBottom: "16px" }}
                   >
-                    <CardContent>
-                      <Typography variant="h6">{item.name}</Typography>
-                      <Typography variant="body2">
-                        Giá: {item.price.toLocaleString()} đ
-                      </Typography>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          marginTop: "8px",
-                        }}
-                      >
-                        <IconButton
-                          onClick={() =>
-                            handleQuantityChange(item.id, "decrease")
-                          }
-                        >
-                          <RemoveIcon />
-                        </IconButton>
-                        <Typography>{item.quantity}</Typography>
-                        <IconButton
-                          onClick={() =>
-                            handleQuantityChange(item.id, "increase")
-                          }
-                        >
-                          <AddIcon />
-                        </IconButton>
-                      </Box>
-                      <Typography variant="body2" sx={{ marginTop: "8px" }}>
-                        Tổng cộng:{" "}
-                        {(item.price * item.quantity).toLocaleString()} đ
-                      </Typography>
-                    </CardContent>
+                    <CardMedia
+                      component="img"
+                      sx={{ width: 100 }}
+                      image={item.image}
+                      alt={item.name}
+                    />
                     <Box
                       sx={{
                         display: "flex",
-                        justifyContent: "flex-end",
-                        padding: "8px",
+                        flexDirection: "column",
+                        width: "100%",
                       }}
                     >
-                      <Button
-                        onClick={() => handleDeleteItem(item.id)}
-                        startIcon={<DeleteIcon />}
-                        color="error"
+                      <CardContent>
+                        <Typography variant="h6">{item.name}</Typography>
+                        <Typography variant="body2">
+                          Giá: {item.price.toLocaleString()} đ
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            marginTop: "8px",
+                          }}
+                        >
+                          <IconButton
+                            onClick={() =>
+                              handleQuantityChange(item.id, "decrease")
+                            }
+                          >
+                            <RemoveIcon />
+                          </IconButton>
+                          <Typography>{item.quantity}</Typography>
+                          <IconButton
+                            onClick={() =>
+                              handleQuantityChange(item.id, "increase")
+                            }
+                          >
+                            <AddIcon />
+                          </IconButton>
+                        </Box>
+                        <Typography variant="body2" sx={{ marginTop: "8px" }}>
+                          Tổng cộng:{" "}
+                          {(item.price * item.quantity).toLocaleString()} đ
+                        </Typography>
+                      </CardContent>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          padding: "8px",
+                        }}
                       >
-                        Xóa
-                      </Button>
+                        <Button
+                          onClick={() => handleDeleteItem(item.id)}
+                          startIcon={<DeleteIcon />}
+                          color="error"
+                        >
+                          Xóa
+                        </Button>
+                      </Box>
                     </Box>
-                  </Box>
-                </Card>
-              ))
+                  </Card>
+                ))}
+              </Box>
             ) : (
-              <TableContainer>
+              <TableContainer sx={{ maxHeight: "400px", overflowY: "auto" }}>
                 <Table>
                   <TableHead>
                     <TableRow>
@@ -228,11 +230,10 @@ const CartPage = () => {
                   <TableBody>
                     {cartItems.map((item) => (
                       <TableRow key={item.id}>
-                        {/* Ảnh sản phẩm */}
                         <TableCell
                           sx={{
                             padding: "8px",
-                            width: { xs: "50px", sm: "70px", md: "90px" }, // Giảm kích thước ảnh hơn
+                            width: { xs: "50px", sm: "70px", md: "90px" },
                           }}
                         >
                           <img
@@ -240,78 +241,74 @@ const CartPage = () => {
                             alt={item.name}
                             style={{
                               width: "100%",
-                              maxWidth: { xs: "50px", sm: "70px", md: "90px" }, // Giới hạn chiều rộng tối đa của ảnh
+                              maxWidth: {
+                                xs: "50px",
+                                sm: "70px",
+                                md: "90px",
+                              },
                               height: "auto",
                             }}
                           />
                         </TableCell>
-                        {/* Cột sản phẩm với font chữ điều chỉnh */}
                         <TableCell
                           sx={{
                             wordWrap: "break-word",
                             minWidth: "200px",
-                            maxWidth: { xs: "120px", sm: "180px", md: "250px" }, // Điều chỉnh độ rộng của cột tên sản phẩm
+                            maxWidth: { xs: "120px", sm: "180px", md: "250px" },
                             flexGrow: 1,
-                            fontSize: { xs: "10px", sm: "12px", md: "14px" }, // Giảm kích thước font chữ
+                            fontSize: { xs: "10px", sm: "12px", md: "14px" },
                           }}
                         >
                           {item.name}
                         </TableCell>
-                        {/* Cột giá */}
                         <TableCell
                           sx={{
                             whiteSpace: "nowrap",
-                            fontSize: { xs: "10px", sm: "12px", md: "14px" }, // Điều chỉnh font chữ
+                            fontSize: { xs: "10px", sm: "12px", md: "14px" },
                           }}
                         >
                           {item.price.toLocaleString()} đ
                         </TableCell>
-                        {/* Cột số lượng */}
                         <TableCell
                           sx={{
                             whiteSpace: "nowrap",
-                            fontSize: { xs: "10px", sm: "12px", md: "14px" }, // Điều chỉnh font chữ
+                            fontSize: { xs: "10px", sm: "12px", md: "14px" },
                           }}
                         >
-                          <Button
+                          <IconButton
                             onClick={() =>
                               handleQuantityChange(item.id, "decrease")
                             }
-                            sx={{
-                              fontSize: { xs: "10px", sm: "12px", md: "14px" },
-                            }} // Font chữ của button
                           >
-                            -
-                          </Button>
+                            <RemoveIcon />
+                          </IconButton>
                           {item.quantity}
-                          <Button
+                          <IconButton
                             onClick={() =>
                               handleQuantityChange(item.id, "increase")
                             }
-                            sx={{
-                              fontSize: { xs: "10px", sm: "12px", md: "14px" },
-                            }} // Font chữ của button
                           >
-                            +
-                          </Button>
+                            <AddIcon />
+                          </IconButton>
                         </TableCell>
-                        {/* Cột tổng cộng */}
                         <TableCell
                           sx={{
                             whiteSpace: "nowrap",
-                            fontSize: { xs: "10px", sm: "12px", md: "14px" }, // Điều chỉnh font chữ
+                            fontSize: { xs: "10px", sm: "12px", md: "14px" },
                           }}
                         >
                           {(item.price * item.quantity).toLocaleString()} đ
                         </TableCell>
-                        <TableCell>
+                        <TableCell
+                          sx={{
+                            whiteSpace: "nowrap",
+                            fontSize: { xs: "10px", sm: "12px", md: "14px" },
+                          }}
+                        >
                           <Button
                             onClick={() => handleDeleteItem(item.id)}
                             startIcon={<DeleteIcon />}
                             color="error"
-                            sx={{
-                              fontSize: { xs: "10px", sm: "12px", md: "14px" },
-                            }} // Font chữ của nút xóa
                           >
                             Xóa
                           </Button>
@@ -324,49 +321,46 @@ const CartPage = () => {
             )}
           </Grid>
 
-          {/* Phần mã giảm giá và tổng tiền bên phải */}
+          {/* Phần tổng thanh toán */}
           <Grid item xs={12} md={4}>
-            <Paper sx={{ padding: "10px", borderRadius: "10px" }}>
-              <Typography variant="h6" gutterBottom>
-                Áp dụng mã giảm giá
-              </Typography>
-              <TextField
-                label="Nhập mã giảm giá"
-                variant="outlined"
-                fullWidth
-                value={discountCode}
-                onChange={(e) => setDiscountCode(e.target.value)}
-                sx={{ marginBottom: "20px" }}
-              />
-              <Button
-                variant="contained"
-                fullWidth
-                onClick={handleApplyDiscount}
-                sx={{ marginBottom: "20px" }}
-              >
-                Áp dụng
-              </Button>
-
-              <Typography variant="h6" gutterBottom>
-                Phí ship
-              </Typography>
-              <Typography sx={{ marginBottom: "20px" }}>
-                {shippingFee.toLocaleString()} đ
-              </Typography>
-
+            <Paper elevation={3} sx={{ padding: "16px" }}>
               <Typography variant="h6" gutterBottom>
                 Tổng cộng
               </Typography>
-              <Typography variant="h6" sx={{ marginBottom: "20px" }}>
-                {totalWithDiscountAndShipping.toLocaleString()} đ
+              <Typography variant="body1">
+                Tổng tiền: {totalAmount.toLocaleString()} đ
               </Typography>
-
+              <Typography variant="body1">
+                Phí ship: {shippingFee.toLocaleString()} đ
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Giảm giá: {discountValue.toLocaleString()} đ
+              </Typography>
+              <Typography variant="h6" gutterBottom>
+                Thành tiền: {totalWithDiscountAndShipping.toLocaleString()} đ
+              </Typography>
+              <TextField
+                label="Mã giảm giá"
+                value={discountCode}
+                onChange={(e) => setDiscountCode(e.target.value)}
+                fullWidth
+                margin="normal"
+              />
               <Button
                 variant="contained"
+                color="primary"
                 fullWidth
-                sx={{ backgroundColor: "#1976d2", color: "white" }}
+                onClick={handleApplyDiscount}
               >
-                Tiếp tục thanh toán
+                Áp dụng mã
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                fullWidth
+                sx={{ marginTop: "16px" }}
+              >
+                Thanh toán
               </Button>
             </Paper>
           </Grid>
