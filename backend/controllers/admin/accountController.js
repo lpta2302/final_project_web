@@ -75,14 +75,17 @@ const accountController = {
 
       const isMatch = await bcrypt.compare(password, _account.password);
 
-      if (isMatch && _account.accountStatus == "active") {
-        if (_account.accountRole == "client") {
-          return res.status(200).json(_account);
-        } else {
-          return res.status(200).json(_account);
-        }
+      if (isMatch && _account.accountStatus === "active") {
+        // Nếu tài khoản là client hoặc có vai trò khác, trả về token
+        const token = jwt.sign(
+          { id: _account._id, email: _account.email }, // Payload
+          secretKey, // Khóa bí mật
+          { expiresIn: "1h" } // Token hết hạn sau 1 giờ
+        );
+
+        return res.status(200).json(token);
       } else {
-        return res.status(400).json(false);
+        return res.status(400).json(false); // Sai mật khẩu hoặc tài khoản không active
       }
     } catch (err) {
       res.status(500).json(false);
