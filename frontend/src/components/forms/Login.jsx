@@ -12,11 +12,15 @@ import {
 } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
 import PropTypes from "prop-types";
+import { useReadAllAccount } from "../../api/queries";
+import { enqueueSnackbar as toaster } from 'notistack';
 
 const Login = ({ setModalType, isAdmin }) => {
   const [inputs, setInputs] = useState({ username: "", password: "" });
-  const [error, setError] = useState({ username: "", password: "" });
+  const [error, setError] = useState({ username: false, password: false });
+  const [errorMessage, setErrorMessage] = useState("");
 
+  const { data: accounts } = useReadAllAccount();
 
   const handleChange = (event) => {
     const name = event.target.name;
@@ -24,29 +28,49 @@ const Login = ({ setModalType, isAdmin }) => {
     setInputs((values) => ({ ...values, [name]: value }));
   };
 
-  const handleLogin = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault();
 
-    let tempError = { username: "", password: "" };
+    let tempError = { username: false, password: false };
 
+    // Kiểm tra tên tài khoản
     if (!inputs.username) {
-      tempError.username = "Tên tài khoản không được để trống";
+      tempError.username = true;
     }
 
+    // Kiểm tra mật khẩu
     if (!inputs.password) {
-      tempError.password = "Mật khẩu không được để trống";
+      tempError.password = true;
     }
 
+    // Nếu thiếu tên tài khoản hoặc mật khẩu, hiển thị lỗi
     if (tempError.username || tempError.password) {
       setError(tempError);
+      toaster('Tên tài khoản hoặc mật khẩu không hợp lệ', { variant: 'error' });
+      setErrorMessage("Tên tài khoản hoặc mật khẩu không hợp lệ");
       return;
     }
 
-    setError({ username: "", password: "" });
-    console.log("Login successful with username:", inputs.username, ", pass:", inputs.password);
-
+    try {
+      const matchedAccount = accounts.find(account => 
+        account.username === inputs.username && account.password === inputs.password
+      );
+  
+      if (matchedAccount) {
+        console.log(matchedAccount)
+        toaster('Đăng nhập thành công!', { variant: 'success' });
+        console.log("Login successful with account:", matchedAccount);
+      } else {
+        console.log(matchedAccount)
+        toaster('Tên tài khoản hoặc mật khẩu không đúng!', { variant: 'error' });
+        setError({ username: true, password: true });
+        setErrorMessage("Tên tài khoản hoặc mật khẩu không đúng");
+      }
+    } catch (error) {
+      console.error(error);
+      toaster('Lỗi xử lý đăng nhập!', { variant: 'error' });
+    }
   };
-
 
   return (
     <Container maxWidth="sm" sx={{ mt: 8 }}>
@@ -58,13 +82,7 @@ const Login = ({ setModalType, isAdmin }) => {
           borderRadius: "16px",
         }}
       >
-        <Typography
-          component="div"
-          variant="h6"
-          sx={{
-            mb: 2,
-          }}
-        >
+        <Typography component="div" variant="h6" sx={{ mb: 2 }}>
           Đăng nhập
         </Typography>
         <Typography
@@ -98,8 +116,8 @@ const Login = ({ setModalType, isAdmin }) => {
             autoFocus
             value={inputs.username}
             onChange={handleChange}
-            error={!!error.username}
-            helperText={error.username}
+            error={error.username}
+            helperText={error.username ? "" : ""}
             sx={{
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
@@ -116,8 +134,8 @@ const Login = ({ setModalType, isAdmin }) => {
             fullWidth
             value={inputs.password}
             onChange={handleChange}
-            error={!!error.password}
-            helperText={error.password}
+            error={error.password}
+            helperText={errorMessage}
             sx={{
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
@@ -127,15 +145,11 @@ const Login = ({ setModalType, isAdmin }) => {
           <Grid2 container justifyContent="space-between" alignItems="center">
             <FormControlLabel
               control={<Checkbox value="remember" />}
-              label={
-                <Typography>
-                  Nhớ mật khẩu
-                </Typography>
-              }
+              label={<Typography>Nhớ mật khẩu</Typography>}
             />
             <Typography
-              onClick={()=>setModalType('forgot-password')}
-              color='primary.main'
+              onClick={() => setModalType('forgot-password')}
+              color="primary.main"
               sx={{ textDecoration: 'underline', '&:hover': { cursor: 'pointer' } }}
             >
               Quên mật khẩu?
@@ -155,20 +169,18 @@ const Login = ({ setModalType, isAdmin }) => {
             Đăng nhập
           </Button>
         </Box>
-        {
-          !isAdmin &&
-          <Box
-          sx={{ display: 'flex', mt: 4, mb: 2}}
-        >
-          Bạn chưa có tài khoản?
-          <Typography
-            onClick={()=>setModalType('register')}
-            color='primary.main'
-            sx={{ ml: 1, textDecoration: 'underline', '&:hover': { cursor: 'pointer' } }}
-          >
-            Đăng ký ngay
-          </Typography>
-        </Box>}
+        {!isAdmin && (
+          <Box sx={{ display: 'flex', mt: 4, mb: 2 }}>
+            Bạn chưa có tài khoản?
+            <Typography
+              onClick={() => setModalType('register')}
+              color="primary.main"
+              sx={{ ml: 1, textDecoration: 'underline', '&:hover': { cursor: 'pointer' } }}
+            >
+              Đăng ký ngay
+            </Typography>
+          </Box>
+        )}
       </Paper>
     </Container>
   );
@@ -176,7 +188,7 @@ const Login = ({ setModalType, isAdmin }) => {
 
 Login.propTypes = {
   setModalType: PropTypes.func,
-  isAdmin: PropTypes.bool
-}
+  isAdmin: PropTypes.bool,
+};
 
 export default forwardRef(Login);
