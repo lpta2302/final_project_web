@@ -33,6 +33,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
 // Sample data for products
+
 const products = [
   {
     id: 1,
@@ -378,12 +379,7 @@ const BannerSlider = () => {
   );
 };
 
-const ProductCard = ({
-  product,
-  handleAddToCart,
-  handleToggleFavorite,
-  isFavorite,
-}) => {
+const ProductCard = ({ product, handleToggleFavorite, isFavorite }) => {
   return (
     <div style={{ padding: "0 10px", marginBottom: "10px" }}>
       <Link
@@ -394,7 +390,7 @@ const ProductCard = ({
           <CardMedia
             component="img"
             height="180"
-            image={product.image}
+            image={product.imageUrl}
             alt={product.title}
           />
           <CardContent>
@@ -429,19 +425,6 @@ const ProductCard = ({
             >
               {product.originalPrice} VND
             </Typography>
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              align="center"
-              sx={{ height: "30px" }}
-            >
-              <Rating
-                name="read-only"
-                value={product.rating || 0}
-                readOnly
-                sx={{ mt: 1 }}
-              />
-            </Typography>
           </CardContent>
         </Card>
       </Link>
@@ -449,7 +432,7 @@ const ProductCard = ({
       {/* Nút thích */}
       <IconButton
         onClick={() => handleToggleFavorite(product)}
-        color={isFavorite ? "error" : "default"}
+        color={isFavorite ? "error" : "default"} // Đổi màu dựa trên trạng thái yêu thích
         sx={{ display: "block", margin: "0 auto" }}
       >
         {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
@@ -583,6 +566,15 @@ const SubNavbar = () => {
 };
 
 const HomePage = ({ handleAddToCart }) => {
+  const [favorites, setFavorites] = useState({});
+
+  const handleToggleFavorite = (product) => {
+    setFavorites((prevFavorites) => ({
+      ...prevFavorites,
+      [product.id]: !prevFavorites[product.id], // Đảo ngược trạng thái yêu thích của sản phẩm
+    }));
+  };
+
   return (
     <>
       <SubNavbar />
@@ -603,7 +595,8 @@ const HomePage = ({ handleAddToCart }) => {
             <ProductCard
               product={product}
               key={product.id}
-              handleAddToCart={handleAddToCart}
+              handleToggleFavorite={handleToggleFavorite}
+              isFavorite={favorites[product.id]} // Kiểm tra trạng thái yêu thích
             />
           ))}
         </Slider>
@@ -621,7 +614,8 @@ const HomePage = ({ handleAddToCart }) => {
             <ProductCard
               product={product}
               key={product.id}
-              handleAddToCart={handleAddToCart}
+              handleToggleFavorite={handleToggleFavorite}
+              isFavorite={favorites[product.id]} // Kiểm tra trạng thái yêu thích
             />
           ))}
         </Slider>
@@ -639,7 +633,8 @@ const HomePage = ({ handleAddToCart }) => {
             <ProductCard
               product={product}
               key={product.id}
-              handleAddToCart={handleAddToCart}
+              handleToggleFavorite={handleToggleFavorite}
+              isFavorite={favorites[product.id]} // Kiểm tra trạng thái yêu thích
             />
           ))}
         </Slider>
@@ -657,7 +652,8 @@ const HomePage = ({ handleAddToCart }) => {
             <ProductCard
               product={product}
               key={product.id}
-              handleAddToCart={handleAddToCart}
+              handleToggleFavorite={handleToggleFavorite}
+              isFavorite={favorites[product.id]} // Kiểm tra trạng thái yêu thích
             />
           ))}
         </Slider>

@@ -74,17 +74,19 @@ const CartPage = () => {
 
   const handleQuantityChange = (id, operation) => {
     setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              quantity:
-                operation === "increase"
-                  ? item.quantity + 1
-                  : Math.max(1, item.quantity - 1),
-            }
-          : item
-      )
+      prevItems.reduce((acc, item) => {
+        if (item.id === id) {
+          const newQuantity =
+            operation === "increase" ? item.quantity + 1 : item.quantity - 1;
+          if (newQuantity > 0) {
+            acc.push({ ...item, quantity: newQuantity });
+          }
+          // Nếu newQuantity = 0, không thêm sản phẩm này vào giỏ nữa
+        } else {
+          acc.push(item); // Sản phẩm khác giữ nguyên
+        }
+        return acc;
+      }, [])
     );
   };
 
@@ -114,6 +116,7 @@ const CartPage = () => {
         variant="h4"
         gutterBottom
         align={isMobile ? "center" : "left"}
+        sx={{ fontSize: isMobile ? "1.5rem" : "2rem" }}
       >
         Giỏ hàng
       </Typography>
@@ -131,7 +134,11 @@ const CartPage = () => {
           <SentimentDissatisfiedIcon
             sx={{ fontSize: 80, color: "#757575", marginBottom: "16px" }}
           />
-          <Typography variant="h6" sx={{ fontSize: "30px" }} gutterBottom>
+          <Typography
+            variant="h6"
+            sx={{ fontSize: "30px", textAlign: "center" }}
+            gutterBottom
+          >
             Giỏ hàng của bạn hiện đang trống!
           </Typography>
           <Button component={Link} to="/" variant="contained" color="primary">
@@ -147,11 +154,15 @@ const CartPage = () => {
                 {cartItems.map((item) => (
                   <Card
                     key={item.id}
-                    sx={{ display: "flex", marginBottom: "16px" }}
+                    sx={{
+                      display: "flex",
+                      marginBottom: "16px",
+                      flexDirection: isMobile ? "column" : "row",
+                    }}
                   >
                     <CardMedia
                       component="img"
-                      sx={{ width: 100 }}
+                      sx={{ width: isMobile ? "100%" : 100 }} // Full width on mobile
                       image={item.image}
                       alt={item.name}
                     />
@@ -323,7 +334,14 @@ const CartPage = () => {
 
           {/* Phần tổng thanh toán */}
           <Grid item xs={12} md={4}>
-            <Paper elevation={3} sx={{ padding: "16px" }}>
+            <Paper
+              elevation={3}
+              sx={{
+                padding: "16px",
+                width: isMobile ? "100%" : "80%",
+                margin: isMobile ? "auto" : "0",
+              }}
+            >
               <Typography variant="h6" gutterBottom>
                 Tổng cộng
               </Typography>
