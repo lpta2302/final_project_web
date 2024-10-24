@@ -15,7 +15,7 @@ function CustomGridToolbar(props) {
       ]);
       setRowModesModel((oldModel) => ({
         ...oldModel,
-        [id]: { mode: GridRowModes.Edit, fieldToFocus: columnFields.find(field=>field.endsWith('Name')) },
+        [id]: { mode: GridRowModes.Edit, fieldToFocus: columnFields.find(field=>field.endsWith('Code')) },
       }));
     };
   

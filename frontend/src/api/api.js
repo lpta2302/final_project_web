@@ -1,7 +1,21 @@
-import { DELETE, READ_ALL_URL } from "./API_URL";
-import axios from "./myAxios";
+import { CREATE_URL, DELETE, READ_ALL_URL, UPDATE_URL } from './API_URL';
+import axios from './myAxios'
 
 //----------------------------- General -----------------------------
+export async function createRecord(createType, data) {
+    try {
+        const newData = (await axios.post(CREATE_URL[createType], data)).data;
+
+        if (!newData)
+            throw Error;
+
+        return newData;
+    } catch (error) {
+        console.error(error);
+        return data;
+    }
+}
+
 export async function readAll(readType, id) {
   try {
     console.log(READ_ALL_URL(id)[readType]);
@@ -12,6 +26,21 @@ export async function readAll(readType, id) {
     console.error(error);
     return error;
   }
+}
+
+
+export async function updateRecord(updateType, data) {
+    try {
+        const newData = (await axios.patch(UPDATE_URL(data._id)[updateType], data)).data;
+
+        if (!newData)
+            throw Error;
+
+        return newData;
+    } catch (error) {
+        console.error(error);
+        return data;
+    }
 }
 
 export async function deleteRecord(id, deleteType) {
@@ -27,20 +56,16 @@ export async function deleteRecord(id, deleteType) {
 
 //----------------------------- Account -----------------------------
 export async function createAccount(user) {
-  try {
-    const response = await axios.post("/auth/register", user);
-    const data = response.data;
+    try {
+        const data = (await axios.post('/auth/register', user)).data;
+        if (!data)
+            throw Error
 
-    // Nếu backend trả về false, ném lỗi đăng ký thất bại
-    if (!data || data === false) {
-      throw new Error("Đăng ký thất bại.");
+        return data;
+    } catch (error) {
+        console.error(error);
+        return error;
     }
-
-    return data; // Trả về token khi thành công
-  } catch (error) {
-    console.error("Lỗi đăng ký:", error);
-    return false; // Trả về false nếu có lỗi
-  }
 }
 
 export async function updateAccountStatus(user) {
