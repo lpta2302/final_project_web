@@ -7,13 +7,13 @@ import {
 } from "@mui/material";
 import AuthProvider from "./context/AuthContext";
 import RootLayout from "./_root/RootLayout";
-import { HomePage } from "./_root/pages";
+
 import Login from "./components/forms/Login";
 import "./globalStyle.css";
 import AdminLayout from "./_root/AdminLayout";
 import AdminHomePage from "./_root/pages/admin/AdminHomePage";
 import { adminNav, customerNav } from "./constance/constance.jsx";
-import HomePageClient from "./_root/pages/customer/HomePageClient.jsx";
+import HomePage from "./_root/pages/customer/HomePage.jsx";
 import GridProduct from "./_root/pages/customer/GridProduct.jsx";
 import CheckoutPage from "./_root/pages/customer/Checkoutpage.jsx";
 import CustomerProfile from "./_root/pages/customer/CustomProfile.jsx";
@@ -59,7 +59,7 @@ function App() {
         <AuthProvider>
           <Routes>
             <Route element={<RootLayout />}>
-              <Route index element={<HomePageClient />} path="/" />
+              <Route index element={<HomePage />} path="/" />
               {customerNav.map((navItem) => (
                 <Route
                   path={navItem.segment}

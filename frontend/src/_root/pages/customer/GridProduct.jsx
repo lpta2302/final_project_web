@@ -29,7 +29,7 @@ const SearchBar = ({ onSearchChange }) => {
   return (
     <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
       <TextField
-        label="Search by name or tag"
+        label="Search"
         variant="outlined"
         size="small"
         value={searchTerm}
@@ -68,9 +68,9 @@ const FilterBar = ({ onFilterChange }) => {
         size="small"
         sx={{ minWidth: "150px" }}
       >
-        <MenuItem value="all">Dòng máy </MenuItem>
-        <MenuItem value="gaming">Gaming</MenuItem>
-        <MenuItem value="office">Văn phòng</MenuItem>
+        <MenuItem value="all">Tag </MenuItem>
+        <MenuItem value="gaming">TagCode</MenuItem>
+        <MenuItem value="office">TagName</MenuItem>
         {/* Add more categories here */}
       </Select>
 
