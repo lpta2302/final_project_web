@@ -110,6 +110,8 @@ const Register = ({ setModalType }) => {
 
         // Lưu token vào localStorage
         localStorage.setItem("token", response);
+
+        setModalType('login');
       }
     } catch (error) {
       console.error("Lỗi trong quá trình đăng ký:", error);
