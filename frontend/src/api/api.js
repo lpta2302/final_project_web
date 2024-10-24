@@ -58,7 +58,7 @@ export async function deleteRecord(id, deleteType) {
 
 export async function login(loginInfo) {
     try {
-        const token = axios.get(AUTH_URL.login, loginInfo);
+        const token = (axios.post(AUTH_URL.login, loginInfo)).data;
         if (!token)
             throw Error;
 
