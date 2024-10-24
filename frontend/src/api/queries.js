@@ -19,9 +19,8 @@ import {
 
 //----------------------------- Auth -----------------------------
 export const useLogin = () => {
-    return useQuery({
-        queryFn: (loginInfo) => login(loginInfo),
-        queryKey: [CURRENT_TOKEN]
+    return useMutation({
+        mutationFn: (loginInfo) => login(loginInfo),
     });
 };
 
