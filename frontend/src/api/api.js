@@ -1,4 +1,4 @@
-import { CREATE_URL, DELETE, READ_ALL_URL, UPDATE_URL } from './API_URL';
+import { AUTH_URL, CREATE_URL, DELETE, READ_ALL_URL, UPDATE_URL } from './API_URL';
 import axios from './myAxios'
 
 //----------------------------- General -----------------------------
@@ -52,6 +52,21 @@ export async function deleteRecord(id, deleteType) {
     console.error(error);
     return error;
   }
+}
+
+//----------------------------- Auth -----------------------------
+
+export async function login(loginInfo) {
+    try {
+        const token = axios.get(AUTH_URL.login, loginInfo);
+        if (!token)
+            throw Error;
+
+        return token
+    } catch (error) {
+        console.error(error);
+        return error;
+    }
 }
 
 //----------------------------- Account -----------------------------
