@@ -55,6 +55,14 @@ const DiscountSection = ({ totalAmount, setDiscountValue }) => {
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>Sử dụng mã giảm giá</Typography>
         </AccordionSummary>
+        <TextField
+          label="Mã giảm giá"
+          value={discountCode}
+          onChange={(e) => setDiscountCode(e.target.value)}
+          fullWidth
+          margin="normal"
+          enabled
+        />
         <AccordionDetails>
           {discountOptions.map((option) => (
             <Card
@@ -78,14 +86,6 @@ const DiscountSection = ({ totalAmount, setDiscountValue }) => {
           ))}
         </AccordionDetails>
       </Accordion>
-
-      <TextField
-        label="Mã giảm giá"
-        value={discountCode}
-        fullWidth
-        margin="normal"
-        disabled
-      />
     </Box>
   );
 };

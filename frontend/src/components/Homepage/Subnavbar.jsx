@@ -81,7 +81,7 @@ const SubNavbar = () => {
           <BottomNavigationAction
             label="Khuyến mãi"
             icon={<OfferIcon />}
-            onClick={() => navigate("/offers")}
+            onClick={() => navigate("/voucherspage")}
           />
           <BottomNavigationAction
             label="Tài khoản"
@@ -96,9 +96,9 @@ const SubNavbar = () => {
             width: { xs: "70px", sm: "150px", md: "200px", lg: "200px" },
             backgroundColor: "#fff",
             borderRight: "1px solid #ddd",
-            paddingTop: { xs: "5px", sm: "10px" },
+            paddingTop: { xs: "10px", sm: "10px" },
             position: "fixed",
-            top: { xs: "50px", sm: "60px", lg: "70px" },
+            top: { xs: "50px", sm: "60px", lg: "80px" },
             left: 0,
             height: { xs: "calc(100vh - 50px)", sm: "calc(100vh - 60px)" },
             boxShadow: "2px 0 5px rgba(0,0,0,0.1)",
