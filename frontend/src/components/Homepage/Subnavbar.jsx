@@ -93,7 +93,7 @@ const SubNavbar = () => {
         // Thanh dọc cho màn hình lớn
         <Box
           sx={{
-            width: { xs: "70px", sm: "150px", md: "200px", lg: "250px" },
+            width: { xs: "70px", sm: "150px", md: "200px", lg: "200px" },
             backgroundColor: "#fff",
             borderRight: "1px solid #ddd",
             paddingTop: { xs: "5px", sm: "10px" },
