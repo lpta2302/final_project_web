@@ -24,7 +24,7 @@ import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { Link } from "react-router-dom";
-
+import DiscountSection from "../../../components/Shopingcart/usevoucher";
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([
     {
@@ -357,26 +357,20 @@ const CartPage = () => {
               <Typography variant="h6" gutterBottom>
                 Thành tiền: {totalWithDiscountAndShipping.toLocaleString()} đ
               </Typography>
-              <TextField
-                label="Mã giảm giá"
-                value={discountCode}
-                onChange={(e) => setDiscountCode(e.target.value)}
-                fullWidth
-                margin="normal"
+
+              {/* Discount Section */}
+              <DiscountSection
+                totalAmount={totalAmount}
+                setDiscountValue={setDiscountValue}
               />
-              <Button
-                variant="contained"
-                color="primary"
-                fullWidth
-                onClick={handleApplyDiscount}
-              >
-                Áp dụng mã
-              </Button>
+
               <Button
                 variant="contained"
                 color="secondary"
                 fullWidth
                 sx={{ marginTop: "16px" }}
+                component={Link}
+                to="/checkoutpage"
               >
                 Thanh toán
               </Button>

@@ -1,5 +1,5 @@
-// src/pages/CheckoutPage.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom"; // Import useLocation
 import {
   Container,
   Grid,
@@ -14,52 +14,52 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 
+// Giả định dữ liệu từ trang shopping cart
 const CheckoutPage = () => {
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: "Anh Lâm kiệt gì cũng bắt",
-      price: 949000,
-      quantity: 2,
-    },
-    {
-      id: 2,
-      name: "Màn hình Dell S2421HN",
-      price: 3499000,
-      quantity: 3,
-    },
-    {
-      id: 3,
-      name: "Bàn phím cơ Keychron K6",
-      price: 2190000,
-      quantity: 2,
-    },
-    {
-      id: 4,
-      name: "Chuột Logitech MX Master 3",
-      price: 2190000,
-      quantity: 1,
-    },
-    {
-      id: 5,
-      name: "Tai nghe Sony WH-1000XM4",
-      price: 6990000,
-      quantity: 1,
-    },
-    {
-      id: 6,
-      name: "Tai nghe Sony WH-1000XM4",
-      price: 6990000,
-      quantity: 1,
-    },
-  ]);
+  const location = useLocation(); // Lấy dữ liệu từ state khi điều hướng
+  const { cartItems, savedCustomerInfo } = location.state || {
+    cartItems: [],
+    savedCustomerInfo: null,
+  };
 
+  const [customerInfo, setCustomerInfo] = useState({
+    name: "",
+    address: "",
+    phone: "",
+    email: "",
+  });
+
+  const [useSavedInfo, setUseSavedInfo] = useState(false);
+
+  useEffect(() => {
+    // Nếu người dùng chọn sử dụng thông tin đã lưu
+    if (useSavedInfo && savedCustomerInfo) {
+      setCustomerInfo(savedCustomerInfo);
+    } else {
+      setCustomerInfo({
+        name: "",
+        address: "",
+        phone: "",
+        email: "",
+      });
+    }
+  }, [useSavedInfo, savedCustomerInfo]);
+
+  // Tính tổng số tiền từ giỏ hàng
   const totalAmount = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
+
+  // Hàm xử lý khi thay đổi thông tin khách hàng
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setCustomerInfo((prev) => ({ ...prev, [name]: value }));
+  };
 
   return (
     <Container style={{ marginTop: "20px" }}>
@@ -72,13 +72,11 @@ const CheckoutPage = () => {
         <Grid item xs={12} md={8}>
           <Paper style={{ padding: "16px" }}>
             <Typography variant="h6" gutterBottom>
-              Hóa đơn
+              Hóa đơn của bạn
             </Typography>
 
             {/* Bảng tóm tắt đơn hàng với scroll */}
             <TableContainer style={{ maxHeight: "300px", overflowY: "auto" }}>
-              {" "}
-              {/* Đặt maxHeight và overflowY để cuộn */}
               <Table stickyHeader>
                 <TableHead>
                   <TableRow>
@@ -92,17 +90,13 @@ const CheckoutPage = () => {
                 <TableBody>
                   {cartItems.map((item, index) => (
                     <TableRow key={item.id}>
-                      <TableCell>{index + 1}</TableCell> {/* Số thứ tự */}
-                      <TableCell>{item.name}</TableCell> {/* Tên sản phẩm */}
-                      <TableCell>
-                        {item.price.toLocaleString()} đ
-                      </TableCell>{" "}
-                      {/* Đơn giá */}
-                      <TableCell>{item.quantity}</TableCell> {/* Số lượng */}
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{item.name}</TableCell>
+                      <TableCell>{item.price.toLocaleString()} đ</TableCell>
+                      <TableCell>{item.quantity}</TableCell>
                       <TableCell>
                         {(item.price * item.quantity).toLocaleString()} đ
-                      </TableCell>{" "}
-                      {/* Tổng tiền */}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -122,30 +116,61 @@ const CheckoutPage = () => {
             <Typography variant="h6" gutterBottom>
               Thông tin khách hàng
             </Typography>
+
+            {/* Checkbox chọn sử dụng thông tin đã lưu */}
+            {savedCustomerInfo && (
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={useSavedInfo}
+                    onChange={() => setUseSavedInfo(!useSavedInfo)}
+                    color="primary"
+                  />
+                }
+                label="Sử dụng thông tin đã lưu"
+              />
+            )}
+
             <form noValidate autoComplete="off">
               <TextField
                 label="Họ và tên"
+                name="name"
+                value={customerInfo.name}
+                onChange={handleInputChange}
                 fullWidth
                 margin="normal"
                 variant="outlined"
+                disabled={useSavedInfo}
               />
               <TextField
                 label="Địa chỉ"
+                name="address"
+                value={customerInfo.address}
+                onChange={handleInputChange}
                 fullWidth
                 margin="normal"
                 variant="outlined"
+                disabled={useSavedInfo}
               />
               <TextField
                 label="Số điện thoại"
+                name="phone"
+                value={customerInfo.phone}
+                onChange={handleInputChange}
                 fullWidth
                 margin="normal"
                 variant="outlined"
+                disabled={useSavedInfo}
               />
               <TextField
                 label="Email"
+                name="email"
+                value={customerInfo.email}
+                onChange={handleInputChange}
                 fullWidth
                 margin="normal"
                 variant="outlined"
+                disabled={useSavedInfo}
               />
             </form>
           </Paper>
@@ -158,6 +183,11 @@ const CheckoutPage = () => {
         color="primary"
         fullWidth
         style={{ marginTop: "20px", padding: "10px" }}
+        onClick={() => {
+          // Thực hiện hành động thanh toán
+          console.log("Customer Info:", customerInfo);
+          console.log("Cart Items:", cartItems);
+        }}
       >
         Xác nhận thanh toán
       </Button>
