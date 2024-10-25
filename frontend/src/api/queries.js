@@ -325,11 +325,28 @@ export const useUpdateCarousel = () => {
     });
 };
 
+export const useDeleteCarousel = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (carouselId) => deleteRecord(carouselId, 'carousel'),
+        onSuccess: () => {
+            queryClient.invalidateQueries([READ_ALL_CAROUSEL]);
+        },
+    });
+};
+
 //----------------------------- Order -----------------------------
 export const useReadAllOrder = () => {
     return useQuery({
         queryKey: [READ_ALL_ORDERS],
         queryFn: () => readAll('order'),
+    });
+};
+
+export const useReadOrdersOfUser = (userId) => {
+    return useQuery({
+        queryKey: [READ_ORDER_OF_USER, userId],
+        queryFn: () => readAll('orderOfUser',id),
     });
 };
 

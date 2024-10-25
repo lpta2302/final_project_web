@@ -33,6 +33,7 @@ export const READ_ALL_URL = (id)=>({
     specification: '/spec',
     carousel: '/carousel',
     order: '/order',
+    orderOfUser: '/order/user/'+id,
     review: '/reviews/'+id,
     address: '/client/address/'+id,  
     cart: '/client/cart/showCart/'+id,  
