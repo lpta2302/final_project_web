@@ -18,6 +18,7 @@ import GridProduct from "./_root/pages/customer/GridProduct.jsx";
 import CheckoutPage from "./_root/pages/customer/Checkoutpage.jsx";
 import CustomerProfile from "./_root/pages/customer/CustomProfile.jsx";
 import VoucherPage from "./_root/pages/customer/Voucher.jsx";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 const theme = createTheme({
   palette: {
     white: {
@@ -34,6 +35,9 @@ const theme = createTheme({
     primary: {
       main: "#0672cb",
     },
+    error: {
+      main: "#f53935"
+    }
   },
   typography: {
     fontFamily: "inter",
@@ -48,47 +52,65 @@ const theme = createTheme({
         },
       },
     },
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#fff'
+        }
+      }
+    }
   },
 });
 
+const queryClient = new QueryClient();
+
 function App() {
+
   return (
-    <Container component="main">
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <Container component="main"
+        sx={{
+          p: {
+            md: '12px', // Padding of 12px for medium screens and up
+            lg: '0',    // Padding of 0 for large screens and up
+          },
+        }}
+      >
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <AuthProvider>
+            <Routes>
+              <Route element={<RootLayout />}>
+                <Route index element={<HomePage />} path="/" />
+                {customerNav.map((navItem) => (
+                  <Route
+                    path={navItem.segment}
+                    element={navItem.element}
+                    key={navItem.title}
+                  />
+                ))}
+              </Route>
+            </Routes>
+          </AuthProvider>
           <Routes>
-            <Route element={<RootLayout />}>
-              <Route index element={<HomePage />} path="/" />
-              {customerNav.map((navItem) => (
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminHomePage />} />
+              {adminNav.map((navItem) => (
                 <Route
                   path={navItem.segment}
                   element={navItem.element}
                   key={navItem.title}
                 />
               ))}
+              <Route path="login" element={<Login admin />} />
             </Route>
+            <Route path="/productgrid" element={<GridProduct />} />
+            <Route path="/checkoutpage" element={<CheckoutPage />} />
+            <Route path="/profile" element={<CustomerProfile />} />
           </Routes>
-        </AuthProvider>
-        <Routes>
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminHomePage />} />
-            {adminNav.map((navItem) => (
-              <Route
-                path={navItem.segment}
-                element={navItem.element}
-                key={navItem.title}
-              />
-            ))}
-            <Route path="login" element={<Login admin />} />
-          </Route>
-
-          <Route path="/productgrid" element={<GridProduct />} />
-          <Route path="/checkoutpage" element={<CheckoutPage />} />
-          <Route path="/profile" element={<CustomerProfile />} />
-        </Routes>
-      </ThemeProvider>
-    </Container>
+        </ThemeProvider>
+      </Container>
+    </QueryClientProvider>
   );
 }
 

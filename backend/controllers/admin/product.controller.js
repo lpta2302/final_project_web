@@ -1,43 +1,64 @@
 import Product from "../../models/product.model.js";
 import Brand from "../../models/brand.model.js";
+import Category from "../../models/category.model.js";
+import SeenProd from "../../models/seen.model.js";
+import Specs from "../../models/specification.model.js";
+import Tag from "../../models/tag.model.js";
+import wishList from "../../models/wishlist.model.js";
 
 // [GET] /products
 export const index = async (req, res) => {
   const product = await Product.find({});
 
-  res.json(product);
+  res.status(200).json(product);
 };
 
 // [POST] /products/postProduct
 export const postProduct = async (req, res) => {
   try {
-    const record = new Product(req.body);
-
-    const exitProductCode = await Product.findOne({
+    // Kiểm tra nếu productCode đã tồn tại
+    const existingProductCode = await Product.findOne({
       productCode: req.body.productCode,
     });
 
-    if (exitProductCode) {
-      res.json({
-        code: 400,
-        message: "Mã sản phẩm đã tồn tại",
-      });
-      return;
+    if (existingProductCode) {
+      return res.status(400).json(false);
     }
 
+    // Kiểm tra nếu productName đã tồn tại
+    const existingProductName = await Product.findOne({
+      productName: req.body.productName,
+    });
+
+    if (existingProductName) {
+      return res.status(400).json({
+        code: 400,
+        message: "Tên sản phẩm đã tồn tại",
+      });
+    }
+
+    // Tạo sản phẩm mới
+    const record = new Product(req.body);
     const savedProduct = await record.save();
+
+    // Thêm sản phẩm vào danh sách sản phẩm của thương hiệu
     const brand = await Brand.findById(req.body.brand);
     await brand.updateOne({ $push: { products: savedProduct._id } });
 
-    res.json({
-      code: 200,
-      message: "Tạo sản phẩm thành công",
-    });
+    // Thêm tag vào bảng tag
+    if (Array.isArray(req.body.tag) && req.body.tag.length > 0) {
+      for (const tagId of req.body.tag) {
+        const tag = await Tag.findById(tagId);
+        if (tag) {
+          await tag.updateOne({ $push: { products: savedProduct._id } });
+        }
+      }
+    }
+
+    res.status(200).json(savedProduct);
   } catch (error) {
-    res.json({
-      code: 400,
-      message: "Tên sản phẩm đã tồn tại",
-    });
+    console.log(error);
+    return res.status(400).json(false);
   }
 };
 
@@ -48,38 +69,60 @@ export const editProduct = async (req, res) => {
     console.log(id);
     console.log(req.body);
 
-    await Product.updateOne({ _id: id }, req.body);
-
-    res.json({
-      code: 200,
-      message: "Sửa sản phẩm thành công",
+    const result = await Product.findOneAndUpdate({ _id: id }, req.body, {
+      new: true,
     });
+
+    res.status(200).json(result);
   } catch (error) {
-    res.json({
-      code: 400,
-      message: "Sửa sản phẩm thất bại",
+    res.status(400).json({
+      message: false,
     });
   }
 };
 
-// [DELETE] /products/deleteProduct
+// [DELETE] /products/deleteProduct/:id
 export const deleteProduct = async (req, res) => {
   try {
+    // Xóa brand
     await Brand.updateOne(
       { products: req.params.id },
       { $pull: { products: req.params.id } }
     );
 
-    await Product.findByIdAndDelete(req.params.id);
+    // Xóa Category
+    await Category.updateMany(
+      { products: req.params.id },
+      { $pull: { products: req.params.id } }
+    );
 
-    res.json({
-      code: 200,
-      message: "Xóa sản phẩm thành công",
-    });
+    // Xóa Seen Product
+    await SeenProd.updateMany(
+      { products: req.params.id },
+      { $pull: { products: req.params.id } }
+    );
+
+    // Xóa Tag Product
+    await Tag.updateMany(
+      { products: req.params.id },
+      { $pull: { products: req.params.id } }
+    );
+
+    // Xóa Specs
+    await Specs.deleteMany({ products: req.params.id });
+
+    // Xóa WishList
+    await wishList.updateMany(
+      { products: req.params.id },
+      { $pull: { products: req.params.id } }
+    );
+
+    const product = await Product.findByIdAndDelete(req.params.id);
+
+    res.status(200).json(true);
   } catch (error) {
-    res.json({
-      code: 400,
-      message: "Xóa sản phẩm thất bại",
+    res.status(400).json({
+      message: false,
     });
   }
 };
@@ -92,14 +135,10 @@ export const detail = async (req, res) => {
 
     const record = await Product.findOne({ _id: id });
 
-    res.json({
-      code: 200,
-      record: record,
-    });
+    res.status(200).json(record);
   } catch (error) {
-    res.json({
-      code: 400,
-      message: "Đã có lỗi xảy ra",
+    res.status(400).json({
+      message: false,
     });
   }
 };
@@ -137,8 +176,22 @@ export const search = async (req, res) => {
     const products = await Product.find(filter);
 
     // Trả về danh sách sản phẩm
-    res.json(products);
+    res.status(200).json(products);
   } catch (error) {
-    res.status(500).json({ message: "Có lỗi xảy ra", error });
+    res.status(500).json(false);
+  }
+};
+
+// [GET] /products/statistic-brand/:brandId
+export const statisticBrand = async (req, res) => {
+  try {
+    const brandId = req.params.brandId;
+
+    const brand = await Brand.findOne({ _id: brandId }).populate("products");
+
+    res.status(200).json(brand.products);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(false);
   }
 };

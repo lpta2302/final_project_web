@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { Container, Typography } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 import Slider from "react-slick";
 import BannerSlider from "../../../components/Homepage/BannerSlider";
 import ProductCard from "../../../components/Homepage/ProductCard";
 import SubNavbar from "../../../components/Homepage/Subnavbar";
-import { TopAppBar } from "../../../components";
+import { useReadAllCategory } from "../../../api/queries";
 
 const products = [
   {
@@ -209,6 +209,10 @@ const sliderSettings = {
 const HomePage = ({ handleAddToCart }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Moved inside component
   const [favorites, setFavorites] = useState({});
+  const { data: categories, isPending: isLoadingCat } = useReadAllCategory();
+
+
+  const theme = useTheme();
 
   const handleToggleFavorite = (product) => {
     if (!isLoggedIn) {
@@ -221,13 +225,38 @@ const HomePage = ({ handleAddToCart }) => {
     }));
   };
 
+  if (isLoadingCat) {
+    return <Typography>loading...</Typography>
+  }
+
   return (
     <>
-      <SubNavbar />
-      <Container>
-        <TopAppBar />
-
-        <BannerSlider />
+      {/* <SubNavbar /> */}
+      <Box component={"section"}
+        sx={{
+          '& .MuiContainer-root': {
+            p: {
+              md: '12px', // Padding of 12px for medium screens and up
+              lg: '0',    // Padding of 0 for large screens and up
+            },
+          },
+        }}
+      >
+        <Box flex='1' display={"flex"}
+        // sx={{ 
+        //   height: `calc(100vh - ${theme.mixins.toolbar.minHeight}px)` 
+        //   }}
+        >
+          <SubNavbar categories={categories} />
+          <Box
+            width={{
+              xs: '100%',
+              md: 'calc(100% - 220px)'
+            }}
+          >
+            <BannerSlider />
+          </Box>
+        </Box>
         {/* Popular Products Section */}
         <Typography
           variant="h4"
@@ -303,7 +332,7 @@ const HomePage = ({ handleAddToCart }) => {
             />
           ))}
         </Slider>
-      </Container>
+      </Box>
     </>
   );
 };

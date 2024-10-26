@@ -6,17 +6,9 @@ const brandController = {
   showBrand: async (req, res) => {
     try {
       const brands = await Brand.find();
-      res.status(200).json({
-        code: 200,
-        message: "Hiển thị tất cả các brand thành công.",
-        data: brands,
-      });
+      res.status(200).json(brands);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message: "Quá trình hiển thị thông tin gặp lỗi. Vui lòng thử lại",
-        error: err.message,
-      });
+      res.status(500).json(false);
     }
   },
 
@@ -27,25 +19,14 @@ const brandController = {
       const id = await Brand.findById(_brand._id);
 
       if (id) {
-        return res.status(400).json({
-          code: 400,
-          message: "Brand đã tồn tại. Vui lòng thêm brand mới.",
-        });
+        return res.status(400).json(false);
       }
 
       await _brand.save();
 
-      res.status(200).json({
-        code: 200,
-        message: "Tạo brand mới thành công.",
-        data: _brand,
-      });
+      res.status(200).json(_brand);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message: "Quá trình thêm brand gặp lỗi. Vui lòng thử lại",
-        error: err.message,
-      });
+      res.status(500).json(false);
     }
   },
 
@@ -54,17 +35,9 @@ const brandController = {
     try {
       const products = await Brand.findById(req.params.id).populate("products");
 
-      res.status(200).json({
-        code: 200,
-        message: "Hiển thị danh sách các sản phẩm trong brand thành công.",
-        data: products,
-      });
+      res.status(200).json(products);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message: "Quá trình hiển thị gặp lỗi. Vui lòng thử lại.",
-        error: err.message,
-      });
+      res.status(500).json(false);
     }
   },
 
@@ -76,40 +49,26 @@ const brandController = {
         { $unset: { brand: "" } }
       );
 
-      await Brand.findByIdAndDelete(req.params.id);
+      const brand = await Brand.findByIdAndDelete(req.params.id);
 
-      res.status(200).json({
-        code: 200,
-        message: "Xóa brand thành công.",
-      });
+      res.status(200).json(true);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message: "Xóa brand gặp lỗi. Vui lòng hãy thử lại.",
-        error: err.message,
-      });
+      res.status(500).json(false);
     }
   },
 
   // [PATCH] /brand/
   updateBrand: async (req, res) => {
     try {
-      const updateBrand = await Brand.updateOne(
+      const updateBrand = await Brand.findByIdAndUpdate(
         { _id: req.params.id },
-        { $set: req.body }
+        { $set: req.body },
+        { new: true }
       );
 
-      res.status(200).json({
-        code: 200,
-        message: "Cập nhật brand thành công.",
-        data: updateBrand,
-      });
+      res.status(200).json(updateBrand);
     } catch (err) {
-      res.status(500).json({
-        code: 500,
-        message: "Quá trình cập nhật diễn ra thất bại. Vui lòng thử lại",
-        error: err.message,
-      });
+      res.status(500).json(false);
     }
   },
 
@@ -141,18 +100,10 @@ const brandController = {
       }).sort(sortBy);
 
       // Trả về kết quả tìm kiếm
-      res.status(200).json({
-        code: 200,
-        message: "Tìm kiếm thành công",
-        data: brands, // Trả về danh sách thương hiệu tìm được
-      });
+      res.status(200).json(brands);
     } catch (err) {
       // Xử lý lỗi
-      res.status(500).json({
-        code: 500,
-        message: "Quá trình tìm kiếm thương hiệu bị lỗi. Vui lòng thử lại.",
-        error: err.message,
-      });
+      res.status(500).json(false);
     }
   },
 };

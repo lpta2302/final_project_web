@@ -16,25 +16,15 @@ export const add = async (req, res) => {
       tagCode: req.body.tagCode,
     });
     if (exittag) {
-      res.json({
-        code: 500,
-        message: "Mã tag đã tồn tại!",
-      });
-      return;
+      return res.status(400).json(false);
     }
 
     const record = new Tag(req.body);
     await record.save();
 
-    res.json({
-      code: 200,
-      message: "Tạo tag thành công",
-    });
+    res.json(record);
   } catch (error) {
-    res.status(500).json({
-      code: 500,
-      message: "Thêm tag thất bại",
-    });
+    res.status(500).json(false);
   }
 };
 
@@ -43,17 +33,13 @@ export const edit = async (req, res) => {
   try {
     const id = req.params.id;
 
-    await Tag.updateOne({ _id: id }, req.body);
+    const result = await Tag.findOneAndUpdate({ _id: id }, req.body, {
+      new: true,
+    });
 
-    res.json({
-      code: 200,
-      message: "Sửa tag thành công",
-    });
+    res.status(200).json(result);
   } catch (error) {
-    res.status(500).json({
-      code: 500,
-      message: "Sửa tag thất bại",
-    });
+    res.status(500).json(false);
   }
 };
 
@@ -62,17 +48,11 @@ export const deletetag = async (req, res) => {
   try {
     const id = req.params.id;
 
-    await Tag.deleteOne({ _id: id });
+    const tag = await Tag.deleteOne({ _id: id });
 
-    res.json({
-      code: 200,
-      message: "Xóa tag thành công",
-    });
+    res.status(200).json(true);
   } catch (error) {
-    res.status(500).json({
-      code: 500,
-      message: "Xóa tag thất bại",
-    });
+    res.status(500).json(false);
   }
 };
 
@@ -99,11 +79,8 @@ export const search = async (req, res) => {
     const tags = await Tag.find(filter);
 
     // Trả về kết quả
-    res.json(tags);
+    res.status(200).json(tags);
   } catch (error) {
-    res.status(500).json({
-      code: 500,
-      message: "Tìm kiếm tag thất bại",
-    });
+    res.status(500).json(false);
   }
 };

@@ -9,5 +9,6 @@ router.post("/postProduct", controller.postProduct);
 router.patch("/editProduct/:id", controller.editProduct);
 router.delete("/deleteProduct/:id", controller.deleteProduct);
 router.get("/search", controller.search);
+router.get("/statistic-brand/:brandId", controller.statisticBrand);
 
 export default router;

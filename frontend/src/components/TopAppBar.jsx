@@ -51,9 +51,9 @@ function TopAppBar() {
   );
 
   return (
-    <Box sx={{ display: "flex", alignItems: "center" }}>
-      <AppBar component="nav">
-        <Toolbar>
+    <Box sx={{ display: "flex", alignItems: "center", backgroundColor: 'white' }}>
+      <AppBar component="nav" sx={{'--AppBar-background': '#fff'}}>
+        <Toolbar sx={{backgroundColor: 'white'}}>
           <IconButton
             color="inherit"
             aria-label="open drawer"

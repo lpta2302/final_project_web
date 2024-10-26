@@ -18,7 +18,7 @@ const brandSchema = new mongoose.Schema(
     products: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "product",
+        ref: "Product", // Đảm bảo tên model "Product"
       },
     ],
   },
@@ -27,5 +27,6 @@ const brandSchema = new mongoose.Schema(
   }
 );
 
-const _Brand = mongoose.models.Brand || mongoose.model("Brand", brandSchema);
+const _Brand =
+  mongoose.models.Brand || mongoose.model("Brand", brandSchema, "brands");
 export default _Brand;

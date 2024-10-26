@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
-import Search from '../Search'
+import ExpandableSearch from '../inputs/ExpandableSearch.jsx'
 import { Link, NavLink } from 'react-router-dom';
 import { useAuthContext } from '../../context/AuthContext';
 import { AccountCircleOutlined } from '@mui/icons-material';
@@ -101,19 +101,20 @@ function TopAppBar() {
     );
 
     const modal = {
-        'login': <Login setModalType={setModalType}/>,
-        'register': <Register setModalType={setModalType}/>,
-        'forgot-password': <ForgotPassword setModalType={setModalType}/>
+        'login': <Login setModalType={setModalType} />,
+        'register': <Register setModalType={setModalType} />,
+        'forgot-password': <ForgotPassword setModalType={setModalType} />
     }
 
     return (
-        <Box component='header' sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box component={'header'}>
             <AppBar color='white' component="nav"
                 sx={{
                     '& .MuiToolbar-root': {
                         px: '16px'
                     }
                 }}
+                position='fixed'
             >
                 <Toolbar sx={{ height: '80px' }}>
                     <IconButton
@@ -157,7 +158,7 @@ function TopAppBar() {
                             mx: 'auto'
                         }}
                     >
-                        <Search
+                        <ExpandableSearch
                             isSearchFocused={isSearchFocused}
                             setIsSearchFocused={setIsSearchFocused}
                         />
@@ -202,12 +203,13 @@ function TopAppBar() {
                 >
                     {drawer}
                 </Drawer>
-            </nav>  
+            </nav>
             <Modal
                 open={modalOpen}
                 onClose={handleModalToggle}
                 aria-labelledby="parent-modal-title"
                 aria-describedby="parent-modal-description"
+                sx={{ height: '100vh', maxHeight: '100vh', overflow: 'auto' }}
             >
                 {modal[modalType]}
             </Modal>

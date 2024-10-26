@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Slider from "react-slick";
-import { Card, CardMedia } from "@mui/material";
+import { Card, CardMedia, IconButton } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import "slick-carousel/slick/slick.css"; // Import slick CSS
@@ -38,26 +38,24 @@ const banners = [
 const NextArrow = (props) => {
   const { onClick } = props;
   return (
-    <div
+    <IconButton
       onClick={onClick}
       style={{
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#fff",
         borderRadius: "50%",
         padding: "10px",
-        boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
         cursor: "pointer",
         position: "absolute",
-        right: "-25px", // Đặt mũi tên ra ngoài bên phải
+        right: "0", // Đặt mũi tên ra ngoài bên phải
         top: "50%", // Căn giữa theo chiều dọc
         transform: "translateY(-50%)", // Điều chỉnh cho đúng giữa chiều cao
         zIndex: 1,
       }}
     >
-      <ArrowForwardIcon />
-    </div>
+      <ArrowForwardIcon color="white" />
+    </IconButton>
   );
 };
 
@@ -65,26 +63,24 @@ const NextArrow = (props) => {
 const PrevArrow = (props) => {
   const { onClick } = props;
   return (
-    <div
+    <IconButton
       onClick={onClick}
       style={{
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#fff",
         borderRadius: "50%",
         padding: "10px",
-        boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
         cursor: "pointer",
         position: "absolute",
-        left: "-25px", // Đặt mũi tên ra ngoài bên trái
+        left: "0", // Đặt mũi tên ra ngoài bên trái
         top: "50%", // Căn giữa theo chiều dọc
         transform: "translateY(-50%)", // Điều chỉnh cho đúng giữa chiều cao
         zIndex: 1,
       }}
     >
-      <ArrowBackIcon />
-    </div>
+      <ArrowBackIcon color="white" />
+    </IconButton>
   );
 };
 
@@ -99,21 +95,9 @@ const BannerSlider = () => {
     autoplaySpeed: 3000, // Chuyển slide sau 3 giây
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
-    responsive: [
-      { breakpoint: 1024, settings: { slidesToShow: 3, slidesToScroll: 3 } },
-      { breakpoint: 768, settings: { slidesToShow: 2, slidesToScroll: 2 } },
-      { breakpoint: 480, settings: { slidesToShow: 1, slidesToScroll: 1 } },
-    ],
   };
 
   return (
-    <div
-      style={{
-        width: "80%", // Giới hạn chiều rộng slider
-        margin: "0 auto", // Căn giữa slider
-        position: "relative", // Đặt relative để mũi tên dựa vào
-      }}
-    >
       <Slider {...settings}>
         {banners.map((banner) => (
           <Link
@@ -146,7 +130,6 @@ const BannerSlider = () => {
           </Link>
         ))}
       </Slider>
-    </div>
   );
 };
 

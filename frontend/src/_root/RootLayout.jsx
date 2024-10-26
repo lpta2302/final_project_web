@@ -5,7 +5,7 @@ import { TopAppBar } from "../components";
 function RootLayout() {
   return (
     <>
-      <Container sx={{ py: "80px" }}>
+      <Container sx={{ py: "88px", px:{xs: '4px', md: '8px'}, overflowX: 'hidden'}}>
         <TopAppBar />
 
         <Outlet />

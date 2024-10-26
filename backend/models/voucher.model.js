@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-// Định nghĩa schema cho Tag
+// Định nghĩa schema cho voucher
 const voucherSchema = new mongoose.Schema(
   {
     voucherName: {
@@ -10,7 +10,18 @@ const voucherSchema = new mongoose.Schema(
     discountPercentage: Number,
     description: String,
     fixedAmount: Number,
-    usageLimitPerCustomer: Number,
+    clients: [
+      {
+        clientId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "account",
+        },
+        usageLimitPerCustomer: {
+          type: Number,
+          default: 1,
+        },
+      },
+    ],
   },
   {
     timestamps: true,

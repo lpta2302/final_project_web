@@ -13,7 +13,7 @@ import {
 import LoginIcon from "@mui/icons-material/Login";
 import PropTypes from "prop-types";
 
-const Login = ({ setModalType }) => {
+const Login = ({ setModalType, isAdmin }) => {
   const [inputs, setInputs] = useState({ username: "", password: "" });
   const [error, setError] = useState({ username: "", password: "" });
 
@@ -44,6 +44,7 @@ const Login = ({ setModalType }) => {
 
     setError({ username: "", password: "" });
     console.log("Login successful with username:", inputs.username, ", pass:", inputs.password);
+
   };
 
 
@@ -69,7 +70,6 @@ const Login = ({ setModalType }) => {
         <Typography
           variant="h5"
           sx={{
-            fontSize: { xs: "1.2rem", sm: "1.5rem" },
             fontFamily: "Nunito",
             color: "primary.main",
             fontWeight: "bold",
@@ -101,7 +101,6 @@ const Login = ({ setModalType }) => {
             error={!!error.username}
             helperText={error.username}
             sx={{
-              fontSize: "1rem",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
               },
@@ -120,7 +119,6 @@ const Login = ({ setModalType }) => {
             error={!!error.password}
             helperText={error.password}
             sx={{
-              fontSize: "1rem",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
               },
@@ -130,7 +128,7 @@ const Login = ({ setModalType }) => {
             <FormControlLabel
               control={<Checkbox value="remember" />}
               label={
-                <Typography sx={{ fontSize: "1rem" }}>
+                <Typography>
                   Nhớ mật khẩu
                 </Typography>
               }
@@ -138,7 +136,7 @@ const Login = ({ setModalType }) => {
             <Typography
               onClick={()=>setModalType('forgot-password')}
               color='primary.main'
-              sx={{ fontSize: "1rem", textDecoration: 'underline', '&:hover': { cursor: 'pointer' } }}
+              sx={{ textDecoration: 'underline', '&:hover': { cursor: 'pointer' } }}
             >
               Quên mật khẩu?
             </Typography>
@@ -150,7 +148,6 @@ const Login = ({ setModalType }) => {
             sx={{
               mt: 1,
               height: "3rem",
-              fontSize: "1rem",
               borderRadius: "12px",
             }}
           >
@@ -158,25 +155,28 @@ const Login = ({ setModalType }) => {
             Đăng nhập
           </Button>
         </Box>
-        <Box
+        {
+          !isAdmin &&
+          <Box
           sx={{ display: 'flex', mt: 4, mb: 2}}
         >
           Bạn chưa có tài khoản?
           <Typography
             onClick={()=>setModalType('register')}
             color='primary.main'
-            sx={{ ml: 1, fontSize: "1rem", textDecoration: 'underline', '&:hover': { cursor: 'pointer' } }}
+            sx={{ ml: 1, textDecoration: 'underline', '&:hover': { cursor: 'pointer' } }}
           >
             Đăng ký ngay
           </Typography>
-        </Box>
+        </Box>}
       </Paper>
     </Container>
   );
 };
 
 Login.propTypes = {
-  setModalType: PropTypes.func
+  setModalType: PropTypes.func,
+  isAdmin: PropTypes.bool
 }
 
 export default forwardRef(Login);

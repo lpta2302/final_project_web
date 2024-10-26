@@ -1,25 +1,6 @@
-import {
-  AccountBoxOutlined,
-  Dashboard,
-  WarehouseOutlined,
-} from "@mui/icons-material";
-import {
-  BoxIcon,
-  CartIcon,
-  OrderIcon,
-  OrderTextIcon,
-  VoucherIcon,
-} from "../icons/CustomIcons";
-import {
-  Cart,
-  ManageAccount,
-  ManageInventory,
-  ManageOrder,
-  ManageProduct,
-  ManageVoucher,
-  Voucher,
-  Dashboard as DashboardPage,
-} from "../_root/pages";
+import { AccountBoxOutlined, CategoryOutlined, Dashboard, WarehouseOutlined } from "@mui/icons-material";
+import { BoxIcon, CartIcon, OrderIcon, OrderTextIcon, VoucherIcon } from "../icons/CustomIcons";
+import { ManageAccount, ManageInventory, ManageOrder, ManageProduct, ManageVoucher, Voucher, Dashboard as DashboardPage, ManageCriteria } from "../_root/pages";
 import Orders from "../_root/pages/customer/Orders";
 import CartPage from "../_root/pages/customer/ShoppingCart";
 import VoucherPage from "../_root/pages/customer/Voucher";
@@ -30,14 +11,20 @@ export const adminNav = [
     title: "Quản lý hàng hóa",
   },
   {
-    segment: "manage-product",
-    title: "Sản phẩm",
-    icon: <BoxIcon />,
-    element: <ManageProduct />,
+    title: 'Sản phẩm',
+    segment: 'manage-product',
+    icon: <BoxIcon/>,
+    element: <ManageProduct/>
   },
   {
-    segment: "manage-inventory",
-    title: "Kho hàng",
+    segment: 'manage-criteria',
+    title: 'Phân loại',
+    icon: <CategoryOutlined />,
+    element: <ManageCriteria/>
+  },
+  {
+    segment: 'manage-inventory',
+    title: 'Kho hàng',
     icon: <WarehouseOutlined />,
     element: <ManageInventory />,
   },
@@ -65,7 +52,11 @@ export const adminNav = [
     segment: "manage-account",
     title: "Tài khoản",
     icon: <AccountBoxOutlined />,
-    element: <ManageAccount />,
+    element: <ManageAccount/>
+  },
+  {
+    kind: 'header',
+    title: 'Báo cáo'
   },
   {
     segment: "dashboard",

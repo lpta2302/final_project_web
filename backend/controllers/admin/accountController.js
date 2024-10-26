@@ -1,4 +1,8 @@
 import account from "../../models/account.model.js";
+import wishList from "../../models/wishlist.model.js";
+import Address from "../../models/address.model.js";
+import Review from "../../models/review.model.js";
+import Cart from "../../models/cart.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"; // Thêm dòng này để sử dụng JWT
 const secretKey = "your-secret-key"; // Khóa bí mật để ký JWT, bạn nên lưu khóa này ở file .env
@@ -10,21 +14,36 @@ const accountController = {
       const isAccount = await account.findOne({ email: req.body.email });
 
       if (isAccount) {
-        return res.status(400).json({
-          code: 400,
-          message: "Email đã tồn tại",
-        });
+        return res.status(400).json(false);
       } else {
         // Mã hóa mật khẩu trước khi lưu
         const saltRounds = 10; // Số rounds salt
         const hashedPassword = await bcrypt.hash(req.body.password, saltRounds); // Mã hóa mật khẩu
 
+        const emailPrefix = req.body.email.slice(0, 4);
+
+        const now = new Date();
+        const timeString = `${now.getHours()}${now.getMinutes()}${now.getSeconds()}`;
+
+        // Tạo accountCode
+        const accountCode = `ACC_${emailPrefix}${timeString}`;
+
         const _account = new account({
           ...req.body,
           password: hashedPassword,
+          accountCode: accountCode, // Gắn accountCode vào req.body
         });
 
         await _account.save();
+        console.log("a");
+
+        const wishlist = new wishList({
+          client: {
+            _id: _account._id,
+          },
+        });
+
+        await wishlist.save();
 
         // Tạo JWT
         const token = jwt.sign(
@@ -35,18 +54,11 @@ const accountController = {
           }
         );
 
-        res.status(200).json({
-          code: 200,
-          message: "Đăng ký thành công",
-          token: token,
-        });
+        res.status(200).json(token);
       }
     } catch (error) {
       console.error(error);
-      res.status(500).json({
-        code: 500,
-        message: "Đã có lỗi xảy ra trong quá trình đăng ký",
-      });
+      res.status(500).json(false);
     }
   },
 
@@ -58,28 +70,22 @@ const accountController = {
       const _account = await account.findOne({ username });
 
       if (!_account) {
-        return res
-          .status(400)
-          .json("Tài khoản không tồn tại. Vui lòng tiến hành đăng ký");
+        return res.status(400).json(false);
       }
 
       const isMatch = await bcrypt.compare(password, _account.password);
 
       if (isMatch && _account.accountStatus == "active") {
-        if (account.accountRole == "client") {
-          return res.status(200).json("Bạn đăng nhập thành công.");
+        if (_account.accountRole == "client") {
+          return res.status(200).json(_account);
         } else {
-          return res
-            .status(200)
-            .json("Chào mừng ngài quay trở lại, administrator");
+          return res.status(200).json(_account);
         }
       } else {
-        return res.status(400).json("Sai Mật Khẩu. Vui lòng nhập lại");
+        return res.status(400).json(false);
       }
     } catch (err) {
-      res
-        .status(500)
-        .json("Quá trình đăng nhập thất bại, vui lòng thử lại. " + err);
+      res.status(500).json(false);
     }
   },
 
@@ -90,11 +96,7 @@ const accountController = {
       const listAccount = await account.find();
       res.status(200).json(listAccount);
     } catch (err) {
-      res
-        .status(500)
-        .json(
-          "Không thể hiển thị danh sách tài khoản, vui lòng thử lại. " + err
-        );
+      res.status(500).json(false);
     }
   },
 
@@ -105,45 +107,55 @@ const accountController = {
       const accountDetail = await account.findOne({ accountCode: accountCode });
       res.status(200).json(accountDetail);
     } catch (err) {
-      res
-        .status(500)
-        .json(
-          "Không thể hiển thị chi tiết tài khoản, vui lòng thử lại. " + err
-        );
+      res.status(500).json(false);
     }
   },
 
   // [PATCH] // Chỉnh sửa trạng thái của tài khoản
   accountUpdateStatus: async (req, res) => {
     try {
-      const accountDetails = await account.findOne({
-        accountCode: req.params.accountCode,
-      });
+      const updatedAccount = await account.findOneAndUpdate(
+        { accountCode: req.params.accountCode }, // Điều kiện tìm kiếm
+        { accountStatus: req.body.accountStatus }, // Cập nhật giá trị
+        { new: true } // Trả về document đã được cập nhật
+      );
 
-      const accountStatus = await accountDetails.updateOne({
-        accountStatus: req.body.accountStatus,
-      });
-
-      res.status(200).json(accountStatus);
+      res.status(200).json(updatedAccount);
     } catch (err) {
-      res
-        .status(500)
-        .json(
-          "Không thể cập nhật trạng thái tài khoản, vui lòng thử lại. " + err
-        );
+      res.status(500).json(false);
     }
   },
 
   // [DELETE] // Xóa tài khoản
   deleteAccount: async (req, res) => {
     try {
-      const result_Delete = await account.deleteOne({
+      const _account = await account.findOne({
         accountCode: req.params.accountCode,
       });
 
-      res.status(200).json("Đã xóa thành công" + result_Delete);
+      await account.deleteOne({
+        accountCode: req.params.accountCode,
+      });
+
+      console.log(_account);
+
+      // Xóa address
+      await Address.deleteMany({ accountId: _account._id });
+
+      // Xóa cart
+      await Cart.deleteOne({ client: _account._id });
+
+      // Xóa Review
+      await Review.deleteMany({ clientId: _account._id });
+
+      // Xóa wishlist
+      await wishList.deleteOne({
+        client: _account._id,
+      });
+
+      res.status(200).json(true);
     } catch (err) {
-      res.status(500).json("Quá trình xóa gặp lỗi, vui lòng thử lại. " + err);
+      res.status(500).json(false);
     }
   },
 
@@ -179,7 +191,10 @@ const accountController = {
 
       const _accounts = await account
         .find({
-          username: { $regex: search, $options: "i" },
+          $or: [
+            { username: { $regex: search, $options: "i" } },
+            { accountCode: { $regex: search, $options: "i" } },
+          ],
         })
         .where("accountStatus")
         .in([...status])
@@ -189,7 +204,7 @@ const accountController = {
 
       res.status(200).json(_accounts);
     } catch (err) {
-      res.status(500).json("Quá trình tìm kiếm xảy ra lỗi, vui lòng thử lại.");
+      res.status(500).json(false);
     }
   },
 };

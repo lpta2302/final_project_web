@@ -1,4 +1,4 @@
-import { forwardRef, useState } from "react";
+import { useState } from "react";
 import {
   Container,
   Paper,
@@ -11,18 +11,20 @@ import {
   Link,
   Grid2,
 } from "@mui/material";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import PropTypes from "prop-types";
+import { useCreateAccount } from "../../api/queries";
+import { enqueueSnackbar as toaster } from "notistack";
+import LoadingOverlay from "../dialogs/LoadingOverlay";
 
-const Register = ({setModalType}) => {
+const Register = ({ setModalType }) => {
   const [inputs, setInputs] = useState({
     username: "",
     password: "",
     firstName: "",
     lastName: "",
     email: "",
-    phone: "",
-    birthDate: "",
+    phoneNumber: "",
+    dateOfBirth: "",
   });
   const [error, setError] = useState({
     username: "",
@@ -30,16 +32,19 @@ const Register = ({setModalType}) => {
     firstName: "",
     lastName: "",
     email: "",
-    phone: "",
+    phoneNumber: "",
   });
   const [isAgree, setIsAgree] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { mutateAsync: register } = useCreateAccount();
 
   const handleChange = (event) => {
     const { name, value } = event.target;
     setInputs((values) => ({ ...values, [name]: value }));
   };
 
-  const handleRegister = (event) => {
+  const handleRegister = async (event) => {
     event.preventDefault();
     let tempError = {
       username: "",
@@ -47,10 +52,11 @@ const Register = ({setModalType}) => {
       firstName: "",
       lastName: "",
       email: "",
-      phone: "",
-      birthDate: "",
+      phoneNumber: "",
+      dateOfBirth: "",
     };
 
+    // Validation
     if (!inputs.username) {
       tempError.username = "Tên tài khoản không được để trống";
     }
@@ -68,10 +74,10 @@ const Register = ({setModalType}) => {
     } else if (!/\S+@\S+\.\S+/.test(inputs.email)) {
       tempError.email = "Email không hợp lệ";
     }
-    if (!inputs.phone) {
-      tempError.phone = "Số điện thoại không được để trống";
-    } else if (!/^\d+$/.test(inputs.phone)) {
-      tempError.phone = "Số điện thoại không hợp lệ";
+    if (!inputs.phoneNumber) {
+      tempError.phoneNumber = "Số điện thoại không được để trống";
+    } else if (!/^\d+$/.test(inputs.phoneNumber)) {
+      tempError.phoneNumber = "Số điện thoại không hợp lệ";
     }
 
     if (Object.values(tempError).some((error) => error)) {
@@ -85,15 +91,38 @@ const Register = ({setModalType}) => {
       firstName: "",
       lastName: "",
       email: "",
-      phone: "",
-      birthDate: "",
+      phoneNumber: "",
+      dateOfBirth: "",
     });
-    console.log("Đăng ký thành công với:", inputs);
+
+    setIsLoading(true);
+    try {
+      const response = await register(inputs);
+
+      // Kiểm tra nếu response là false (thất bại) hoặc không có token
+      if (!response || typeof response !== "string") {
+        toaster("Tên tài khoản hoặc email đã tồn tại. Vui lòng thử lại.", {
+          variant: "error",
+        });
+      } else {
+        // Nếu nhận được token, đăng ký thành công
+        toaster("Đăng ký thành công!", { variant: "success" });
+
+        // Lưu token vào localStorage
+        localStorage.setItem("token", response);
+
+        setModalType('login');
+      }
+    } catch (error) {
+      console.error("Lỗi trong quá trình đăng ký:", error);
+      toaster("Đã xảy ra lỗi. Vui lòng thử lại.", { variant: "error" });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-
   return (
-    <Container maxWidth="sm" sx={{ my: 8 }}>
+    <Container maxWidth="sm" sx={{ my: 8, overflow: "auto" }}>
       <Paper
         elevation={10}
         sx={{
@@ -114,7 +143,6 @@ const Register = ({setModalType}) => {
         <Typography
           variant="h5"
           sx={{
-            fontSize: "1.5rem",
             fontFamily: "Nunito",
             color: "primary.main",
             fontWeight: "bold",
@@ -134,6 +162,7 @@ const Register = ({setModalType}) => {
             gap: 2,
           }}
         >
+          {/* Form fields */}
           <TextField
             required
             id="outlined-username"
@@ -142,7 +171,6 @@ const Register = ({setModalType}) => {
             fullWidth
             autoFocus
             sx={{
-              fontSize: "1rem",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
               },
@@ -161,7 +189,6 @@ const Register = ({setModalType}) => {
             fullWidth
             required
             sx={{
-              fontSize: "1rem",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
               },
@@ -172,7 +199,7 @@ const Register = ({setModalType}) => {
             helperText={error.password}
           />
           <Grid2 container spacing={1}>
-            <Grid2 size={{xs: 12, sm: 6}}>
+            <Grid2 size={{ xs: 12, sm: 6 }}>
               <TextField
                 id="outlined-lastname"
                 label="Họ"
@@ -180,7 +207,6 @@ const Register = ({setModalType}) => {
                 required
                 fullWidth
                 sx={{
-                  fontSize: "1rem",
                   "& .MuiOutlinedInput-root": {
                     borderRadius: "12px",
                   },
@@ -191,7 +217,7 @@ const Register = ({setModalType}) => {
                 helperText={error.lastName}
               />
             </Grid2>
-            <Grid2 size={{xs: 12, sm: 6}}>
+            <Grid2 size={{ xs: 12, sm: 6 }}>
               <TextField
                 id="outlined-firstname"
                 label="Tên"
@@ -199,7 +225,6 @@ const Register = ({setModalType}) => {
                 required
                 fullWidth
                 sx={{
-                  fontSize: "1rem",
                   "& .MuiOutlinedInput-root": {
                     borderRadius: "12px",
                   },
@@ -219,7 +244,6 @@ const Register = ({setModalType}) => {
             required
             fullWidth
             sx={{
-              fontSize: "1rem",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
               },
@@ -230,36 +254,34 @@ const Register = ({setModalType}) => {
             helperText={error.email}
           />
           <TextField
-            id="outlined-phone"
+            id="outlined-phoneNumber"
             label="Số điện thoại"
             type="tel"
-            name="phone"
+            name="phoneNumber"
             required
             fullWidth
             sx={{
-              fontSize: "1rem",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
               },
             }}
-            value={inputs.phone}
+            value={inputs.phoneNumber}
             onChange={handleChange}
-            error={!!error.phone}
-            helperText={error.phone}
+            error={!!error.phoneNumber}
+            helperText={error.phoneNumber}
           />
           <TextField
-            id="outlined-birthdate"
+            id="outlined-dateOfBirth"
             label="Ngày sinh"
             type="date"
-            name="birthDate"
+            name="dateOfBirth"
             fullWidth
             sx={{
-              fontSize: "1rem",
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
               },
             }}
-            value={inputs.birthDate}
+            value={inputs.dateOfBirth}
             onChange={handleChange}
             InputLabelProps={{
               shrink: true,
@@ -273,50 +295,48 @@ const Register = ({setModalType}) => {
                 value="agree"
               />
             }
-            label={
-              <>
-                Tôi đồng ý với{" "}
-                <Link href="/dieu-khoan-bao-mat" target="_blank">
-                  điều khoản bảo mật cá nhân
-                </Link>
-              </>
-            }
+            label="Tôi đồng ý với các điều khoản sử dụng."
           />
           <Button
             type="submit"
+            disabled={!isAgree}
             variant="contained"
-            fullWidth
             sx={{
-              mt: 1,
-              height: "3rem",
-              fontSize: "1rem",
               borderRadius: "12px",
+              backgroundColor: "#6c74cc",
             }}
-            disabled={!isAgree} 
           >
-            <PersonAddIcon sx={{ mr: 2 }} />
             Đăng ký
           </Button>
         </Box>
-        <Box
-          sx={{ display: 'flex', mt: 4, mb: 2}}
-        >
-          Bạn đã có tài khoản?
+        <Box mt={2}>
           <Typography
-            onClick={()=>setModalType('login')}
-            color='primary.main'
-            sx={{ ml: 1, fontSize: "1rem", textDecoration: 'underline', '&:hover': { cursor: 'pointer' } }}
+            variant="body2"
+            sx={{ textAlign: "center", color: "text.secondary" }}
           >
-            Đăng nhập ngay
+            Đã có tài khoản?{" "}
+            <Link
+              component="button"
+              onClick={() => setModalType("login")}
+              sx={{
+                cursor: "pointer",
+                color: "primary.main",
+                fontWeight: "bold",
+              }}
+            >
+              Đăng nhập
+            </Link>
           </Typography>
         </Box>
       </Paper>
+      {/* Hiển thị overlay loading khi đang xử lý */}
+      <LoadingOverlay visible={isLoading} message="Đang tạo tài khoản..." />
     </Container>
   );
 };
 
 Register.propTypes = {
-  setIsLogin: PropTypes.func
-}
+  setModalType: PropTypes.func,
+};
 
-export default forwardRef(Register);
+export default Register;
