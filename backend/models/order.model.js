@@ -5,7 +5,7 @@ const orderScheme = new mongoose.Schema(
     userId: String,
     processStatus: {
       type: String,
-      enum: ["pending", "completed"],
+      enum: ["pending", "completed", "cancelled"],
     },
     paymentStatus: {
       type: String,

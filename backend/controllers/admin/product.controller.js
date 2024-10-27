@@ -181,3 +181,17 @@ export const search = async (req, res) => {
     res.status(500).json(false);
   }
 };
+
+// [GET] /products/statistic-brand/:brandId
+export const statisticBrand = async (req, res) => {
+  try {
+    const brandId = req.params.brandId;
+
+    const brand = await Brand.findOne({ _id: brandId }).populate("products");
+
+    res.status(200).json(brand.products);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(false);
+  }
+};
