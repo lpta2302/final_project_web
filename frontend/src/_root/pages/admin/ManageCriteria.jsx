@@ -3,9 +3,9 @@ import { DataGrid, GridActionsCellItem, GridEditInputCell, GridRowModes } from '
 import { PageContainer } from '@toolpad/core';
 import { useEffect, useState } from 'react';
 import DataGridConfirmDialog from '../../../components/dialogs/DataGridConfirmDialog.jsx';
-import { CustomGridToolbar, ManagePageSearch, SplitButton } from "../../../components";
+import { CustomEditCell, CustomGridToolbar, ManagePageSearch, SplitButton } from "../../../components";
 import { enqueueSnackbar as toaster } from 'notistack';
-import { Box, styled, Tooltip, tooltipClasses } from '@mui/material';
+import { Badge, Box, styled, Tooltip, tooltipClasses } from '@mui/material';
 import { Cancel, Delete, Edit, Save } from '@mui/icons-material';
 import { useCreateBrand, useCreateCategory, useCreateTag, useDeleteBrand, useDeleteCategory, useDeleteTag, useReadAllBrand, useReadAllCategory, useReadAllTag, useUpdateBrand, useUpdateCategory, useUpdateTag } from '../../../api/queries.js';
 
@@ -25,8 +25,8 @@ const criteria = {
     delete: useDeleteBrand,
     update: useUpdateBrand,
     columns: [
-      { field: 'brandCode', headerName: 'Id', width: 150, editable: true, renderEditCell: (params) => (<CustomCell {...params} />), isRequired: true },
-      { field: 'brandName', headerName: 'Hãng sản xuất', width: 200, editable: true, renderEditCell: (params) => (<CustomCell {...params} />), isRequired: true }
+      { field: 'brandCode', headerName: 'Id', width: 150, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} isRequired/>), isRequired: true },
+      { field: 'brandName', headerName: 'Hãng sản xuất', width: 200, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} isRequired/>), isRequired: true }
     ],
     savedFields: ['brandName', 'brandCode']
   },
@@ -36,8 +36,8 @@ const criteria = {
     delete: useDeleteCategory,
     update: useUpdateCategory,
     columns: [
-      { field: 'categoryCode', headerName: 'Id', width: 150, editable: true, renderEditCell: (params) => (<CustomCell {...params} />), isRequired: true },
-      { field: 'categoryName', headerName: 'Loại sản phẩm', width: 200, editable: true, renderEditCell: (params) => (<CustomCell {...params} />), isRequired: true }
+      { field: 'categoryCode', headerName: 'Id', width: 150, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true },
+      { field: 'categoryName', headerName: 'Loại sản phẩm', width: 200, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true }
     ],
     savedFields: ['categoryName', 'categoryCode']
   },
@@ -47,8 +47,8 @@ const criteria = {
     delete: useDeleteTag,
     update: useUpdateTag,
     columns: [
-      { field: 'tagCode', headerName: 'Id', width: 150, editable: true, renderEditCell: (params) => (<CustomCell {...params} />), isRequired: true },
-      { field: 'tagName', headerName: 'Tên thẻ', width: 200, editable: true, renderEditCell: (params) => (<CustomCell {...params} />), isRequired: true }
+      { field: 'tagCode', headerName: 'Id', width: 150, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true },
+      { field: 'tagName', headerName: 'Tên thẻ', width: 200, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true }
     ],
     savedFields: ['tagName', 'tagCode']
   },
@@ -64,25 +64,6 @@ const criteria = {
 
 const criteriaKeys = Object.keys(criteria);
 
-const StyledTooltip = styled(({ className, ...props }) => (
-  <Tooltip {...props} classes={{ popper: className }} />
-))(({ theme }) => ({
-  [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: theme.palette.error.main,
-    color: theme.palette.error.contrastText,
-  },
-}));
-
-function CustomCell(props) {
-  const { error } = props;
-
-  return (
-    <StyledTooltip open={!!error} title={error} {...props}>
-      <GridEditInputCell {...props} />
-    </StyledTooltip>
-  )
-}
-
 function ManageCriteria() {
   const [criterion, setCriterion] = useState('category')
   const [searchValue, setSearchValue] = useState('')
@@ -96,7 +77,7 @@ function ManageCriteria() {
 
   const { mutateAsync: createRecord } = currentCriterion.create();
   const { data } = currentCriterion.read();
-  const { mutateAsync: updateCriterion } = currentCriterion.update();
+  const { mutateAsync: updateCriterion, isError: updateFaild } = currentCriterion.update();
   const { mutateAsync: deleteRecord } = currentCriterion.delete();
 
   const [deleteDialogPayload, setDeleteDialogPayload] = useState({ state: false, id: null });
@@ -112,14 +93,12 @@ function ManageCriteria() {
 
   const handleEditCellProps = ({field, row, isRequired, props}) => {
     const {value} = props;
-    setRowChanges(prev=>({...prev, [field]: value !== row[field]}));
-    console.log(value, row[field], value !== row[field]);
-    
+    setRowChanges(prev=>({...prev, [field]: value !== row[field]}));    
 
     if (isRequired) {
-      const errorMessage = (!props.value || props.value.trim() === "") ? "Require" : ""
+      const errorMessage = (!value || value.trim() === "") ? "Require" : ""
       setUpdateCellError(prev=>({...prev, [field]: errorMessage}))
-      return { ...props, error: errorMessage };
+      return { ...props, error: value !== row[field] && errorMessage };
     }
     return { ...props };
   }
@@ -210,6 +189,7 @@ function ManageCriteria() {
   };
 
   const handleDeleteClick = async (isAccept) => {
+console.log("delete");
 
     const { id } = deleteDialogPayload
 
@@ -219,12 +199,18 @@ function ManageCriteria() {
     }
 
 
-    await deleteRecord(id)
-    setRows(rows.filter((row) => row.accountCode !== id));
+    const isDeleted = await deleteRecord(id);
     setDeleteDialogPayload({ state: false, id: null });
+
+    if(!isDeleted){
+      toaster("Xóa thất bại", { variant: 'error' })
+      throw new Error(isDeleted);
+      
+    }
+    setRows(rows.filter((row) => row.accountCode !== id));
   }
 
-  const handleUpdate = async (newRow) => {
+  const handleUpdate = async (newRow, oldRow) => {
     let newData;
 
     if (newRow.isNew) {
@@ -235,10 +221,16 @@ function ManageCriteria() {
       }
 
       newData = await createRecord(data);
-      toaster("Tạo thành công", { variant: 'success' })
+      toaster("Tạo thành công.", { variant: 'success' })
     } else {
-      newData = { ...newRow, ...(await updateCriterion(newRow)) };
-      toaster("Cập nhật thành công", { variant: 'success' })
+      const updatedData = await updateCriterion(newRow);
+      
+      if (!updatedData) {
+        toaster("Cập nhật thất bại.", {variant: 'error'})
+        return oldRow;
+      }
+      newData = { ...newRow, ...updatedData };
+      toaster("Cập nhật thành công.", { variant: 'success' })
     }
 
     return newData
@@ -309,6 +301,7 @@ function ManageCriteria() {
       />
       <StyledBox>
         <DataGrid
+          paginationMode='server' 
           getRowId={(row) => row._id ? row._id : row.id}
           rows={rows}
           columns={columns}
@@ -320,6 +313,8 @@ function ManageCriteria() {
           onRowEditStop={handleRowEditStop}
           onProcessRowUpdateError={handleUpdateError}
           onRowModesModelChange={handleRowModesModelChange}
+          pageSizeOptions={[10,25,100]}
+          paginationModel={{pageSize: 10, page: 0}}
         />
       </StyledBox>
 

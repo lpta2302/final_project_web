@@ -4,7 +4,10 @@ import ForgotPassword from './forms/ForgotPassword'
 
 import TopAppBar from './navbar/TopAppBar'
 
-import CustomGridToolbar from './toolbar/CustomGridToolbar'
+import PageToolbar from './pageContainer/PageToolbar'
+
+import CustomGridToolbar from './gridData/CustomGridToolbar'
+import CustomEditCell from './gridData/CustomEditCell'
 
 import ExpandableSearch from './inputs/ExpandableSearch'
 import ManagePageSearch from './inputs/ManagePageSearch'
@@ -21,5 +24,7 @@ export {
     Search,
     ManagePageSearch,
     SplitButton,
-    CustomGridToolbar
+    CustomGridToolbar,
+    CustomEditCell,
+    PageToolbar
 }

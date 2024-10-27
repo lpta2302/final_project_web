@@ -3,7 +3,7 @@ import { DashboardLayout } from '@toolpad/core/DashboardLayout'
 import { useMemo, useState } from "react"
 import Logo from '../components/Logo'
 import { useNavigate, Outlet } from 'react-router-dom'
-import { Box, Grid2, Typography } from '@mui/material'
+import { Box, Grid2, Typography, useTheme } from '@mui/material'
 import { adminNav } from '../constance/constance.jsx'
 
 const initSession = {
@@ -14,6 +14,7 @@ function AdminLayout() {
   const [pathname, setPathname] = useState('/admin');
   const navigate = useNavigate();
   const [session, setSession] = useState(initSession);
+  const theme = useTheme();
 
 
   const authentication = useMemo(() => {
@@ -70,6 +71,7 @@ function AdminLayout() {
             <Typography variant='subtitle2' ml={{ sm: '12px', xs: 'none' }}>Admin</Typography>
           </Box>
       }}
+      theme={theme}
       session={session}
       authentication={authentication}
     >

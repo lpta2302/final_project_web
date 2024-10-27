@@ -3,11 +3,12 @@ import { PageContainer } from '@toolpad/core';
 import { renderEditProductStatus, renderProductStatus, STATUS_OPTIONS } from './customRenderer/productStatus.jsx';
 import { useEffect, useState } from 'react';
 import DataGridConfirmDialog from '../../../components/dialogs/DataGridConfirmDialog.jsx';
-import { ManagePageSearch } from "../../../components";
+import { CustomGridToolbar, ManagePageSearch } from "../../../components";
 import { enqueueSnackbar as toaster } from 'notistack';
 import { Box } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 import { useDeleteProduct, useReadAllProduct } from '../../../api/queries.js';
+import { useNavigate } from 'react-router-dom';
 
 const columnFields = [
   { field: 'productCode', headerName: 'Id', width: 150 },
@@ -28,10 +29,13 @@ const columnFields = [
 
 
 function ManageAccount() {
+  const navigate = useNavigate()
   const [searchValue, setSearchValue] = useState('')
   const [rows, setRows] = useState()
+
   const { data, isPending: isLoading } = useReadAllProduct();
   const [dialogPayload, setDialogPayload] = useState({ state: false, id: null });
+
   const { mutateAsync: deleteAccount } = useDeleteProduct();
   // const { mutateAsync: updateAccountStatus } = useUpdateAccountStatus();
 
@@ -151,7 +155,8 @@ function ManageAccount() {
         getRowId={(row) => row.productCode}
         rows={rows}
         columns={columns}
-        slots={{ toolbar: GridToolbar }}
+        slots={{ toolbar: CustomGridToolbar }}
+        slotProps={{toolbar:{onClick: ()=> navigate('create-product')}}}
         checkboxSelection
         processRowUpdate={handleUpdate}
         onProcessRowUpdateError={handleUpdateError}

@@ -18,8 +18,6 @@ export async function createRecord(createType, data) {
 
 export async function readAll(readType, id) {
   try {
-    console.log(READ_ALL_URL(id)[readType]);
-
     const data = (await axios.get(READ_ALL_URL(id)[readType])).data;
     return data;
   } catch (error) {
@@ -34,12 +32,11 @@ export async function updateRecord(updateType, data) {
     const newData = (await axios.patch(UPDATE_URL(data._id)[updateType], data)).data;
 
     if (!newData)
-      throw Error;
+      throw Error(newData);
 
     return newData;
   } catch (error) {
     console.error(error);
-    return data;
   }
 }
 

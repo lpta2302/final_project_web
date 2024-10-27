@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import AuthProvider from "./context/AuthContext";
 import RootLayout from './_root/RootLayout';
-import { HomePage, Profile } from './_root/pages';
+import { CreateProduct, HomePage, Profile } from './_root/pages';
 import './globalStyle.css'
 import AdminLayout from './_root/AdminLayout';
 import AdminHomePage from './_root/pages/admin/AdminHomePage';
@@ -35,7 +35,7 @@ const theme = createTheme({
       main: "#09083d",
     },
     primary: {
-      main: "#0672cb",
+      main: "#1463f3",
     },
     error:{
       main: "#f53935"
@@ -106,6 +106,7 @@ function App() {
                 {adminNav.map(navItem =>
                   <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
                 )}
+                <Route path="manage-product/create-product" element={<CreateProduct/>}/>
               </Route>
               <Route path='admin/login' element={<Login />} />
             </Routes>
