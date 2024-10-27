@@ -29,7 +29,7 @@ export default function AuthProvider({ children }) {
 
     async function checkAuthUser() {
         try {
-            // const { id, ...userInfo } = await getCurrentUser();
+            const { id, ...userInfo } = await getCurrentUser();
             
             if (!user.id)
                 return false

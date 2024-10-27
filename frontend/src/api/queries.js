@@ -24,6 +24,13 @@ export const useLogin = () => {
     });
 };
 
+export const useGetCurrentUser = () => {
+    return useQuery({
+        queryKey: [CURRENT_USER],
+        queryFn: (token) => 
+    })
+}
+
 
 //----------------------------- Account -----------------------------
 export const useCreateAccount = () => {

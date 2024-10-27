@@ -1,4 +1,5 @@
 export const CURRENT_TOKEN = 'CURRENT_TOKEN';
+export const CURRENT_USER = 'CURRENT_USER';
 
 export const READ_ALL_ACCOUNTS = 'READ_ALL_ACCOUNTS';
 export const READ_ALL_PRODUCTS = 'READ_ALL_PRODUCTS';
