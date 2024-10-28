@@ -24,12 +24,12 @@ export const useLogin = () => {
     });
 };
 
-export const useGetCurrentUser = () => {
-    return useQuery({
-        queryKey: [CURRENT_USER],
-        queryFn: (token) => 
-    })
-}
+// export const useGetCurrentUser = () => {
+//     return useQuery({
+//         queryKey: [CURRENT_USER],
+//         queryFn: (token) => 
+//     })
+// }
 
 
 //----------------------------- Account -----------------------------

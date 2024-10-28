@@ -66,21 +66,20 @@ export async function login(loginInfo) {
     return token
   } catch (error) {
     console.error(error);
-    return error;
   }
 }
 
-export async function readAll(readType, id) {
-  try {
-    console.log(READ_ALL_URL(id)[readType]);
+// export async function readAll(readType, id) {
+//   try {
+//     console.log(READ_ALL_URL(id)[readType]);
 
-    const data = (await axios.get(READ_ALL_URL(id)[readType])).data;
-    return data;
-  } catch (error) {
-    console.error(error);
-    return error;
-  }
-}
+//     const data = (await axios.get(READ_ALL_URL(id)[readType])).data;
+//     return data;
+//   } catch (error) {
+//     console.error(error);
+//     return error;
+//   }
+// }
 
 //----------------------------- Account -----------------------------
 export async function createAccount(user) {
