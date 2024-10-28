@@ -5,7 +5,7 @@ import Review from "../../models/review.model.js";
 import Cart from "../../models/cart.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"; // Thêm dòng này để sử dụng JWT
-const secretKey = "your-secret-key"; // Khóa bí mật để ký JWT, bạn nên lưu khóa này ở file .env
+const secretKey = "your-secret-key"; // Nên lưu khóa này ở file .env
 
 const accountController = {
   // [POST] /auth/register
@@ -50,7 +50,7 @@ const accountController = {
           { id: _account._id, email: _account.email },
           secretKey,
           {
-            expiresIn: "1h", // Token sẽ hết hạn sau 1 giờ
+            expiresIn: "24h", // Token sẽ hết hạn sau 1 giờ
           }
         );
 
@@ -75,14 +75,17 @@ const accountController = {
 
       const isMatch = await bcrypt.compare(password, _account.password);
 
-      if (isMatch && _account.accountStatus == "active") {
-        if (_account.accountRole == "client") {
-          return res.status(200).json(_account);
-        } else {
-          return res.status(200).json(_account);
-        }
+      if (isMatch && _account.accountStatus === "active") {
+        // Nếu tài khoản là client hoặc có vai trò khác, trả về token
+        const token = jwt.sign(
+          { id: _account._id, email: _account.email }, // Payload
+          secretKey, // Khóa bí mật
+          { expiresIn: "24h" } // Token hết hạn sau 1 giờ
+        );
+
+        return res.status(200).json(token);
       } else {
-        return res.status(400).json(false);
+        return res.status(400).json(false); // Sai mật khẩu hoặc tài khoản không active
       }
     } catch (err) {
       res.status(500).json(false);
@@ -203,6 +206,143 @@ const accountController = {
         .sort(sortBy);
 
       res.status(200).json(_accounts);
+    } catch (err) {
+      res.status(500).json(false);
+    }
+  },
+
+  // [GET] /stats/daily
+  getNewUsersByDay: async (req, res) => {
+    try {
+      const sort = req.query.sort === "desc" ? -1 : 1;
+      const dailyStats = await account.aggregate([
+        {
+          $group: {
+            _id: {
+              day: {
+                $dateToString: { format: "%Y-%m-%d", date: "$createdAt" },
+              },
+            },
+            accountCodes: { $push: "$accountCode" }, // Thu thập mảng accountCode
+            count: { $sum: 1 }, // Đếm số lượng
+          },
+        },
+        { $sort: { "_id.day": sort } }, // Sắp xếp theo ngày
+        {
+          $project: {
+            day: "$_id.day",
+            accountCodes: 1,
+            count: 1,
+            _id: 0, // Ẩn _id
+          },
+        },
+      ]);
+
+      res.status(200).json(dailyStats);
+    } catch (err) {
+      return res.status(500).json(false);
+    }
+  },
+
+  // [GET] /stats/weekly
+  getNewUsersByWeek: async (req, res) => {
+    try {
+      const sort = req.query.sort === "desc" ? -1 : 1;
+      const weeklyStats = await account.aggregate([
+        {
+          $group: {
+            _id: {
+              isoWeekYear: { $isoWeekYear: "$createdAt" },
+              week: { $isoWeek: "$createdAt" },
+            },
+            accountCodes: { $push: "$accountCode" }, // Thu thập mảng accountCode
+            count: { $sum: 1 }, // Đếm số lượng
+          },
+        },
+        { $sort: { "_id.isoWeekYear": sort, "_id.week": sort } }, // Sắp xếp theo tuần
+        {
+          $project: {
+            week: {
+              $concat: [
+                { $toString: "$_id.isoWeekYear" },
+                "-",
+                { $toString: "$_id.week" },
+              ],
+            }, // Hiển thị tuần dưới dạng chuỗi "năm-tuần"
+            accountCodes: 1,
+            count: 1,
+            _id: 0, // Ẩn _id
+          },
+        },
+      ]);
+
+      res.status(200).json(weeklyStats);
+    } catch (err) {
+      res.status(500).json(false);
+    }
+  },
+
+  // [GET] /stats/monthly
+  getNewUsersByMonth: async (req, res) => {
+    try {
+      const sort = req.query.sort === "desc" ? -1 : 1;
+      const monthlyStats = await account.aggregate([
+        {
+          $group: {
+            _id: {
+              year: { $year: "$createdAt" },
+              month: { $month: "$createdAt" },
+            },
+            accountCodes: { $push: "$accountCode" }, // Thu thập mảng accountCode
+            count: { $sum: 1 }, // Đếm số lượng
+          },
+        },
+        { $sort: { "_id.year": sort, "_id.month": sort } }, // Sắp xếp theo tháng
+        {
+          $project: {
+            month: {
+              $concat: [
+                { $toString: "$_id.year" },
+                "-",
+                { $toString: "$_id.month" },
+              ],
+            }, // Hiển thị tháng dưới dạng "năm-tháng"
+            accountCodes: 1,
+            count: 1,
+            _id: 0,
+          },
+        },
+      ]);
+
+      res.status(200).json(monthlyStats);
+    } catch (err) {
+      res.status(500).json(false);
+    }
+  },
+
+  // [GET] /stats/roles
+  getAccountRoleStatistics: async (req, res) => {
+    try {
+      const sort = req.query.sort === "desc" ? -1 : 1;
+      const roleStats = await account.aggregate([
+        {
+          $group: {
+            _id: "$accountRole",
+            accountCodes: { $push: "$accountCode" }, // Thu thập mảng accountCode
+            count: { $sum: 1 }, // Đếm số lượng
+          },
+        },
+        { $sort: { count: sort } }, // Sắp xếp theo số lượng tài khoản
+        {
+          $project: {
+            role: "$_id",
+            accountCodes: 1,
+            count: 1,
+            _id: 0, // Ẩn _id
+          },
+        },
+      ]);
+      res.status(200).json(roleStats);
     } catch (err) {
       res.status(500).json(false);
     }

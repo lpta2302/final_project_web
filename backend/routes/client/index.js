@@ -9,6 +9,7 @@ import wishListRoutes from "./wishList.route.js";
 import accountRoutes from "./account.route.js";
 import orderRoutes from "./order.route.js";
 import reviewRoutes from "./reviews.route.js";
+import { authenticateJWT } from "../../middleware/authMiddleware.js";
 
 export default (app) => {
   app.use("/client/voucher", voucherRoutes);
@@ -18,7 +19,7 @@ export default (app) => {
   app.use("/client/address", addressRoutes);
   app.use("/client/seen", seenRoutes);
   app.use("/client/category", categoryRoutes);
-  app.use("/client/product", productRoutes);
+  app.use("/client/product", authenticateJWT, productRoutes);
   app.use("/client/wishList", wishListRoutes);
   app.use("/client/account", accountRoutes);
   app.use("/client/order", orderRoutes);
