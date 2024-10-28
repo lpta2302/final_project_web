@@ -25,6 +25,7 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { Link } from "react-router-dom";
 import DiscountSection from "../../../components/Shopingcart/usevoucher";
+import { useReadAllCart } from "../../../api/queries";
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([
     {
@@ -57,20 +58,21 @@ const CartPage = () => {
   const [shippingFee, setShippingFee] = useState(0);
   const [discountValue, setDiscountValue] = useState(0);
 
+  const {} = useReadAllCart();
   const isMobile = useMediaQuery("(max-width:600px)");
 
-  useEffect(() => {
-    const fetchShippingFee = async () => {
-      try {
-        const response = await fetch("/api/shipping-fee");
-        const data = await response.json();
-        setShippingFee(data.fee);
-      } catch (error) {
-        console.error("Lỗi khi lấy phí ship từ backend:", error);
-      }
-    };
-    fetchShippingFee();
-  }, []);
+  // useEffect(() => {
+  //   const fetchShippingFee = async () => {
+  //     try {
+  //       const response = await fetch("/api/shipping-fee");
+  //       const data = await response.json();
+  //       setShippingFee(data.fee);
+  //     } catch (error) {
+  //       console.error("Lỗi khi lấy phí ship từ backend:", error);
+  //     }
+  //   };
+  //   fetchShippingFee();
+  // }, []);
 
   const handleQuantityChange = (id, operation) => {
     setCartItems((prevItems) =>

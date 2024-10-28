@@ -19,7 +19,7 @@ const ProductCard = ({ product, handleToggleFavorite, isFavorite }) => (
       <Card sx={{ maxWidth: "100%", marginBottom: 2 }}>
         <CardMedia
           component="img"
-          height="180"
+          height="300"
           image={product.imageUrl}
           alt={product.title}
         />

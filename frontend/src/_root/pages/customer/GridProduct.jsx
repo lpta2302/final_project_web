@@ -17,6 +17,7 @@ import {
   Button, // For Search Button
 } from "@mui/material";
 import { TopAppBar } from "../../../components";
+import { useReadAllProduct } from "../../../api/queries";
 
 // Search Component
 const SearchBar = ({ onSearchChange }) => {
@@ -439,7 +440,7 @@ const GridProduct = () => {
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-
+  const { data: productData } = useReadAllProduct();
   const handleSearchChange = (searchTerm) => {
     setFilters({ ...filters, search: searchTerm });
   };
