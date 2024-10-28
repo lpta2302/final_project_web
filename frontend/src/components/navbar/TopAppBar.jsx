@@ -208,6 +208,7 @@ function TopAppBar() {
                 onClose={handleModalToggle}
                 aria-labelledby="parent-modal-title"
                 aria-describedby="parent-modal-description"
+                sx={{height: '100vh', maxHeight: '100vh', overflow: 'auto'}}
             >
                 {modal[modalType]}
             </Modal>

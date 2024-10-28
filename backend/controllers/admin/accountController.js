@@ -5,7 +5,7 @@ import Review from "../../models/review.model.js";
 import Cart from "../../models/cart.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken"; // Thêm dòng này để sử dụng JWT
-const secretKey = "your-secret-key"; // Khóa bí mật để ký JWT, bạn nên lưu khóa này ở file .env
+const secretKey = "your-secret-key"; // Nên lưu khóa này ở file .env
 
 const accountController = {
   // [POST] /auth/register
