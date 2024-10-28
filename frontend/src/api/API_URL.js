@@ -1,6 +1,6 @@
 export const AUTH_URL = {
-    login: '/login',
-    register: '/register',
+    login: '/auth/login',
+    register: '/auth/register',
     forgotPassword: ''
 }
 

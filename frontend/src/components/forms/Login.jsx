@@ -12,15 +12,18 @@ import {
 } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
 import PropTypes from "prop-types";
-import { useReadAllAccount } from "../../api/queries";
+import { useLogin } from "../../api/queries";
 import { enqueueSnackbar as toaster } from 'notistack';
+import { useAuthContext } from "../../context/AuthContext";
+
+const init_error_message = {username: '', password: ''}
 
 const Login = ({ setModalType, isAdmin }) => {
   const [inputs, setInputs] = useState({ username: "", password: "" });
-  const [error, setError] = useState({ username: false, password: false });
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState(init_error_message);
+  const { checkAuthUser } = useAuthContext();
 
-  const { data: accounts } = useReadAllAccount();
+  const { mutateAsync: login  } = useLogin();
 
   const handleChange = (event) => {
     const name = event.target.name;
@@ -31,45 +34,36 @@ const Login = ({ setModalType, isAdmin }) => {
   const handleLogin = async (event) => {
     event.preventDefault();
 
-    let tempError = { username: false, password: false };
 
     // Kiểm tra tên tài khoản
-    if (!inputs.username) {
-      tempError.username = true;
-    }
+    console.log(!inputs.password);
+    
+    setErrorMessage(()=>({
+      username: !inputs.username ? "Username không được để trống" : "",
+      password: !inputs.password ? "Password không được để trống" : ""
+    }))
 
-    // Kiểm tra mật khẩu
-    if (!inputs.password) {
-      tempError.password = true;
-    }
+    console.log(errorMessage.password);
+    
 
-    // Nếu thiếu tên tài khoản hoặc mật khẩu, hiển thị lỗi
-    if (tempError.username || tempError.password) {
-      setError(tempError);
-      toaster('Tên tài khoản hoặc mật khẩu không hợp lệ', { variant: 'error' });
-      setErrorMessage("Tên tài khoản hoặc mật khẩu không hợp lệ");
+    if (errorMessage.username !== "" || errorMessage.password !== "") {
+      console.log("ue");
+      
       return;
     }
 
-    try {
-      const matchedAccount = accounts.find(account => 
-        account.username === inputs.username && account.password === inputs.password
-      );
-  
-      if (matchedAccount) {
-        console.log(matchedAccount)
-        toaster('Đăng nhập thành công!', { variant: 'success' });
-        console.log("Login successful with account:", matchedAccount);
-      } else {
-        console.log(matchedAccount)
-        toaster('Tên tài khoản hoặc mật khẩu không đúng!', { variant: 'error' });
-        setError({ username: true, password: true });
-        setErrorMessage("Tên tài khoản hoặc mật khẩu không đúng");
-      }
-    } catch (error) {
-      console.error(error);
-      toaster('Lỗi xử lý đăng nhập!', { variant: 'error' });
+    const token = await login(inputs);
+
+    if (!token) {
+      console.log(token)
+      toaster('Tên tài khoản hoặc mật khẩu không đúng!', { variant: 'error' });
+      setErrorMessage(init_error_message);
+      return;
     }
+
+    localStorage.setItem('cookieFallback',JSON.stringify(token));
+    await checkAuthUser();
+    
   };
 
   return (
@@ -116,8 +110,8 @@ const Login = ({ setModalType, isAdmin }) => {
             autoFocus
             value={inputs.username}
             onChange={handleChange}
-            error={error.username}
-            helperText={error.username ? "" : ""}
+            error={!!errorMessage.username}
+            helperText={errorMessage.username}
             sx={{
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
@@ -134,8 +128,8 @@ const Login = ({ setModalType, isAdmin }) => {
             fullWidth
             value={inputs.password}
             onChange={handleChange}
-            error={error.password}
-            helperText={errorMessage}
+            error={!!errorMessage.password}
+            helperText={errorMessage.password}
             sx={{
               "& .MuiOutlinedInput-root": {
                 borderRadius: "12px",
