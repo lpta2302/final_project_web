@@ -4,22 +4,23 @@ import {
 } from '@mui/material';
 import { Add, Remove, Favorite, FavoriteBorder } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
-import { useCreateReview, useReadAllProduct, useReadAllReview } from '../api/queries';
+import { useCreateReview, useReadAllProduct, useReadAllReview, useReadAllSpecification } from '../api/queries';
 import moment from 'moment'; // Để format ngày tháng
 
 const Product = () => {
   const { productId } = useParams();
   
-  const { data: productData, isLoading } = useReadAllProduct();
-  const { data: productReview, refetch } = useReadAllReview(); // Refetch để cập nhật danh sách sau khi review mới được thêm
-  const { mutateAsync: addReview } = useCreateReview();
-
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(null); 
   const [isFavorited, setIsFavorited] = useState(false); 
   const [newRating, setNewRating] = useState(0); // Dùng để lưu rating mới từ người dùng
   const [reviewText, setReviewText] = useState(''); // Dùng để lưu nội dung đánh giá mới
   const [isSubmitting, setIsSubmitting] = useState(false); // Trạng thái submit
+
+  const { data: productData, isLoading } = useReadAllProduct();
+  const { data: productReview, refetch } = useReadAllReview();
+  const { mutateAsync: addReview } = useCreateReview();
+  const { data: specData } = useReadAllSpecification();
 
   const product = productData?.find(item => item._id === productId);
   

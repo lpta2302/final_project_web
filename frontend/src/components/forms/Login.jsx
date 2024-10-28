@@ -18,7 +18,7 @@ import { useAuthContext } from "../../context/AuthContext";
 
 const init_error_message = {username: '', password: ''}
 
-const Login = ({ setModalType, isAdmin }) => {
+const Login = ({ setModalType, setModalOpen, isAdmin }) => {
   const [inputs, setInputs] = useState({ username: "", password: "" });
   const [errorMessage, setErrorMessage] = useState(init_error_message);
   const { checkAuthUser } = useAuthContext();
@@ -60,10 +60,12 @@ const Login = ({ setModalType, isAdmin }) => {
       setErrorMessage(init_error_message);
       return;
     }
-
-    localStorage.setItem('cookieFallback',JSON.stringify(token));
-    await checkAuthUser();
-    
+    else{
+      toaster('Đăng nhập thành công.', { variant: 'success' });
+      localStorage.setItem('cookieFallback',JSON.stringify(token));
+      await checkAuthUser();
+      setModalOpen(false);
+    }
   };
 
   return (
@@ -182,6 +184,7 @@ const Login = ({ setModalType, isAdmin }) => {
 
 Login.propTypes = {
   setModalType: PropTypes.func,
+  setModalOpen: PropTypes.func,
   isAdmin: PropTypes.bool,
 };
 
