@@ -1,5 +1,6 @@
 import { Router } from "express";
 import brandController from "../../controllers/admin/brand.controller.js";
+import { isAdmin } from "../../middleware/authMiddleware.js";
 
 const brandRoutes = Router();
 // Tìm kiếm brand
@@ -17,6 +18,6 @@ brandRoutes.patch("/:id", brandController.updateBrand);
 brandRoutes.post("/", brandController.addBrand);
 
 // Xem tất cả các brand
-brandRoutes.get("/", brandController.showBrand);
+brandRoutes.get("/", isAdmin, brandController.showBrand);
 
 export default brandRoutes;

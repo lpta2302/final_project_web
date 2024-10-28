@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import AccountModel from "../models/account.model.js";
 
 const secretKey = "your-secret-key"; // Khóa bí mật để ký JWT, bạn nên lưu khóa này ở file .env
 
@@ -23,7 +24,7 @@ export const authenticateJWT = (req, res, next) => {
   }
 };
 
-export const isAdmin = (req, res, next) => {
+export const isAdmin = async (req, res, next) => {
   const token = req.header("Authorization")?.split(" ")[1]; // Lấy token từ header Authorization
   if (!token) {
     return res.status(401).json({
@@ -35,6 +36,13 @@ export const isAdmin = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, secretKey); // Xác minh token
     console.log(decoded);
+
+    const info = await AccountModel.findOne({ _id: decoded.id });
+
+    if (info.accountRole != "admin") {
+      return res.json("Bạn đéo phải admin mà vào đây làm gì???");
+    }
+
     next();
   } catch (error) {
     return res.status(403).json({
