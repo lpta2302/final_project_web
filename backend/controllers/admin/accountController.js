@@ -50,7 +50,7 @@ const accountController = {
           { id: _account._id, email: _account.email },
           secretKey,
           {
-            expiresIn: "1h", // Token sẽ hết hạn sau 1 giờ
+            expiresIn: "24h", // Token sẽ hết hạn sau 1 giờ
           }
         );
 
@@ -80,7 +80,7 @@ const accountController = {
         const token = jwt.sign(
           { id: _account._id, email: _account.email }, // Payload
           secretKey, // Khóa bí mật
-          { expiresIn: "1h" } // Token hết hạn sau 1 giờ
+          { expiresIn: "24h" } // Token hết hạn sau 1 giờ
         );
 
         return res.status(200).json(token);
