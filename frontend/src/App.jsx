@@ -36,8 +36,8 @@ const theme = createTheme({
       main: "#0672cb",
     },
     error: {
-      main: "#f53935"
-    }
+      main: "#f53935",
+    },
   },
   typography: {
     fontFamily: "inter",
@@ -55,24 +55,24 @@ const theme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundColor: '#fff'
-        }
-      }
-    }
+          backgroundColor: "#fff",
+        },
+      },
+    },
   },
 });
 
 const queryClient = new QueryClient();
 
 function App() {
-
   return (
     <QueryClientProvider client={queryClient}>
-      <Container component="main"
+      <Container
+        component="main"
         sx={{
           p: {
-            md: '12px', // Padding of 12px for medium screens and up
-            lg: '0',    // Padding of 0 for large screens and up
+            md: "12px", // Padding of 12px for medium screens and up
+            lg: "0", // Padding of 0 for large screens and up
           },
         }}
       >
