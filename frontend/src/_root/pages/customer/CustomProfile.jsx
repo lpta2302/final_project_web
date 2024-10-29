@@ -1,30 +1,26 @@
 import React, { useState } from "react";
 import {
-  Grid,
   Box,
   List,
   ListItem,
   ListItemText,
   ListItemIcon,
+  Divider,
   Paper,
   Typography,
-  TextField,
-  Button,
-  MenuItem,
-  FormControl,
-  Select,
-  InputLabel,
-  Divider,
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LaptopIcon from "@mui/icons-material/Laptop";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import PeopleIcon from "@mui/icons-material/People";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import ProfileForm from "../../../components/CustomerProfile/ProfileForm";
+import FavoritePage from "../../../components/CustomerProfile/FavoritePage";
+import SeenProductPage from "../../../components/CustomerProfile/SeenProduct";
+import OrderManagementPage from "../../../components/CustomerProfile/OrderManagementPage";
 
 const CustomerProfile = () => {
   const [activeComponent, setActiveComponent] = useState("MyProfile");
-  const [countryCode, setCountryCode] = useState("");
 
   const handleComponentChange = (component) => {
     setActiveComponent(component);
@@ -44,6 +40,7 @@ const CustomerProfile = () => {
         return <ProfileForm />;
     }
   };
+
   return (
     <Box
       sx={{
@@ -130,159 +127,4 @@ const CustomerProfile = () => {
   );
 };
 
-const ProfileForm = () => {
-  const [countryCode, setCountryCode] = useState("");
-
-  return (
-    <Box component="form" sx={{ mt: 2 }}>
-      <TextField
-        label="First Name"
-        fullWidth
-        variant="outlined"
-        defaultValue="Trung"
-        sx={{
-          mb: 2,
-          "& .MuiInputBase-input": { color: "#000" },
-          "& .MuiOutlinedInput-root": {
-            "& fieldset": {
-              borderColor: "#505050",
-            },
-          },
-        }}
-        InputLabelProps={{ shrink: true, sx: { color: "#505050" } }}
-      />
-      <TextField
-        label="Last Name"
-        fullWidth
-        variant="outlined"
-        defaultValue="Phạm"
-        sx={{
-          mb: 2,
-          "& .MuiInputBase-input": { color: "#000" },
-          "& .MuiOutlinedInput-root": {
-            "& fieldset": {
-              borderColor: "#505050",
-            },
-          },
-        }}
-        InputLabelProps={{ shrink: true, sx: { color: "#505050" } }}
-      />
-      <TextField
-        label="Region/Country"
-        fullWidth
-        variant="outlined"
-        defaultValue="Vietnam"
-        sx={{
-          mb: 2,
-          "& .MuiInputBase-input": { color: "#000" },
-          "& .MuiOutlinedInput-root": {
-            "& fieldset": {
-              borderColor: "#505050",
-            },
-          },
-        }}
-        InputLabelProps={{ shrink: true, sx: { color: "#505050" } }}
-      />
-      <TextField
-        label="Password"
-        type="password"
-        fullWidth
-        variant="outlined"
-        defaultValue="••••••••"
-        sx={{
-          mb: 2,
-          "& .MuiInputBase-input": { color: "#000" },
-          "& .MuiOutlinedInput-root": {
-            "& fieldset": {
-              borderColor: "#505050",
-            },
-          },
-        }}
-        InputLabelProps={{ shrink: true, sx: { color: "#505050" } }}
-      />
-      <TextField
-        label="Email"
-        fullWidth
-        variant="outlined"
-        defaultValue="lcdangchet@gmail.com"
-        sx={{
-          mb: 2,
-          "& .MuiInputBase-input": { color: "#000" },
-          "& .MuiOutlinedInput-root": {
-            "& fieldset": {
-              borderColor: "#505050",
-            },
-          },
-        }}
-        InputLabelProps={{ shrink: true, sx: { color: "#505050" } }}
-      />
-      <FormControl fullWidth sx={{ mb: 2 }}>
-        <InputLabel sx={{ color: "#000" }}>Country Code</InputLabel>
-        <Select
-          value={countryCode}
-          label="Country Code"
-          onChange={(e) => setCountryCode(e.target.value)}
-          sx={{
-            "& .MuiInputBase-input": { color: "#000" },
-            "& .MuiOutlinedInput-root": {
-              "& fieldset": {
-                borderColor: "#505050 ",
-              },
-            },
-          }}
-        >
-          <MenuItem value={1}>+1</MenuItem>
-          <MenuItem value={84}>+84</MenuItem>
-        </Select>
-      </FormControl>
-      <TextField
-        label="Telephone Number"
-        fullWidth
-        variant="outlined"
-        sx={{
-          mb: 2,
-          "& .MuiInputBase-input": { color: "#000" },
-          "& .MuiOutlinedInput-root": {
-            "& fieldset": {
-              borderColor: "#505050",
-            },
-          },
-        }}
-        InputLabelProps={{ shrink: true, sx: { color: "#505050" } }}
-      />
-      <Button
-        sx={{
-          backgroundColor: "#0672cb",
-          color: "#fff",
-
-          "&:hover": {
-            backgroundColor: "#005a9c", // Màu tối hơn khi hover
-          },
-        }}
-      >
-        Lưu
-      </Button>
-    </Box>
-  );
-};
-const FavoritePage = () => (
-  <Box>
-    <Typography variant="h5">Favorite Products</Typography>
-    {/* Add your favorite products UI here */}
-  </Box>
-);
-
-const SeenProductPage = () => (
-  <Box>
-    <Typography variant="h5">Seen Products</Typography>
-    {/* Add your seen products UI here */}
-  </Box>
-);
-
-const OrderManagementPage = () => (
-  <Box>
-    <Typography variant="h5">Order Management</Typography>
-    {/* Add your order management UI here */}
-  </Box>
-);
 export default CustomerProfile;

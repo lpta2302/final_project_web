@@ -24,7 +24,7 @@ import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { Link } from "react-router-dom";
-import DiscountSection from "../../../components/Shopingcart/usevoucher";
+import DiscountSection from "../../../components/Cart/usevoucher";
 import { useReadAllCart } from "../../../api/queries";
 const Cart = () => {
   const [cartItems, setCartItems] = useState([
