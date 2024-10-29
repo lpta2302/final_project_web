@@ -97,6 +97,8 @@ const Register = ({ setModalType }) => {
 
     setIsLoading(true);
     try {
+      console.log(inputs);
+      
       const response = await register(inputs);
 
       // Kiểm tra nếu response là false (thất bại) hoặc không có token

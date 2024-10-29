@@ -24,6 +24,7 @@ const AuthContext = createContext(INIT_STATE)
 
 export default function AuthProvider({ children }) {
     // const navigate = useNavigate();
+
     const [user, setUser] = useState(INIT_USER);
     const [token, setToken] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -46,11 +47,12 @@ export default function AuthProvider({ children }) {
             //     setUser(user)
 
             setIsAuthenticated(true);
+            return true;
         } catch (error) {
             console.log(error);
-            return false
+            return false;
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
     }
 

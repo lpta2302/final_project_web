@@ -20,7 +20,6 @@ import ManagePersonalProfile from "./pages/ManagePersonalProfile.jsx";
 import ManagePersonalOrder from "./pages/ManagePersonalOrder.jsx";
 import Favorite from "./pages/Favorite.jsx";
 import Product from "./pages/Product.jsx";
-import { CssVarsProvider, extendTheme } from "@mui/joy/styles";
 
 const muiTheme = createTheme({
   palette: {
@@ -65,18 +64,6 @@ const muiTheme = createTheme({
   },
 });
 
-const joyTheme = extendTheme(
-  {
-    vars:{
-      radius: {
-      sm: '4px',
-      md: '8px',
-      lg: '12px',
-      xl: '16px'
-    },}
-  }
-);
-
 const queryClient = new QueryClient();
 
 function App() {
@@ -91,41 +78,39 @@ function App() {
       >
 
         <ThemeProvider theme={muiTheme}>
-          <CssVarsProvider theme={joyTheme}>
-            <SnackbarProvider
-              anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
-              autoHideDuration={3000}
-            >
-              <CssBaseline />
-              <AuthProvider>
-                <Routes>
-                  <Route element={<RootLayout />}>
-                    <Route index element={<HomePage />} path='/' />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/manage-profile" element={<ManagePersonalProfile />} />
-                    <Route path="/manage-order" element={<ManagePersonalOrder />} />
-                    <Route path="/favorite" element={<Favorite />} />
-                    <Route path="/product/productId" element={<Product />} />
-
-
-                    {customerNav.map(navItem =>
-                      <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
-                    )}
-                  </Route>
-                </Routes>
-              </AuthProvider>
+          <SnackbarProvider
+            anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+            autoHideDuration={3000}
+          >
+            <CssBaseline />
+            <AuthProvider>
               <Routes>
-                <Route path='/admin' element={<AdminLayout />}>
-                  <Route index element={<AdminHomePage />} />
-                  {adminNav.map(navItem =>
+                <Route element={<RootLayout />}>
+                  <Route index element={<HomePage />} path='/' />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/manage-profile" element={<ManagePersonalProfile />} />
+                  <Route path="/manage-order" element={<ManagePersonalOrder />} />
+                  <Route path="/favorite" element={<Favorite />} />
+                  <Route path="/product/productId" element={<Product />} />
+
+
+                  {customerNav.map(navItem =>
                     <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
                   )}
-                  <Route path="manage-product/create-product" element={<CreateProduct />} />
                 </Route>
-                <Route path='admin/login' element={<Login />} />
               </Routes>
-            </SnackbarProvider>
-          </CssVarsProvider>
+            </AuthProvider>
+            <Routes>
+              <Route path='/admin' element={<AdminLayout />}>
+                <Route index element={<AdminHomePage />} />
+                {adminNav.map(navItem =>
+                  <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
+                )}
+                <Route path="manage-product/create-product" element={<CreateProduct />} />
+              </Route>
+              <Route path='admin/login' element={<Login />} />
+            </Routes>
+          </SnackbarProvider>
         </ThemeProvider>
       </Container>
     </QueryClientProvider>

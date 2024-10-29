@@ -1,139 +1,139 @@
 export const AUTH_URL = {
-    login:()=> '/auth/login',
-    register:()=> '/auth/register',
-    forgotPassword:()=> ''
+    login: '/auth/login',
+    register: '/auth/register',
+    forgotPassword: ''
 }
 
 //----------------------------- CUSTOMER -----------------------------
 export const customer_url = {
-    voucher:{
-        readVoucher:(id)=> '/client/voucher/my-voucher/'+id,
-        search:()=> '/client/voucher/my-voucher/search',
-        deleteVoucher:(id)=> '/client/voucher/my-voucher/del/'+id,
-        getOwnVouchers:(id)=> '/client/voucher/'+id,
-        getAllVoucher:()=> '/client/voucher/'
+    voucher: {
+        readVoucher: (id) => '/client/voucher/my-voucher/' + id,
+        search: () => '/client/voucher/my-voucher/search',
+        deleteVoucher: (id) => '/client/voucher/my-voucher/del/' + id,
+        getOwnVouchers: (id) => '/client/voucher/' + id,
+        getAllVoucher: () => '/client/voucher/'
     },
-    cart:{
-        addItem:()=> '/cart/add',
-        deleteItem:()=> '/cart/delete',
-        getOwnCart:(id)=> '/cart/showCart/'+id
+    cart: {
+        addItem: () => '/cart/add',
+        deleteItem: () => '/cart/delete',
+        getOwnCart: (id) => '/cart/showCart/' + id
     },
-    brand:{
-        getAllBrand:()=> '/client/brand/',
-        search:()=> '/client/brand/search',
-        getProductByBrand:(id)=> '/client/brand/'+id
+    brand: {
+        getAllBrand: () => '/client/brand/',
+        search: () => '/client/brand/search',
+        getProductByBrand: (id) => '/client/brand/' + id
     },
-    address:{
-        getOwnAddresses:(id)=> '/client/address/'+id,
-        addAddress:()=> '/client/address/add',
-        editAddress:(id)=> '/client/address/edit/'+id,
-        deleteAddress:(id)=> '/client/address/delete/'+id,
+    address: {
+        getOwnAddresses: (id) => '/client/address/' + id,
+        addAddress: () => '/client/address/add',
+        editAddress: (id) => '/client/address/edit/' + id,
+        deleteAddress: (id) => '/client/address/delete/' + id,
     },
-    seen:{
-        addSeenProduct:()=> '/client/seen/add',
-        getOwnSeenProducts:(id)=> '/client/seen/'+id
+    seen: {
+        addSeenProduct: () => '/client/seen/add',
+        getOwnSeenProducts: (id) => '/client/seen/' + id
     },
-    category:{
-        getAllCategory:()=> '/client/category/',
-        search:()=> '/client/category/search',
+    category: {
+        getAllCategory: () => '/client/category/',
+        search: () => '/client/category/search',
     },
-    product:{
-        getAllProduct:()=> '/client/product/',
-        search:()=> '/client/product/search',
-        getProductByTag:(id)=> '/client/product/tag/search/'+id,
-        getDetailProduct:(id)=> '/client/product/details/'+id,
-        getRelativeProducts:(id)=> '/relative/'+id
+    product: {
+        getAllProduct: () => '/client/product/',
+        search: () => '/client/product/search',
+        getProductByTag: (id) => '/client/product/tag/search/' + id,
+        getDetailProduct: (id) => '/client/product/details/' + id,
+        getRelativeProducts: (id) => '/relative/' + id
     },
-    wishList:{
-        addProduct:(id)=> '/client/wishList/add-to-wissList/'+id,
-        search:(id)=> '/client/wishList/my-wishList/'+id+'/search',
-        deleteProduct:(id)=> '/client/wishList/my-wishList/del-from-wishList/'+id,
-        getAllProduct:(id)=> '/slient/wishList/my-wishList/'+id
+    wishList: {
+        addProduct: (id) => '/client/wishList/add-to-wissList/' + id,
+        search: (id) => '/client/wishList/my-wishList/' + id + '/search',
+        deleteProduct: (id) => '/client/wishList/my-wishList/del-from-wishList/' + id,
+        getAllProduct: (id) => '/slient/wishList/my-wishList/' + id
     },
-    account:{//ok
-        getAccountDetail:(id)=> '/client/account/details/'+id,
-        udpateAccountDetail:(id)=> '/client/account/details/'+id
+    account: {//ok
+        getAccountDetail: (id) => '/client/account/details/' + id,
+        udpateAccountDetail: (id) => '/client/account/details/' + id
     },
-    order:{
-        getOwnOrders:(id)=> '/client/order/user/'+id,
-        addNewOrder:()=> '/client/order/add',
-        editOrder:(id)=> '/client/order/edit/'+id,//x
-        getOrderDetail:(id)=> '/client/order/detail/'+id,
-        deleteOrder:(id)=> '/client/order/delete/'+id//x
+    order: {
+        getOwnOrders: (id) => '/client/order/user/' + id,
+        addNewOrder: () => '/client/order/add',
+        editOrder: (id) => '/client/order/edit/' + id,//x
+        getOrderDetail: (id) => '/client/order/detail/' + id,
+        deleteOrder: (id) => '/client/order/delete/' + id//x
     },
     review: {
-        addReview:(id)=> '/client/reviews/'+id,
-        deleteReview:(id)=> '/client/reviews/'+id,
-        updateReview:(id)=> '/client/reviews/'+id
-    }    
+        addReview: (id) => '/client/reviews/' + id,
+        deleteReview: (id) => '/client/reviews/' + id,
+        updateReview: (id) => '/client/reviews/' + id
+    }
 }
 
 //----------------------------- CUSTOMER -----------------------------
 
 export const admin_url = {
-    product:{
-        getAllProduct:()=> '/product/',
-        getProductDetail:(id)=> '/product/productDetail/'+id,
-        createProduct:()=> '/product/postProduct',
-        updateProduct:(id)=> '/product/editProduct/'+id,
-        deleteProduct:(id)=> '/product/deleteProduct/'+id,
-        search:()=> '/product/search',
-        statisticBrand:(id)=> '/product/statistic-brand/'+id,
+    product: {
+        getAllProduct: () => '/product/',
+        getProductDetail: (id) => '/product/productDetail/' + id,
+        createProduct: () => '/product/postProduct',
+        updateProduct: (id) => '/product/editProduct/' + id,
+        deleteProduct: (id) => '/product/deleteProduct/' + id,
+        search: () => '/product/search',
+        statisticBrand: (id) => '/product/statistic-brand/' + id,
     },
-    account:{//ok
-        search:()=> '/account/Quan-ly-tai-khoan/search/',
-        getAllAccounts:()=> '/account/Quan-ly-tai-khoan/',//Lấy tất cả tài khoản 
-        getAccountDetail:(id)=> '/account/Quan-ly-tai-khoan/'+id,
-        updateAccountDetail:(id)=> '/account/Quan-ly-tai-khoan/'+id+'/Chinh-sua-trang-thai-tai-khoan',
-        deleteAccount:(id)=> '/account/Quan-ly-tai-khoan/'+id
+    account: {//ok
+        search: () => '/account/Quan-ly-tai-khoan/search/',
+        getAllAccounts: () => '/account/Quan-ly-tai-khoan/',//Lấy tất cả tài khoản 
+        getAccountDetail: (id) => '/account/Quan-ly-tai-khoan/' + id,
+        updateAccountDetail: (id) => '/account/Quan-ly-tai-khoan/' + id + '/Chinh-sua-trang-thai-tai-khoan',
+        deleteAccount: (id) => '/account/Quan-ly-tai-khoan/' + id
     },
-    category:{
-        getAllCategory:()=> '/category/',
-        addCategory:()=> '/category/add/',
-        updateCategory:(id)=> '/category/edit/'+id,
-        deleteCategory:(id)=> '/category/delete/'+id,
-        search:()=> '/category/search',
+    category: {
+        getAllCategory: () => '/category/',
+        addCategory: () => '/category/add/',
+        updateCategory: (id) => '/category/edit/' + id,
+        deleteCategory: (id) => '/category/delete/' + id,
+        search: () => '/category/search',
     },
-    tag:{
-        getAllTag:()=> '/tag/',
-        addTag:()=> '/tag/add/',
-        updateTag:(id)=> '/tag/edit/'+id,
-        deleteTag:(id)=> '/tag/delete/'+id,
-        search:()=> '/tag/search',
+    tag: {
+        getAllTag: () => '/tag/',
+        addTag: () => '/tag/add/',
+        updateTag: (id) => '/tag/edit/' + id,
+        deleteTag: (id) => '/tag/delete/' + id,
+        search: () => '/tag/search',
     },
-    brand:{
-        getAllBrand:()=> '/brand/',
-        search:()=> '/brand/search',
-        delete:(id)=> '/brand/del/'+id,
-        getProductByBrand:(id)=> '/brand/'+id,
-        updateBrand:(id)=> '/brand/'+id,
-        addBrand:()=> '/brand/',
+    brand: {
+        getAllBrand: () => '/brand/',
+        search: () => '/brand/search',
+        delete: (id) => '/brand/del/' + id,
+        getProductByBrand: (id) => '/brand/' + id,
+        updateBrand: (id) => '/brand/' + id,
+        addBrand: () => '/brand/',
     },
-    voucher:{
-        getAllVoucher:()=> '/voucher/',
-        addVoucher:()=> '/voucher/add/',
-        updateVoucher:(id)=> '/voucher/edit/'+id,
-        deleteVoucher:(id)=> '/voucher/delete/'+id,
-        search:()=> '/voucher/search',
+    voucher: {
+        getAllVoucher: () => '/voucher/',
+        addVoucher: () => '/voucher/add/',
+        updateVoucher: (id) => '/voucher/edit/' + id,
+        deleteVoucher: (id) => '/voucher/delete/' + id,
+        search: () => '/voucher/search',
     },
-    order:{
-        getAllOrders:()=> '/order/',
-        getOrderOfUser:(id)=> '/order/user/'+id,
-        getOrderDetail:(id)=> '/order/detail/'+id,
-        editOrder:(id)=> '/order/edit/'+id,
-        search:()=> '/order/search/',
-        generalStatistic:()=> '/order/statistic/',//x
-        statisticRevenue:()=> '/order/statistic-revenue/'//x
+    order: {
+        getAllOrders: () => '/order/',
+        getOrderOfUser: (id) => '/order/user/' + id,
+        getOrderDetail: (id) => '/order/detail/' + id,
+        editOrder: (id) => '/order/edit/' + id,
+        search: () => '/order/search/',
+        generalStatistic: () => '/order/statistic/',//x
+        statisticRevenue: () => '/order/statistic-revenue/'//x
     },
-    carousel:{
-        getAllCarousel:()=> '/carousel/',
-        addCarousel:()=> '/carousel/',
-        updateCarousel:(id)=> '/carousel/'+id,
-        deleteCarousel:(id)=> '/carousel/'+id,
+    carousel: {
+        getAllCarousel: () => '/carousel/',
+        addCarousel: () => '/carousel/',
+        updateCarousel: (id) => '/carousel/' + id,
+        deleteCarousel: (id) => '/carousel/' + id,
     },
     review: {
-        search:(id)=> '/reviews/'+id+'/search/',
-        deleteReview:(id)=> '/reviews/'+id,
-        getReview:(id)=> '/reviews/'+id
-    }    
+        search: (id) => '/reviews/' + id + '/search/',
+        deleteReview: (id) => '/reviews/' + id,
+        getReview: (id) => '/reviews/' + id
+    }
 }
