@@ -1,10 +1,10 @@
-import { AUTH_URL, CREATE_URL, DELETE, READ_ALL_URL, UPDATE_URL } from './API_URL';
+import { AUTH_URL } from './API_URL';
 import axios from './myAxios'
 
 //----------------------------- General -----------------------------
-export async function createRecord(createType, data) {
+export async function createRecord(url, data) {
   try {
-    const newData = (await axios.post(CREATE_URL[createType], data)).data;
+    const newData = (await axios.post(url, data)).data;
 
     if (!newData)
       throw Error;
@@ -16,9 +16,9 @@ export async function createRecord(createType, data) {
   }
 }
 
-export async function readAll(readType, id) {
+export async function readAll(url) {
   try {
-    const data = (await axios.get(READ_ALL_URL(id)[readType])).data;
+    const data = (await axios.get(url)).data;
     return data;
   } catch (error) {
     console.error(error);
@@ -27,9 +27,9 @@ export async function readAll(readType, id) {
 }
 
 
-export async function updateRecord(updateType, data) {
+export async function updateRecord(url, data) {
   try {
-    const newData = (await axios.patch(UPDATE_URL(data._id)[updateType], data)).data;
+    const newData = (await axios.patch(url, data)).data;
 
     if (!newData)
       throw Error(newData);
@@ -40,14 +40,25 @@ export async function updateRecord(updateType, data) {
   }
 }
 
-export async function deleteRecord(id, deleteType) {
+export async function deleteRecord(url) {
   try {
-    const status = (await axios.delete(DELETE(id)[deleteType])).status;
-    if (status) return status;
+    const data = (await axios.delete(url)).data;
+    if (data) return data;
     throw Error;
   } catch (error) {
     console.error(error);
-    return error;
+  }
+}
+
+export async function search(url, searchParam) {
+  try {
+    const data = (await axios.get(url, searchParam)).data;
+    if (data)
+      return data;
+    throw Error;
+
+  } catch (error) {
+    console.error(error);
   }
 }
 

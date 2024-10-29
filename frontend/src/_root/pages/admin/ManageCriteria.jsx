@@ -7,7 +7,7 @@ import { CustomEditCell, CustomGridToolbar, ManagePageSearch, SplitButton } from
 import { enqueueSnackbar as toaster } from 'notistack';
 import { Badge, Box, styled, Tooltip, tooltipClasses } from '@mui/material';
 import { Cancel, Delete, Edit, Save } from '@mui/icons-material';
-import { useCreateBrand, useCreateCategory, useCreateTag, useDeleteBrand, useDeleteCategory, useDeleteTag, useReadAllBrand, useReadAllCategory, useReadAllTag, useUpdateBrand, useUpdateCategory, useUpdateTag } from '../../../api/queries.js';
+import { useCreateBrand, useCreateCategory, useCreateTag, useDeleteBrand, useDeleteCategory, useDeleteTag, useReadAllBrand, useReadAllCategory, useReadAllTagAdmin, useUpdateBrand, useUpdateCategory, useUpdateTag } from '../../../api/queries.js';
 
 const StyledBox = styled('div')(({ theme }) => ({
   '& .Mui-error': {
@@ -43,7 +43,7 @@ const criteria = {
   },
   tag: {
     create: useCreateTag,
-    read: useReadAllTag,
+    read: useReadAllTagAdmin,
     delete: useDeleteTag,
     update: useUpdateTag,
     columns: [

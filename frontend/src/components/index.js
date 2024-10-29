@@ -4,6 +4,7 @@ import ForgotPassword from './forms/ForgotPassword'
 
 import TopAppBar from './navbar/TopAppBar'
 
+import CustomPageContainer from './pageContainer/CustomPageContainer'
 import PageToolbar from './pageContainer/PageToolbar'
 
 import CustomGridToolbar from './gridData/CustomGridToolbar'
@@ -26,5 +27,6 @@ export {
     SplitButton,
     CustomGridToolbar,
     CustomEditCell,
-    PageToolbar
+    PageToolbar,
+    CustomPageContainer
 }

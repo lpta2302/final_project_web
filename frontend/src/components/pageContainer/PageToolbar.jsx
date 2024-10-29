@@ -1,14 +1,46 @@
-import { Save } from "@mui/icons-material"
-import { Button, Typography } from "@mui/material"
+import { DeleteOutlined, Done, Save } from "@mui/icons-material"
+import { Box, Button, Typography } from "@mui/material"
 import { PageContainerToolbar } from "@toolpad/core"
 
-function PageToolbar() {
+function PageToolbar({handleSave, handleSaveDraft, handleDelete}) {
   return (
-    <PageContainerToolbar>
+    <Box
+        sx={{display: {md: 'inline-flex',xs:'none'}, gap: '8px', ml: 'auto'}}
+    >
+        <Button
+            startIcon={<DeleteOutlined/>}
+            variant="outlined"
+            color="error"
+            onClick={handleSave}
+            sx={{borderRadius: '25px'}}
+        >
+            <Typography
+                variant="button"
+            >
+                Delete
+            </Typography>
+        </Button>
         <Button
             startIcon={<Save/>}
+            variant="outlined"
+            color="primary"
+            onClick={handleSaveDraft}
+            sx={{borderRadius: '25px'}}
+
+        >
+            <Typography
+                variant="button"
+            >
+                Save Draft
+            </Typography>
+        </Button>
+        <Button
+            startIcon={<Done/>}
             variant="contained"
-            color="primary.main"
+            color="primary"
+            onClick={handleDelete}
+            sx={{borderRadius: '25px'}}
+
         >
             <Typography
                 variant="button"
@@ -16,7 +48,7 @@ function PageToolbar() {
                 Save
             </Typography>
         </Button>
-    </PageContainerToolbar>
+    </Box>
   )
 }
 

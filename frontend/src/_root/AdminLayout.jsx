@@ -71,7 +71,7 @@ function AdminLayout() {
             <Typography variant='subtitle2' ml={{ sm: '12px', xs: 'none' }}>Admin</Typography>
           </Box>
       }}
-      theme={theme}
+      // theme={theme}
       session={session}
       authentication={authentication}
     >
