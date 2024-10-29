@@ -7,6 +7,7 @@ const ManagePersonalProfile = () => {
   const { isAuthenticated, isLoading: isLoadingUser, user } = useAuthContext();
   const { mutateAsync: updateAccount } = useUpdateAccount();
   
+  
   // Khởi tạo state với các giá trị từ `user`
   const [inputs, setInputs] = useState({
     username: "",
@@ -17,6 +18,7 @@ const ManagePersonalProfile = () => {
     dateOfBirth: "",
     avatar: "",
   });
+  console.log(inputs.dateOfBirth);
 
   const [error, setError] = useState({
     firstName: "",

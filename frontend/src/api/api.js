@@ -28,8 +28,13 @@ export async function readAll(url) {
 
 
 export async function updateRecord(url, data) {
+  console.log("🚀 ~ updateRecord ~ url, data:", url, data)
   try {
+    
     const newData = (await axios.patch(url, data)).data;
+
+    console.log(newData);
+    
 
     if (!newData)
       throw Error(newData);
