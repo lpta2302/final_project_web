@@ -16,6 +16,7 @@ import { CartIcon } from '../../icons/CustomIcons.jsx';
 import Login from '../forms/Login.jsx';
 import Register from '../forms/Register.jsx';
 import ForgotPassword from '../forms/ForgotPassword.jsx';
+import { LoadingIcon } from '../../assets/index.js';
 
 const drawerWidth = 240;
 
@@ -36,7 +37,7 @@ const NavbarButton = ({ title, path, navIcon, onClick }) =>
                 px: '8px'
             }}>
             {navIcon}
-            <Typography variant='button' sx={{ fontSize: '16px' }}>
+            <Typography variant='button' sx={{ fontSize: '16px', maxWidth: '120px' }} noWrap>
                 {title}
             </Typography>
         </Button>
@@ -66,7 +67,7 @@ NavbarButton.propTypes = {
 const navItems = customerNav;
 
 function TopAppBar() {
-    const { isAuthenticated, user } = useAuthContext();
+    const { isAuthenticated, isLoading: isLoadingUser , user } = useAuthContext();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
@@ -90,11 +91,8 @@ function TopAppBar() {
                 {navItems.map((item) =>
                     <NavbarLink key={item.title} segment={item.segment} title={item.title} />)}
                 {isAuthenticated ?
-                    <NavbarLink segment='/profile' title={user.name} />
-
-                    :
+                    <NavbarLink segment='/profile' title={!isLoadingUser ? `${user.firstName} ${user.lastName}` : ""} /> :
                     <NavbarLink segment='/login' title='Đăng nhập' />
-
                 }
             </List>
         </Box>
@@ -105,6 +103,8 @@ function TopAppBar() {
         'register': <Register setModalType={setModalType} />,
         'forgot-password': <ForgotPassword setModalType={setModalType} />
     }
+
+    console.log(user, isLoadingUser, isAuthenticated);
 
     return (
         <Box component='header' sx={{ display: 'flex', alignItems: 'center' }}>
@@ -181,7 +181,7 @@ function TopAppBar() {
                         ))}
                         {
                             isAuthenticated ?
-                                <NavbarButton title={user.name} navIcon={<AccountCircleOutlined />} path='/profile' /> :
+                                <NavbarButton title={!isLoadingUser ? `${user.firstName} ${user.lastName}` : ""} navIcon={!isLoadingUser ? <AccountCircleOutlined /> : <Box component="img" src={LoadingIcon}/>} path='/profile' /> :
                                 <NavbarButton title='Đăng nhập' navIcon={<AccountCircleOutlined />} onClick={handleModalToggle} />
                         }
                     </Box>
