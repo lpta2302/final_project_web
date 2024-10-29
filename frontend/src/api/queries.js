@@ -59,11 +59,13 @@ export const useUpdateAccount = () => {
   return useMutation({
     mutationFn: (user) =>
       updateRecord(
-        admin_account_url.updateAccountDetail(user._id),
+        customer_url.account.udpateAccountDetail(user._id),
         user
       ),
-    onSuccess: (user) => {
-      queryClient.invalidateQueries([ADMIN_ACCOUNT_DETAIL, user._id]);
+    onSuccess: (data) => {
+      console.log(data);
+      
+      queryClient.invalidateQueries([ADMIN_ACCOUNT_DETAIL, data._id]);
     },
   });
 };
@@ -90,7 +92,7 @@ export const useUpdateAccountStatus = () => {
   return useMutation({
     mutationFn: (user) =>
       updateRecord(
-        admin_account_url.updateAccountDetail(user._id),
+        admin_account_url.updateAccountDetail(user.accountCode),
         user
       ),
     onSuccess: () => {
