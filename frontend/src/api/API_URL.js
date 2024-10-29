@@ -132,6 +132,7 @@ export const admin_url = {
         deleteCarousel: (id) => '/carousel/' + id,
     },
     review: {
+        getAllReview: (id) => '/client/reviews/' + id,
         search: (id) => '/reviews/' + id + '/search/',
         deleteReview: (id) => '/reviews/' + id,
         getReview: (id) => '/reviews/' + id

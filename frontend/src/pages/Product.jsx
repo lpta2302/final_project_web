@@ -4,7 +4,7 @@ import {
 } from '@mui/material';
 import { Add, Remove, Favorite, FavoriteBorder } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
-import { useCreateReview, useReadAllProduct, useReadAllReview, useReadAllSpecification } from '../api/queries';
+import { useAddNewReview, useReadAllProduct, useReadAllReviewsAdmin } from '../api/queries';
 import moment from 'moment'; // Để format ngày tháng
 
 const Product = () => {
@@ -18,9 +18,9 @@ const Product = () => {
   const [isSubmitting, setIsSubmitting] = useState(false); // Trạng thái submit
 
   const { data: productData, isLoading } = useReadAllProduct();
-  const { data: productReview, refetch } = useReadAllReview();
-  const { mutateAsync: addReview } = useCreateReview();
-  const { data: specData } = useReadAllSpecification();
+  const { data: productReview, refetch } = useReadAllReviewsAdmin();
+  const { mutateAsync: addReview } = useAddNewReview();
+  // const { data: specData } = useReadAllSpecification();
 
   const product = productData?.find(item => item._id === productId);
   

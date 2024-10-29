@@ -574,8 +574,15 @@ export const useAddNewReview = () => {
   });
 };
 
+
 //admin
 const admin_review_url = admin_url.review;
+export const useReadAllReviewsAdmin = (productId) => {
+  return useQuery({
+    queryKey: [READ_ALL_ORDERS],
+    queryFn: () => readAll(admin_review_url.getAllReview(productId)),
+  });
+};
 export const useDeleteReview = () => {
   const queryClient = useQueryClient();
   return useMutation({
