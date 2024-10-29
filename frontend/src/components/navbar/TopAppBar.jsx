@@ -99,7 +99,7 @@ function TopAppBar() {
     );
 
     const modal = {
-        'login': <Login setModalType={setModalType} />,
+        'login': <Login setModalOpen={setModalOpen} setModalType={setModalType} />,
         'register': <Register setModalType={setModalType} />,
         'forgot-password': <ForgotPassword setModalType={setModalType} />
     }
