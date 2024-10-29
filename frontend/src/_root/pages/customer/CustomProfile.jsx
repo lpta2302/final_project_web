@@ -34,11 +34,16 @@ const CustomerProfile = () => {
     switch (activeComponent) {
       case "MyProfile":
         return <ProfileForm />;
+      case "Favorite":
+        return <FavoritePage />;
+      case "SeenProduct":
+        return <SeenProductPage />;
+      case "OrderManagement":
+        return <OrderManagementPage />;
       default:
         return <ProfileForm />;
     }
   };
-
   return (
     <Box
       sx={{
@@ -67,28 +72,31 @@ const CustomerProfile = () => {
             <ListItemText primary="My Profile" sx={{ color: "#ffffff" }} />
           </ListItem>
           <Divider sx={{ backgroundColor: "#ffffff" }} />
-          <ListItem button>
+          <ListItem button onClick={() => handleComponentChange("Favorite")}>
             <ListItemIcon>
               <LaptopIcon sx={{ color: "#ffffff" }} />
             </ListItemIcon>
-            <ListItemText primary="My Products" sx={{ color: "#ffffff" }} />
+            <ListItemText primary="Favorite" sx={{ color: "#ffffff" }} />
           </ListItem>
           <Divider sx={{ backgroundColor: "#ffffff" }} />
-          <ListItem button>
+          <ListItem button onClick={() => handleComponentChange("SeenProduct")}>
             <ListItemIcon>
               <AssignmentTurnedInIcon sx={{ color: "#ffffff" }} />
             </ListItemIcon>
-            <ListItemText
-              primary="Register a Product"
-              sx={{ color: "#ffffff" }}
-            />
+            <ListItemText primary="Seen Product" sx={{ color: "#ffffff" }} />
           </ListItem>
           <Divider sx={{ backgroundColor: "#ffffff" }} />
-          <ListItem button>
+          <ListItem
+            button
+            onClick={() => handleComponentChange("OrderManagement")}
+          >
             <ListItemIcon>
               <PeopleIcon sx={{ color: "#ffffff" }} />
             </ListItemIcon>
-            <ListItemText primary="My Community" sx={{ color: "#ffffff" }} />
+            <ListItemText
+              primary="Order Management"
+              sx={{ color: "#ffffff" }}
+            />
           </ListItem>
           <Divider sx={{ backgroundColor: "#ffffff" }} />
           <ListItem button>
@@ -257,5 +265,24 @@ const ProfileForm = () => {
     </Box>
   );
 };
+const FavoritePage = () => (
+  <Box>
+    <Typography variant="h5">Favorite Products</Typography>
+    {/* Add your favorite products UI here */}
+  </Box>
+);
 
+const SeenProductPage = () => (
+  <Box>
+    <Typography variant="h5">Seen Products</Typography>
+    {/* Add your seen products UI here */}
+  </Box>
+);
+
+const OrderManagementPage = () => (
+  <Box>
+    <Typography variant="h5">Order Management</Typography>
+    {/* Add your order management UI here */}
+  </Box>
+);
 export default CustomerProfile;
