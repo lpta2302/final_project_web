@@ -18,7 +18,6 @@ const ManagePersonalProfile = () => {
     dateOfBirth: "",
     avatar: "",
   });
-  console.log(inputs.dateOfBirth);
 
   const [error, setError] = useState({
     firstName: "",
