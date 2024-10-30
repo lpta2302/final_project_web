@@ -23,10 +23,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DiscountSection from "../../../components/Cart/usevoucher";
 import { useReadAllCart } from "../../../api/queries";
 const Cart = () => {
+  const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([
     {
       id: 1,
@@ -53,7 +54,11 @@ const Cart = () => {
         "https://www.tnc.com.vn/uploads/product/XUYEN_102020/DELL-S2421HN.jpg",
     },
   ]);
-
+  const handleCheckout = () => {
+    navigate("/checkoutpage", {
+      state: { cartItems },
+    });
+  };
   const [discountCode, setDiscountCode] = useState("");
   const [shippingFee, setShippingFee] = useState(0);
   const [discountValue, setDiscountValue] = useState(0);
@@ -235,8 +240,8 @@ const Cart = () => {
                       <TableCell>ẢNH</TableCell>
                       <TableCell>SẢN PHẨM</TableCell>
                       <TableCell>GIÁ</TableCell>
-                      <TableCell>SỐ LƯỢNG</TableCell>
-                      <TableCell>TỔNG CỘNG</TableCell>
+                      <TableCell width={"300"}>SỐ LƯỢNG</TableCell>
+                      <TableCell width={"300"}>TỔNG CỘNG</TableCell>
                       <TableCell></TableCell>
                     </TableRow>
                   </TableHead>

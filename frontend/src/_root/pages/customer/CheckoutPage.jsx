@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom"; // Import useLocation
+import { useLocation } from "react-router-dom";
 import {
   Container,
   Grid,
@@ -16,11 +16,12 @@ import {
   TableRow,
   FormControlLabel,
   Checkbox,
+  Box,
 } from "@mui/material";
 
 // Giả định dữ liệu từ trang shopping cart
 const CheckoutPage = () => {
-  const location = useLocation(); // Lấy dữ liệu từ state khi điều hướng
+  const location = useLocation();
   const { cartItems, savedCustomerInfo } = location.state || {
     cartItems: [],
     savedCustomerInfo: null,
@@ -36,7 +37,6 @@ const CheckoutPage = () => {
   const [useSavedInfo, setUseSavedInfo] = useState(false);
 
   useEffect(() => {
-    // Nếu người dùng chọn sử dụng thông tin đã lưu
     if (useSavedInfo && savedCustomerInfo) {
       setCustomerInfo(savedCustomerInfo);
     } else {
@@ -49,13 +49,11 @@ const CheckoutPage = () => {
     }
   }, [useSavedInfo, savedCustomerInfo]);
 
-  // Tính tổng số tiền từ giỏ hàng
   const totalAmount = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
 
-  // Hàm xử lý khi thay đổi thông tin khách hàng
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setCustomerInfo((prev) => ({ ...prev, [name]: value }));
@@ -63,61 +61,48 @@ const CheckoutPage = () => {
 
   return (
     <Container style={{ marginTop: "20px" }}>
-      <Typography variant="h4" gutterBottom>
-        Thanh toán
-      </Typography>
-
       <Grid container spacing={3}>
-        {/* Thông tin giỏ hàng */}
+        {/* Left Side - Product Info and Customer Form */}
         <Grid item xs={12} md={8}>
-          <Paper style={{ padding: "16px" }}>
-            <Typography variant="h6" gutterBottom>
-              Hóa đơn của bạn
-            </Typography>
-
-            {/* Bảng tóm tắt đơn hàng với scroll */}
-            <TableContainer style={{ maxHeight: "300px", overflowY: "auto" }}>
-              <Table stickyHeader>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Số thứ tự</TableCell>
-                    <TableCell>Tên sản phẩm</TableCell>
-                    <TableCell>Đơn giá</TableCell>
-                    <TableCell>Số lượng</TableCell>
-                    <TableCell>Tổng tiền</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {cartItems.map((item, index) => (
-                    <TableRow key={item.id}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>{item.name}</TableCell>
-                      <TableCell>{item.price.toLocaleString()} đ</TableCell>
-                      <TableCell>{item.quantity}</TableCell>
-                      <TableCell>
-                        {(item.price * item.quantity).toLocaleString()} đ
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-
-            <Divider style={{ margin: "16px 0" }} />
-            <Typography variant="h6">
-              Tổng cộng: {totalAmount.toLocaleString()} đ
-            </Typography>
+          {/* Product Info */}
+          <Paper style={{ padding: "16px", marginBottom: "20px" }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={3}>
+                <img
+                  src="/path-to-image" // You can replace this with your product image
+                  alt="Product"
+                  style={{ width: "100%", borderRadius: "8px" }}
+                />
+              </Grid>
+              <Grid item xs={12} md={9}>
+                <Typography variant="h6">
+                  Acer Aspire 3 A315-44P-R5QG R7 5700U/Bạc
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  Màu: Bạc
+                </Typography>
+                <Box mt={1}>
+                  <Typography variant="body1">
+                    <span
+                      style={{ textDecoration: "line-through", color: "#888" }}
+                    >
+                      14.990.000 đ
+                    </span>{" "}
+                    <span style={{ fontWeight: "bold", color: "#f00" }}>
+                      11.990.000 đ
+                    </span>
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
           </Paper>
-        </Grid>
 
-        {/* Form thông tin khách hàng */}
-        <Grid item xs={12} md={4}>
+          {/* Customer Form */}
           <Paper style={{ padding: "16px" }}>
             <Typography variant="h6" gutterBottom>
               Thông tin khách hàng
             </Typography>
 
-            {/* Checkbox chọn sử dụng thông tin đã lưu */}
             {savedCustomerInfo && (
               <FormControlLabel
                 control={
@@ -175,22 +160,86 @@ const CheckoutPage = () => {
             </form>
           </Paper>
         </Grid>
-      </Grid>
 
-      {/* Nút xác nhận thanh toán */}
-      <Button
-        variant="contained"
-        color="primary"
-        fullWidth
-        style={{ marginTop: "20px", padding: "10px" }}
-        onClick={() => {
-          // Thực hiện hành động thanh toán
-          console.log("Customer Info:", customerInfo);
-          console.log("Cart Items:", cartItems);
-        }}
-      >
-        Xác nhận thanh toán
-      </Button>
+        {/* Right Side - Order Summary */}
+        <Grid item xs={12} md={4}>
+          <Paper style={{ padding: "16px" }}>
+            <Typography variant="h6" gutterBottom>
+              Thông tin đơn hàng
+            </Typography>
+            <Divider style={{ margin: "8px 0" }} />
+
+            <Grid container spacing={1}>
+              <Grid item xs={6}>
+                <Typography>Tổng tiền</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography align="right">14.990.000 đ</Typography>
+              </Grid>
+
+              <Grid item xs={6}>
+                <Typography>Tổng khuyến mãi</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography align="right">3.500.000 đ</Typography>
+              </Grid>
+              <Grid item xs={6} style={{ paddingLeft: "16px" }}>
+                <Typography>- Giảm giá sản phẩm</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography align="right">3.000.000 đ</Typography>
+              </Grid>
+              <Grid item xs={6} style={{ paddingLeft: "16px" }}>
+                <Typography>- Voucher</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography align="right">500.000 đ</Typography>
+              </Grid>
+
+              <Grid item xs={6}>
+                <Typography>Phí vận chuyển</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography align="right">Miễn phí</Typography>
+              </Grid>
+
+              <Divider style={{ margin: "8px 0", width: "100%" }} />
+
+              <Grid item xs={6}>
+                <Typography variant="h6">Cần thanh toán</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6" align="right" color="error">
+                  11.490.000 đ
+                </Typography>
+              </Grid>
+            </Grid>
+            {/* Nút đặt hàng */}
+            <Button
+              variant="contained"
+              fullWidth
+              style={{
+                marginTop: "20px",
+                padding: "10px",
+                backgroundColor: "#0672cb",
+              }}
+            >
+              Đặt hàng
+            </Button>
+
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              align="center"
+              style={{ marginTop: "10px" }}
+            >
+              Bằng việc tiến hành đặt mua hàng, bạn đồng ý với{" "}
+              <a href="#">Điều khoản dịch vụ</a> và{" "}
+              <a href="#">Chính sách xử lý dữ liệu cá nhân</a> của FPT Shop
+            </Typography>
+          </Paper>
+        </Grid>
+      </Grid>
     </Container>
   );
 };
