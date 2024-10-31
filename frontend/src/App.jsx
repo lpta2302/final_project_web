@@ -20,6 +20,7 @@ import ManagePersonalProfile from "./pages/ManagePersonalProfile.jsx";
 import ManagePersonalOrder from "./pages/ManagePersonalOrder.jsx";
 import Favorite from "./pages/Favorite.jsx";
 import Product from "./pages/Product.jsx";
+import { CssVarsProvider, extendTheme } from "@mui/joy";
 
 const muiTheme = createTheme({
   palette: {
@@ -64,6 +65,8 @@ const muiTheme = createTheme({
   },
 });
 
+const joyTheme = extendTheme();
+
 const queryClient = new QueryClient();
 
 function App() {
@@ -92,8 +95,6 @@ function App() {
                   <Route path="/manage-order" element={<ManagePersonalOrder />} />
                   <Route path="/favorite" element={<Favorite />} />
                   <Route path="/product/productId" element={<Product />} />
-
-
                   {customerNav.map(navItem =>
                     <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
                   )}

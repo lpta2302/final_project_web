@@ -11,7 +11,7 @@ function PageToolbar({handleSave, handleSaveDraft, handleDelete}) {
             startIcon={<DeleteOutlined/>}
             variant="outlined"
             color="error"
-            onClick={handleSave}
+            onClick={handleDelete}
             sx={{borderRadius: '25px'}}
         >
             <Typography
@@ -38,7 +38,7 @@ function PageToolbar({handleSave, handleSaveDraft, handleDelete}) {
             startIcon={<Done/>}
             variant="contained"
             color="primary"
-            onClick={handleDelete}
+            onClick={handleSave}
             sx={{borderRadius: '25px'}}
 
         >
