@@ -16,19 +16,15 @@ export const index = async (req, res) => {
 // [POST] /products/postProduct
 export const postProduct = async (req, res) => {
   try {
-    // Kiểm tra nếu productCode đã tồn tại
-    const existingProductCode = await Product.findOne({
-      productCode: req.body.productCode,
-    });
+    const productCode = req.body.productCode; // Lấy productCode
+    const existingProductCode = await Product.findOne({ productCode });
 
     if (existingProductCode) {
       return res.status(400).json(false);
     }
 
-    // Kiểm tra nếu productName đã tồn tại
-    const existingProductName = await Product.findOne({
-      productName: req.body.productName,
-    });
+    const productName = req.body.productName; // Lấy productName
+    const existingProductName = await Product.findOne({ productName });
 
     if (existingProductName) {
       return res.status(400).json({
@@ -37,17 +33,36 @@ export const postProduct = async (req, res) => {
       });
     }
 
+    // Phân tích các trường JSON nếu cần
+    const tag = JSON.parse(req.body.tag);
+    const relativeProduct = JSON.parse(req.body.relativeProduct);
+
     // Tạo sản phẩm mới
-    const record = new Product(req.body);
+    const record = new Product({
+      productCode,
+      productName,
+      description: req.body.description,
+      price: req.body.price,
+      discountPercentage: req.body.discountPercentage,
+      stockQuantity: req.body.stockQuantity,
+      productStatus: req.body.productStatus,
+      imageURLs: req.imageUrl ? [req.imageUrl] : [],
+      category: req.body.category, // Kiểm tra nếu có category
+      tag, // Gán tag
+      brand: req.body.brand, // Gán brand
+      relativeProduct, // Gán relativeProduct
+      slug: req.body.slug, // Gán slug
+    });
+
     const savedProduct = await record.save();
 
-    // Thêm sản phẩm vào danh sách sản phẩm của thương hiệu
+    // Cập nhật thương hiệu
     const brand = await Brand.findById(req.body.brand);
     await brand.updateOne({ $push: { products: savedProduct._id } });
 
-    // Thêm tag vào bảng tag
-    if (Array.isArray(req.body.tag) && req.body.tag.length > 0) {
-      for (const tagId of req.body.tag) {
+    // Cập nhật tag
+    if (Array.isArray(tag) && tag.length > 0) {
+      for (const tagId of tag) {
         const tag = await Tag.findById(tagId);
         if (tag) {
           await tag.updateOne({ $push: { products: savedProduct._id } });
@@ -58,7 +73,7 @@ export const postProduct = async (req, res) => {
     res.status(200).json(savedProduct);
   } catch (error) {
     console.log(error);
-    return res.status(400).json(false);
+    return res.status(400).json(error);
   }
 };
 
