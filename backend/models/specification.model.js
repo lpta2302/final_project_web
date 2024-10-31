@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 import slug from "mongoose-slug-generator";
 
 mongoose.plugin(slug);
@@ -11,10 +11,19 @@ const specificationSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
-    specifications: {
-      type: Map,
-      of: String, // Bạn có thể thay đổi 'String' thành kiểu giá trị phù hợp nếu các giá trị của map không phải là string.
-    },
+    specifications: [
+      {
+        key: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "SpecificationKey",
+          required: true,
+        },
+        value: {
+          type: String,
+          required: true,
+        },
+      },
+    ],
     stockQuantity: {
       type: Number,
       required: true,
