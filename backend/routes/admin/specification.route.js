@@ -25,6 +25,9 @@ specRouter.get("/specification-keys", specController.showSpecKey);
 specRouter.post("/specification-keys", specController.addSpecKey);
 
 // Delete Specs Key
-specRouter.delete("/specification-keys", specController.delSpecKey);
+specRouter.delete("/specification-keys/:id", specController.delSpecKey);
+
+//Update Specs Key
+specRouter.patch("/specification-keys/:id", specController.updtSpecKey);
 
 export default specRouter;
