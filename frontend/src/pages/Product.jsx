@@ -9,6 +9,7 @@ import moment from 'moment';
 
 const Product = () => {
   const { productId } = useParams();
+  
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(null); 
   const [isFavorited, setIsFavorited] = useState(false); 
@@ -21,9 +22,7 @@ const Product = () => {
   const { mutateAsync: addReview } = useAddNewReview();
 
   const product = productData ? productData : null;
-  const specs = product?.specs[0];
-
-  const discountedPrice = specs ? specs.price * (1 - (product.discountPercentage || 0) / 100) : 0;
+  const specs = product?.specs && product.specs.length > 0 ? product.specs[0] : null;
 
   useEffect(() => {
     if (product && product.imageURLs && product.imageURLs.length > 0) {
@@ -32,7 +31,7 @@ const Product = () => {
   }, [product]);
 
   const handleIncrease = () => {
-    if (quantity < specs.stockQuantity) setQuantity(quantity + 1);
+    if (specs && quantity < specs.stockQuantity) setQuantity(quantity + 1);
   };
 
   const handleDecrease = () => {
@@ -41,6 +40,36 @@ const Product = () => {
 
   const toggleFavorite = () => {
     setIsFavorited(!isFavorited); 
+  };
+
+  const handleReviewSubmit = async () => {
+    if (!specs) {
+      alert('Thông tin sản phẩm không đầy đủ. Không thể gửi đánh giá.');
+      return;
+    }
+
+    if (newRating === 0 || reviewText.trim() === '') {
+      alert('Vui lòng chọn số sao và nhập nội dung đánh giá.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      await addReview({
+        spec: specs._id,
+        star: newRating,
+        description: reviewText,
+        createdAt: new Date(),
+      });
+      setNewRating(0);
+      setReviewText('');
+      refetch();
+    } catch (error) {
+      console.error('Error adding review:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isLoading) {
@@ -63,39 +92,12 @@ const Product = () => {
     );
   }
 
-  const filteredReviews = Array.isArray(productReview)
-    ? productReview.filter(review => review.spec === productId)
-    : [];
+  const filteredReviews = Array.isArray(productReview) ? productReview.filter(review => review.spec === specs?._id) : [];
 
   const calculateAverageRating = (reviews) => {
     if (!reviews || reviews.length === 0) return 0;
     const totalStars = reviews.reduce((sum, review) => sum + review.star, 0);
     return totalStars / reviews.length;
-  };
-
-  const handleReviewSubmit = async () => {
-    if (newRating === 0 || reviewText.trim() === '') {
-      alert('Vui lòng chọn số sao và nhập nội dung đánh giá.');
-      return;
-    }
-
-    setIsSubmitting(true);
-    
-    try {
-      await addReview({
-        spec: productId,
-        star: newRating,
-        description: reviewText,
-        createdAt: new Date(),
-      });
-      setNewRating(0);
-      setReviewText('');
-      refetch();
-    } catch (error) {
-      console.error('Error adding review:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   return (
@@ -138,27 +140,45 @@ const Product = () => {
               ))}
             </Box>
           </Grid>
+
           <Grid item xs={12} md={6}>
-            <Typography variant="h4" gutterBottom>{product.productName}</Typography>
+            <Typography variant="h4" gutterBottom>
+              {product.productName}
+            </Typography>
+            
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
               <Typography variant="body1" sx={{ mr: 2 }}>
                 <strong>Mã sản phẩm:</strong> {product.productCode}
               </Typography>
               <Rating value={calculateAverageRating(filteredReviews)} precision={0.5} readOnly />
-              <Typography variant="body2" sx={{ ml: 1 }}>({filteredReviews?.length || 0} đánh giá)</Typography>
+              <Typography variant="body2" sx={{ ml: 1 }}>
+                ({filteredReviews?.length || 0} đánh giá)
+              </Typography>
             </Box>
+            
             <Typography variant="h6" color="primary" sx={{ mb: 1 }}>
-              ${discountedPrice.toFixed(2)}{' '}
-              {product.discountPercentage > 0 && (
-                <Typography component="span" sx={{ textDecoration: 'line-through', color: 'gray', ml: 2 }}>
+              ${specs ? (specs.price * (1 - (product.discountPercentage || 0) / 100)).toFixed(2) : ''}
+              {product.discountPercentage > 0 && specs && (
+                <Typography
+                  component="span"
+                  sx={{ textDecoration: 'line-through', color: 'gray', ml: 2 }}
+                >
                   ${specs.price.toFixed(2)}
                 </Typography>
               )}
             </Typography>
-            <Typography variant="body1" sx={{ mb: 3 }}>{product.description}</Typography>
+            
+            <Typography variant="body1" sx={{ mb: 3 }}>
+              {product.description}
+            </Typography>
+
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-              <Typography variant="body1" sx={{ mr: 2 }}>Số lượng:</Typography>
-              <IconButton onClick={handleDecrease} disabled={quantity <= 1}><Remove /></IconButton>
+              <Typography variant="body1" sx={{ mr: 2 }}>
+                Số lượng:
+              </Typography>
+              <IconButton onClick={handleDecrease} disabled={quantity <= 1}>
+                <Remove />
+              </IconButton>
               <TextField
                 value={quantity}
                 size="small"
@@ -166,14 +186,22 @@ const Product = () => {
                 inputProps={{ style: { textAlign: 'center' } }}
                 disabled
               />
-              <IconButton onClick={handleIncrease} disabled={quantity >= specs.stockQuantity}><Add /></IconButton>
+              <IconButton onClick={handleIncrease} disabled={specs && quantity >= specs.stockQuantity}>
+                <Add />
+              </IconButton>
             </Box>
-            <Typography variant="body2" color={specs.stockQuantity > 0 ? 'green' : 'red'}>
-              {specs.stockQuantity > 0 ? `Còn hàng: ${specs.stockQuantity} sản phẩm` : 'Hết hàng'}
+
+            <Typography variant="body2" color={specs && specs.stockQuantity > 0 ? 'green' : 'red'}>
+              {specs && specs.stockQuantity > 0
+                ? `Còn hàng: ${specs.stockQuantity} sản phẩm`
+                : 'Hết hàng'}
             </Typography>
-            {specs.stockQuantity > 0 && (
+
+            {specs && specs.stockQuantity > 0 && (
               <Box sx={{ display: 'flex', alignItems: 'center', mt: 3 }}>
-                <Button variant="contained" color="primary">Thêm vào giỏ hàng</Button>
+                <Button variant="contained" color="primary">
+                  Thêm vào giỏ hàng
+                </Button>
                 <IconButton onClick={toggleFavorite} sx={{ ml: 2, color: 'red' }}>
                   {isFavorited ? <Favorite /> : <FavoriteBorder />}
                 </IconButton>
@@ -182,6 +210,7 @@ const Product = () => {
           </Grid>
         </Grid>
       </Paper>
+
       <Box sx={{ mt: 4 }}>
         <Typography variant="h5" sx={{ mb: 2 }}>Đánh giá sản phẩm</Typography>
         <Paper sx={{ p: 2, mb: 2 }}>
@@ -206,12 +235,15 @@ const Product = () => {
             {isSubmitting ? 'Đang gửi...' : 'Gửi đánh giá'}
           </Button>
         </Paper>
+
         {filteredReviews && filteredReviews.length > 0 ? (
           filteredReviews.map((review) => (
             <Paper key={review._id} sx={{ p: 2, mb: 2 }}>
               <Rating value={review.star} readOnly />
               <Typography variant="body2" sx={{ mb: 1 }}>{review.description}</Typography>
-              <Typography variant="caption" color="textSecondary">{moment(review.createdAt).format('DD/MM/YYYY')}</Typography>
+              <Typography variant="caption" color="textSecondary">
+                {moment(review.createdAt).format('DD/MM/YYYY')}
+              </Typography>
             </Paper>
           ))
         ) : (

@@ -1,26 +1,22 @@
 import React, { useState } from 'react';
 import { Container, Typography, Tabs, Tab, Box, List, ListItem, ListItemText, Button, Paper, Grid } from '@mui/material';
+import { useReadAllOrdersOfUser } from '../api/queries'; // Update the import to the correct hook
+import moment from 'moment';
 
-const sampleOrders = {
-  processing: [
-    { id: 1, orderCode: 'DH001', date: '10-01-2024', total: '500,000 VND', status: 'Đang xử lý', products: ['Sản phẩm A', 'Sản phẩm B', 'Sản phẩm C'] },
-    { id: 2, orderCode: 'DH002', date: '12-01-2024', total: '1,200,000 VND', status: 'Đang xử lý', products: ['Sản phẩm D'] }
-  ],
-  purchased: [
-    { id: 3, orderCode: 'DH003', date: '12-10-2023', total: '2,000,000 VND', status: 'Đã giao hàng', products: ['Sản phẩm E', 'Sản phẩm F'] }
-  ],
-  cancelled: [
-    { id: 4, orderCode: 'DH004', date: '05-12-2023', total: '300,000 VND', status: 'Đã hủy', products: ['Sản phẩm G'] }
-  ]
-};
-
-const ManagePersonalOrder = () => {
+const ManagePersonalOrder = ({ userId }) => {
   const [currentTab, setCurrentTab] = useState(0);
+  const { data: ordersData, isLoading, isError } = useReadAllOrdersOfUser(userId); // Pass userId
+
+  // Sắp xếp các đơn hàng theo trạng thái
+  const processingOrders = ordersData?.filter(order => order.processStatus === "pending") || [];
+  const completedOrders = ordersData?.filter(order => order.processStatus === "completed") || [];
+  const cancelledOrders = ordersData?.filter(order => order.processStatus === "cancelled") || [];
 
   const handleTabChange = (event, newValue) => {
     setCurrentTab(newValue);
   };
 
+  // Hiển thị các đơn hàng theo trạng thái
   const renderOrders = (orders) => {
     if (orders.length === 0) {
       return <Typography>Không có đơn hàng nào.</Typography>;
@@ -29,37 +25,42 @@ const ManagePersonalOrder = () => {
     return (
       <List>
         {orders.map((order) => {
-          const { products, date } = order;
-          const displayProduct = products[0];
-          const additionalProductsCount = products.length > 1 ? `và ${products.length - 1} sản phẩm khác` : '';
+          const formattedDate = moment(order.takeOrderTime).format('DD-MM-YYYY');
+          const displayTotal = `${(order.totalAmount - order.discountAmount + order.shippingCost).toLocaleString()} VND`;
 
+          // Định nghĩa các kiểu trạng thái và kiểu hiển thị
+          const statusLabels = {
+            completed: 'Đã giao hàng',
+            pending: 'Đang xử lý',
+            cancelled: 'Đã hủy',
+          };
           const statusStyles = {
-            'Đã giao hàng': { backgroundColor: 'lightgreen', color: 'darkgreen' },
-            'Đang xử lý': { backgroundColor: 'lightyellow', color: 'goldenrod' },
-            'Đã hủy': { backgroundColor: '#ffcccb', color: '#b22222' }
+            completed: { backgroundColor: 'lightgreen', color: 'darkgreen' },
+            pending: { backgroundColor: 'lightyellow', color: 'goldenrod' },
+            cancelled: { backgroundColor: '#ffcccb', color: '#b22222' },
           };
 
           return (
-            <Paper key={order.id} sx={{ mb: 2, p: 2 }} elevation={10}>
+            <Paper key={order._id} sx={{ mb: 2, p: 2 }} elevation={10}>
               <ListItem>
                 <Grid container spacing={2} alignItems="center" justifyContent="center">
-                  {/* Product Info */}
+                  {/* Thông tin đơn hàng */}
                   <Grid item xs={12} sm={4} sx={{ textAlign: 'center' }}>
                     <ListItemText
-                      primary={displayProduct}
-                      secondary={additionalProductsCount}
+                      primary={`Mã đơn hàng: ${order._id}`}
+                      secondary={`Ngày đặt hàng: ${formattedDate}`}
                     />
-                  </Grid>
-                  
-                  {/* Date and Status */}
-                  <Grid item xs={12} sm={4} sx={{ textAlign: 'center' }}>
                     <Typography variant="body2" color="text.secondary">
-                      {date}
+                      Tổng cộng: {displayTotal}
                     </Typography>
+                  </Grid>
+
+                  {/* Trạng thái đơn hàng */}
+                  <Grid item xs={12} sm={4} sx={{ textAlign: 'center' }}>
                     <Typography
                       variant="body2"
                       sx={{
-                        ...statusStyles[order.status],
+                        ...statusStyles[order.processStatus],
                         borderRadius: '4px',
                         p: 0.5,
                         fontWeight: 'bold',
@@ -67,11 +68,11 @@ const ManagePersonalOrder = () => {
                         mt: 1,
                       }}
                     >
-                      {order.status}
+                      {statusLabels[order.processStatus]}
                     </Typography>
                   </Grid>
-                  
-                  {/* Action Buttons */}
+
+                  {/* Nút hành động */}
                   <Grid item xs={12} sm={4} sx={{ textAlign: 'center' }}>
                     <Button fullWidth variant="outlined" color="primary" sx={{ mb: 1 }}>
                       Xem chi tiết
@@ -91,6 +92,14 @@ const ManagePersonalOrder = () => {
     );
   };
 
+  if (isLoading) {
+    return <Typography>Đang tải...</Typography>;
+  }
+
+  if (isError) {
+    return <Typography>Có lỗi xảy ra trong quá trình tải đơn hàng.</Typography>;
+  }
+
   return (
     <Container maxWidth="md">
       <Typography variant="h4" sx={{ mb: 4, mt: 4 }}>Quản lý đơn hàng</Typography>
@@ -101,12 +110,12 @@ const ManagePersonalOrder = () => {
       </Tabs>
 
       <Box sx={{ mt: 4 }}>
-        {currentTab === 0 && renderOrders(sampleOrders.processing)}
-        {currentTab === 1 && renderOrders(sampleOrders.purchased)}
-        {currentTab === 2 && renderOrders(sampleOrders.cancelled)}
+        {currentTab === 0 && renderOrders(processingOrders)}
+        {currentTab === 1 && renderOrders(completedOrders)}
+        {currentTab === 2 && renderOrders(cancelledOrders)}
       </Box>
     </Container>
   );
-}
+};
 
 export default ManagePersonalOrder;
