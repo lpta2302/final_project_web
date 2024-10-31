@@ -3,6 +3,10 @@ import mongoose from "mongoose";
 // Định nghĩa schema cho voucher
 const voucherSchema = new mongoose.Schema(
   {
+    voucherCode: {
+      type: Number,
+      require: true,
+    },
     voucherName: {
       type: String,
       required: true,
@@ -22,6 +26,7 @@ const voucherSchema = new mongoose.Schema(
         },
       },
     ],
+    expiringDate: Date,
   },
   {
     timestamps: true,
