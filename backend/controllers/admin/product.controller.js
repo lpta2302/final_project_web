@@ -8,7 +8,7 @@ import wishList from "../../models/wishlist.model.js";
 
 // [GET] /products
 export const index = async (req, res) => {
-  const product = await Product.find({});
+  const product = await Product.find({}).populate("tag category");
 
   res.status(200).json(product);
 };
