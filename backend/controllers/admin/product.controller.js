@@ -6,6 +6,9 @@ import Specs from "../../models/specification.model.js";
 import Tag from "../../models/tag.model.js";
 import wishList from "../../models/wishlist.model.js";
 
+// Middleware
+import deleteFromDrive from "../../middleware/delToDrive.js";
+
 // [GET] /products
 export const index = async (req, res) => {
   const product = await Product.find({});
@@ -33,9 +36,13 @@ export const postProduct = async (req, res) => {
       });
     }
 
-    // Phân tích các trường JSON nếu cần
-    const tag = JSON.parse(req.body.tag);
-    const relativeProduct = JSON.parse(req.body.relativeProduct);
+    // Kiểm tra và phân tích các trường JSON
+    const tag = req.body.tag ? JSON.parse(req.body.tag) : []; // Phân tích tag, mặc định là mảng rỗng nếu không có
+
+    // Kiểm tra sự tồn tại của relativeProduct trước khi phân tích
+    const relativeProduct = req.body.relativeProduct
+      ? JSON.parse(req.body.relativeProduct)
+      : []; // Phân tích relativeProduct, mặc định là mảng rỗng
 
     // Tạo sản phẩm mới
     const record = new Product({
@@ -46,7 +53,7 @@ export const postProduct = async (req, res) => {
       discountPercentage: req.body.discountPercentage,
       stockQuantity: req.body.stockQuantity,
       productStatus: req.body.productStatus,
-      imageURLs: req.imageUrl ? [req.imageUrl] : [],
+      imageURLs: req.imageUrls ? req.imageUrls : [],
       category: req.body.category, // Kiểm tra nếu có category
       tag, // Gán tag
       brand: req.body.brand, // Gán brand
@@ -81,16 +88,46 @@ export const postProduct = async (req, res) => {
 export const editProduct = async (req, res) => {
   try {
     const id = req.params.id;
-    console.log(id);
-    console.log(req.body);
 
-    const result = await Product.findOneAndUpdate({ _id: id }, req.body, {
-      new: true,
-    });
+    // Tìm sản phẩm hiện tại
+    const existingProduct = await Product.findById(id);
+    if (!existingProduct) {
+      return res.status(404).json({ message: "Product not found" });
+    }
 
+    const newImgUrl = req.imageUrls || [];
+
+    console.log(newImgUrl);
+
+    if (newImgUrl.length > 0) {
+      const oldImgUrl = existingProduct.imageURLs;
+
+      for (const url of oldImgUrl) {
+        const urlParams = new URL(url);
+        const fileId = urlParams.searchParams.get("id");
+        if (fileId) {
+          // Gọi middleware xóa hình ảnh
+          await deleteFromDrive({ params: { fileId: fileId } }, res, () => {});
+        }
+      }
+
+      existingProduct.imageURLs = newImgUrl;
+    }
+    console.log("Thao huynh");
+
+    const result = await Product.findByIdAndUpdate(
+      id,
+      {
+        ...req.body,
+        imageURLs: existingProduct.imageURLs, // Cập nhật hình ảnh
+      },
+      {
+        new: true, // Trả về sản phẩm đã cập nhật
+      }
+    );
     res.status(200).json(result);
   } catch (error) {
-    res.status(400).json({
+    res.status(500).json({
       message: false,
     });
   }
@@ -99,44 +136,59 @@ export const editProduct = async (req, res) => {
 // [DELETE] /products/deleteProduct/:id
 export const deleteProduct = async (req, res) => {
   try {
+    const productId = req.params.id;
+
     // Xóa brand
     await Brand.updateOne(
-      { products: req.params.id },
-      { $pull: { products: req.params.id } }
+      { products: productId },
+      { $pull: { products: productId } }
     );
 
     // Xóa Category
     await Category.updateMany(
-      { products: req.params.id },
-      { $pull: { products: req.params.id } }
+      { products: productId },
+      { $pull: { products: productId } }
     );
 
     // Xóa Seen Product
     await SeenProd.updateMany(
-      { products: req.params.id },
-      { $pull: { products: req.params.id } }
+      { products: productId },
+      { $pull: { products: productId } }
     );
 
     // Xóa Tag Product
     await Tag.updateMany(
-      { products: req.params.id },
-      { $pull: { products: req.params.id } }
+      { products: productId },
+      { $pull: { products: productId } }
     );
 
     // Xóa Specs
-    await Specs.deleteMany({ products: req.params.id });
+    await Specs.deleteMany({ products: productId });
 
     // Xóa WishList
     await wishList.updateMany(
-      { products: req.params.id },
-      { $pull: { products: req.params.id } }
+      { products: productId },
+      { $pull: { products: productId } }
     );
 
-    const product = await Product.findByIdAndDelete(req.params.id);
+    // Tìm sản phẩm theo ID
+    const product = await Product.findById(productId);
+
+    // Lấy danh sách hình ảnh để xóa
+    for (const url of product.imageURLs) {
+      const urlParams = new URL(url);
+      const fileId = urlParams.searchParams.get("id");
+      if (fileId) {
+        // Gọi middleware xóa hình ảnh
+        await deleteFromDrive({ params: { fileId: fileId } }, res, () => {});
+      }
+    }
+
+    await Product.findByIdAndDelete(productId);
 
     res.status(200).json(true);
   } catch (error) {
-    res.status(400).json({
+    res.status(500).json({
       message: false,
     });
   }
