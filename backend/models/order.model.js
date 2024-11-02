@@ -2,7 +2,10 @@ import mongoose from "mongoose";
 
 const orderScheme = new mongoose.Schema(
   {
-    userId: String,
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Account",
+    },
     processStatus: {
       type: String,
       enum: ["pending", "completed", "cancelled"],

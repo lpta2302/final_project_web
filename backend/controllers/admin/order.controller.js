@@ -8,6 +8,10 @@ export const index = async (req, res) => {
       select: "city district ward address",
     })
     .populate({
+      path: "userId",
+      select: "firstName lastName",
+    })
+    .populate({
       path: "voucher",
       select: "voucherCode voucherName",
     })
