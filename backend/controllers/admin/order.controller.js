@@ -2,7 +2,27 @@ import Order from "../../models/order.model.js";
 
 // [GET] /order
 export const index = async (req, res) => {
-  const order = await Order.find({});
+  const order = await Order.find({})
+    .populate({
+      path: "address",
+      select: "city district ward address",
+    })
+    .populate({
+      path: "voucher",
+      select: "voucherCode voucherName",
+    })
+    .populate({
+      path: "cart",
+      populate: {
+        path: "cartItems",
+        populate: {
+          path: "spec",
+          populate: {
+            path: "products",
+          },
+        },
+      },
+    });
 
   res.status(200).json(order);
 };
