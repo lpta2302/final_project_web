@@ -38,6 +38,10 @@ export const detail = async (req, res) => {
 
     const order = await Order.findOne({ _id: orderId })
       .populate({
+        path: "userId",
+        select: "firstName lastName",
+      })
+      .populate({
         path: "address",
       })
       .populate({
@@ -68,6 +72,10 @@ export const orderOfUser = async (req, res) => {
     const userId = req.params.userId;
 
     const order = await Order.find({ userId: userId })
+      .populate({
+        path: "userId",
+        select: "firstName lastName",
+      })
       .populate({
         path: "address",
       })
@@ -176,6 +184,10 @@ export const search = async (req, res) => {
 
     // Tìm kiếm với bộ lọc filter
     const order = await Order.find(filter)
+      .populate({
+        path: "userId",
+        select: "firstName lastName",
+      })
       .populate({
         path: "address",
       })
