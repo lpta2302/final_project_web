@@ -12,11 +12,16 @@ router.get("/", controller.index);
 router.get("/productDetail/:id", controller.detail);
 router.post(
   "/postProduct",
-  upload.single("file"),
+  upload.array("files", 6),
   uploadToDrive,
   controller.postProduct
 );
-router.patch("/editProduct/:id", controller.editProduct);
+router.patch(
+  "/editProduct/:id",
+  upload.array("files", 6),
+  uploadToDrive,
+  controller.editProduct
+);
 router.delete("/deleteProduct/:id", controller.deleteProduct);
 router.get("/search", controller.search);
 router.get("/statistic-brand/:brandId", controller.statisticBrand);
