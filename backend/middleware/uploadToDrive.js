@@ -50,7 +50,7 @@ async function uploadToDrive(req, res, next) {
       });
 
       // Lấy URL công khai để xem file
-      const imageUrl = `https://drive.google.com/uc?id=${fileId}&export=view`;
+      const imageUrl = `https://drive.google.com/uc?id=${fileId}`;
       req.imageUrls.push(imageUrl); // Thêm URL vào mảng
 
       // Xóa file tạm
