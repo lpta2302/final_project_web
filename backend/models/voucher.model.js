@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 const voucherSchema = new mongoose.Schema(
   {
     voucherCode: {
-      type: Number,
+      type: String,
       require: true,
     },
     voucherName: {
