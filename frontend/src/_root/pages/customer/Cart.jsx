@@ -54,30 +54,12 @@ const Cart = () => {
         "https://www.tnc.com.vn/uploads/product/XUYEN_102020/DELL-S2421HN.jpg",
     },
   ]);
-  const handleCheckout = () => {
-    navigate("/checkoutpage", {
-      state: { cartItems },
-    });
-  };
-  const [discountCode, setDiscountCode] = useState("");
+
   const [shippingFee, setShippingFee] = useState(0);
   const [discountValue, setDiscountValue] = useState(0);
 
   const {} = useReadAllCart();
   const isMobile = useMediaQuery("(max-width:600px)");
-
-  // useEffect(() => {
-  //   const fetchShippingFee = async () => {
-  //     try {
-  //       const response = await fetch("/api/shipping-fee");
-  //       const data = await response.json();
-  //       setShippingFee(data.fee);
-  //     } catch (error) {
-  //       console.error("Lỗi khi lấy phí ship từ backend:", error);
-  //     }
-  //   };
-  //   fetchShippingFee();
-  // }, []);
 
   const handleQuantityChange = (id, operation) => {
     setCartItems((prevItems) =>
@@ -105,14 +87,6 @@ const Cart = () => {
     (acc, item) => acc + item.price * item.quantity,
     0
   );
-
-  const handleApplyDiscount = () => {
-    if (discountCode === "SALE10") {
-      setDiscountValue(totalAmount * 0.1);
-    } else {
-      setDiscountValue(0);
-    }
-  };
 
   const totalWithDiscountAndShipping =
     totalAmount + shippingFee - discountValue;

@@ -2,37 +2,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import { Card, CardMedia, IconButton } from "@mui/material";
+import { useReadAllCarousel } from "../../api/queries";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import "slick-carousel/slick/slick.css"; // Import slick CSS
 import "slick-carousel/slick/slick-theme.css"; // Import slick-theme CSS
-
-const banners = [
-  {
-    id: 1,
-    image:
-      "https://giatin.com.vn/wp-content/uploads/2020/11/cac-loai-kich-thuoc-man-hinh-laptop.jpg",
-    title: "Deal HP Ngập Tràn",
-  },
-  {
-    id: 2,
-    image:
-      "https://img.lovepik.com/bg/20240112/Astonishing-Laptop-Image-with-Sky-as-Cloudy-Background_2759597_wh860.jpg!/fw/860",
-    title: "Hot Deal",
-  },
-  {
-    id: 3,
-    image:
-      "https://cdn2.fptshop.com.vn/unsafe/Uploads/images/tin-tuc/145289/Originals/pc-game.png",
-    title: "Thiết Bị Mạng Chính Hãng",
-  },
-  {
-    id: 4,
-    image:
-      "https://cdn2.fptshop.com.vn/unsafe/Uploads/images/tin-tuc/145289/Originals/pc-game.png",
-    title: "Laptop Jack 5 củ",
-  },
-];
 
 // Component custom arrow phải
 const NextArrow = (props) => {
@@ -85,6 +59,7 @@ const PrevArrow = (props) => {
 };
 
 const BannerSlider = () => {
+  const { data: banners, isLoading, isError, error } = useReadAllCarousel();
   const settings = {
     dots: true,
     infinite: true,
@@ -97,6 +72,8 @@ const BannerSlider = () => {
     prevArrow: <PrevArrow />,
   };
 
+  if (isLoading) return <CircularProgress />;
+  if (isError) return <p>Có lỗi xảy ra: {error.message}</p>;
   return (
     <Slider {...settings}>
       {banners.map((banner) => (
