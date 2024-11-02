@@ -29,6 +29,7 @@ import {
   READ_ALL_REVIEWS,
   SEARCH_ACCOUNT,
   ORDER_DETAIL,
+  READ_ALL_SPECIFICATION_KEY,
 } from "./queryKeys";
 import { admin_url, customer_url } from "./API_URL";
 
@@ -64,7 +65,7 @@ export const useUpdateAccount = () => {
       ),
     onSuccess: (data) => {
       console.log(data);
-      
+
       queryClient.invalidateQueries([ADMIN_ACCOUNT_DETAIL, data._id]);
     },
   });
@@ -116,6 +117,7 @@ export const useSearchAccount = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_ACCOUNT, searchParam],
     queryFn: () => search(admin_account_url.search(), searchParam),
+    enabled: !!searchParam
   });
 };
 //----------------------------- Product -----------------------------
@@ -132,6 +134,7 @@ export const useSearchProduct = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_PRODUCT, searchParam],
     queryFn: () => search(customer_product_url.search(), searchParam),
+    enabled: !!searchParam
   });
 };
 
@@ -211,6 +214,7 @@ export const useSearchProductAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_PRODUCT, searchParam],
     queryFn: () => search(admin_product_url.search(), searchParam),
+    enabled: !!searchParam
   });
 };
 
@@ -249,6 +253,7 @@ export const useSearchVoucher = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(customer_voucher_url.search(), searchParam),
+    enabled: !!searchParam
   });
 };
 
@@ -297,6 +302,7 @@ export const useSearchVoucherAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(admin_voucher_url.search(), searchParam),
+    enabled: !!searchParam
   });
 };
 //----------------------------- Brand -----------------------------
@@ -312,6 +318,7 @@ export const useSearchBrand = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(customer_brand_url.search(), searchParam),
+    enabled: !!searchParam
   });
 };
 //admin
@@ -354,6 +361,7 @@ export const useSearchBrandAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(admin_brand_url.search(), searchParam),
+    enabled: !!searchParam
   });
 };
 //----------------------------- Tag -----------------------------
@@ -396,6 +404,7 @@ export const useSearchTagAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(admin_tag_url.search(), searchParam),
+    enabled: !!searchParam
   });
 };
 //----------------------------- Category -----------------------------
@@ -411,6 +420,7 @@ export const useSearchCategory = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(customer_category_url.search(), searchParam),
+    enabled: !!searchParam
   });
 };
 //admin
@@ -458,6 +468,7 @@ export const useSearchCategoryAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(admin_category_url.search(), searchParam),
+    enabled: !!searchParam
   });
 };
 //----------------------------- Carousel -----------------------------
@@ -560,6 +571,7 @@ export const useSearchOrderAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(admin_order_url.search(), searchParam),
+    enabled: !!searchParam
   });
 };
 //----------------------------- Reviews -----------------------------
@@ -599,5 +611,59 @@ export const useSearchReviewAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(admin_review_url.search(), searchParam),
+    enabled: !!searchParam
+  });
+};
+
+//----------------------------- SPECIFICATION KEYS -----------------------------
+//admin
+const admin_specificationKey_url = admin_url.specificationKey;
+export const useReadAllSpecificationKeyAdmin = () => {
+  return useQuery({
+    queryKey: [READ_ALL_SPECIFICATION_KEY],
+    queryFn: () => readAll(admin_specificationKey_url.getAllSpecificationKey()),
+  });
+};
+export const useCreateSpecificationKey = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (SpecificationKey) =>
+      createRecord(admin_specificationKey_url.addSpecificationKey(), SpecificationKey),
+    onSuccess: () => {
+      queryClient.invalidateQueries([READ_ALL_SPECIFICATION_KEY]);
+    },
+  });
+};
+
+export const useUpdateSpecificationKey = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (SpecificationKey) => console.log('updated'),
+    // updateRecord(
+    //   admin_specificationKey_url.updateSpecificationKey(SpecificationKey._id),
+    //   SpecificationKey
+    // ),
+    onSuccess: () => {
+      queryClient.invalidateQueries([READ_ALL_SPECIFICATION_KEY]);
+    },
+  });
+};
+
+export const useDeleteSpecificationKey = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (SpecificationKeyId) =>
+      deleteRecord(admin_specificationKey_url.deleteSpecificationKey(SpecificationKeyId)),
+    onSuccess: () => {
+      queryClient.invalidateQueries([READ_ALL_SPECIFICATION_KEY]);
+    },
+  });
+};
+
+export const useSearchSpecificationKey = (searchParam) => {
+  return useQuery({
+    queryKey: [SEARCH_VOUCHER, searchParam],
+    queryFn: () => search(admin_review_url.search(), searchParam),
+    enabled: !!searchParam
   });
 };

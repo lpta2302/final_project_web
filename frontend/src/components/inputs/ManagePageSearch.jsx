@@ -4,8 +4,8 @@ import PropTypes from "prop-types"
 
 function ManagePageSearch({ searchValue, setSearchValue, handleSearch }) {
   return (
-    <Box width='300px' mb={3}  >
-      <Search {...{searchValue, setSearchValue, handleSearch}}/>
+    <Box width='300px'  >
+      <Search {...{ searchValue, setSearchValue, handleSearch }} />
     </Box>
   )
 }

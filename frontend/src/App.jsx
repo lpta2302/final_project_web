@@ -20,11 +20,13 @@ import ManagePersonalProfile from "./pages/ManagePersonalProfile.jsx";
 import ManagePersonalOrder from "./pages/ManagePersonalOrder.jsx";
 import Favorite from "./pages/Favorite.jsx";
 import Product from "./pages/Product.jsx";
-import GridProduct from "./pages/GridProduct.jsx";
-import CheckoutPage from "./_root/pages/customer/Checkoutpage.jsx";
-import CustomerProfile from "./_root/pages/customer/CustomProfile.jsx";
+import { CssVarsProvider, extendTheme } from "@mui/joy";
 
-const theme = createTheme({
+const muiTheme = createTheme({
+  colorSchemes:{
+    dark: true
+  },
+  defaultColorScheme:"light",
   palette: {
     white: {
       main: "#fff",
@@ -48,24 +50,27 @@ const theme = createTheme({
     fontFamily: "inter",
   },
   components: {
+    MuiAppBar: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          backgroundColor: theme.palette.mode === 'dark' ? "#1d1d1d" : "#ffffff",
+          color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+        }),
+      },
+    },
     MuiButton: {
       styleOverrides: {
         text: {
           "&:hover": {
-            backgroundColor: "rgba(0,0,0,0.035)",
+            backgroundColor: "rgba(255,255,255,0.1)",
           },
-        },
-      },
-    },
-    MuiAppBar: {
-      styleOverrides: {
-        root: {
-          backgroundColor: "#fff",
         },
       },
     },
   },
 });
+
+const joyTheme = extendTheme();
 
 const queryClient = new QueryClient();
 
@@ -95,18 +100,10 @@ function App() {
                     element={<ManagePersonalOrder />}
                   />
                   <Route path="/favorite" element={<Favorite />} />
-                  <Route path="/product/:productId" element={<Product />} />
-                  <Route path="/productgrid" element={<GridProduct />} />
-                  <Route path="/checkoutpage" element={<CheckoutPage />} />
-                  <Route path="/customprofile" element={<CustomerProfile />} />
-
-                  {customerNav.map((navItem) => (
-                    <Route
-                      path={navItem.segment}
-                      element={navItem.element}
-                      key={navItem.title}
-                    />
-                  ))}
+                  <Route path="/product/productId" element={<Product />} />
+                  {customerNav.map(navItem =>
+                    <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
+                  )}
                 </Route>
               </Routes>
             </AuthProvider>
