@@ -129,16 +129,49 @@ export const search = async (req, res) => {
     let filter = {};
 
     // Lấy giá trị từ query params
-    const { orderId, userId } = req.query;
+    const {
+      orderId,
+      paymentMethod,
+      processStatus,
+      paymentStatus,
+      minTotalAmount,
+      maxTotalAmount,
+    } = req.query;
 
-    // Kiểm tra nếu categoryCode có trong query
+    // Kiểm tra nếu orderId có trong query
     if (orderId) {
-      filter._id = orderId; // Tìm kiếm chính xác theo categoryCode
+      filter._id = orderId; // Tìm kiếm chính xác theo orderId
     }
 
-    // Kiểm tra nếu categoryName có trong query
-    if (userId) {
-      filter.userId = userId;
+    // Kiểm tra nếu paymentMethod có trong query
+    if (paymentMethod) {
+      filter.paymentMethod = paymentMethod; // Lọc theo phương thức thanh toán
+    }
+
+    // Kiểm tra nếu processStatus có trong query
+    if (processStatus) {
+      filter.processStatus = processStatus; // Lọc theo trạng thái xử lý
+    }
+
+    // Kiểm tra nếu paymentStatus có trong query
+    if (paymentStatus) {
+      filter.paymentStatus = paymentStatus; // Lọc theo trạng thái thanh toán
+    }
+
+    // Kiểm tra nếu minTotalAmount có trong query
+    if (minTotalAmount) {
+      filter.totalAmount = {
+        ...filter.totalAmount,
+        $gte: parseFloat(minTotalAmount),
+      }; // Lọc theo tổng tiền lớn hơn hoặc bằng minTotalAmount
+    }
+
+    // Kiểm tra nếu maxTotalAmount có trong query
+    if (maxTotalAmount) {
+      filter.totalAmount = {
+        ...filter.totalAmount,
+        $lte: parseFloat(maxTotalAmount),
+      }; // Lọc theo tổng tiền nhỏ hơn hoặc bằng maxTotalAmount
     }
 
     // Tìm kiếm với bộ lọc filter
