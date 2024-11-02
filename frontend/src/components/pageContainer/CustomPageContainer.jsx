@@ -9,7 +9,7 @@ function CustomPageContainer({ children, ...props }) {
                 maxWidth: { xl: 'unset', lg: '94vw', sm: '92vw', xs: '100vw' },
                 overflowX: "hidden",
                 '& .MuiTypography-root': {
-                    fontSize: { xs: '1.5rem', md: '2rem' },
+                    fontSize: { xs: '1.2rem', md: '1.5rem' },
                     textWrap: 'nowrap',
                 },
                 '& nav .MuiTypography-root, & .MuiBreadcrumbs-separator': {
@@ -22,6 +22,10 @@ function CustomPageContainer({ children, ...props }) {
                     textWrap: 'nowrap',
                     fontFamily: 'nunito'
                 },
+                '& .MuiBreadcrumbs-li':{
+                    display: 'flex',
+                    alignItems: 'center'
+                }
             }}
         >
             {children}

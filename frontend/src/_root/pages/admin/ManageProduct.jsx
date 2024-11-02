@@ -1,43 +1,55 @@
-import { DataGrid, GridActionsCellItem, GridToolbar } from '@mui/x-data-grid';
-import { PageContainer } from '@toolpad/core';
+import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
 import { renderEditProductStatus, renderProductStatus, STATUS_OPTIONS } from './customRenderer/productStatus.jsx';
 import { useEffect, useState } from 'react';
 import DataGridConfirmDialog from '../../../components/dialogs/DataGridConfirmDialog.jsx';
-import { CustomGridToolbar, ManagePageSearch } from "../../../components";
+import { CustomGridToolbar, CustomPageContainer, FilterDrawer, ManagePageSearch } from "../../../components";
 import { enqueueSnackbar as toaster } from 'notistack';
-import { Box } from '@mui/material';
-import { Delete } from '@mui/icons-material';
-import { useDeleteProduct, useReadAllProduct } from '../../../api/queries.js';
+import { Box, Button, ButtonGroup, Drawer, IconButton, useTheme } from '@mui/material';
+import { Delete, Filter, FilterAlt, FilterAltOff } from '@mui/icons-material';
+import { useDeleteProduct, useReadAllProduct, useSearchProductAdmin } from '../../../api/queries.js';
 import { useNavigate } from 'react-router-dom';
+import renderImageSamples from './customRenderer/renderImageSamples.jsx';
 
 const columnFields = [
+  {
+    field: 'imageUrls',
+    headerName: 'Avatar',
+    display: 'flex',
+    renderCell: renderImageSamples,
+    valueGetter: (value, row) => row.imageURLs,
+    sortable: false,
+    filterable: false,
+   },
   { field: 'productCode', headerName: 'Id', width: 150 },
-    { field: 'productName', headerName: 'Tên sản phẩm', width: 200 },
-    { field: 'description', headerName: 'Mô tả', width: 300 },
-    {
-      field: 'productStatus',
-      headerName: 'Trạng thái',
-      width: 150,
-      renderCell: renderProductStatus,
-      renderEditCell: renderEditProductStatus,
-      type: 'singleSelect',
-      valueOptions: STATUS_OPTIONS,
-      editable: true,
-      align: 'center'
-    },
+  { field: 'productName', headerName: 'Tên sản phẩm', flex: 1 },
+  { field: 'description', headerName: 'Mô tả', width: 300 },
+  {
+    field: 'productStatus',
+    headerName: 'Trạng thái',
+    width: 150,
+    renderCell: renderProductStatus,
+    renderEditCell: renderEditProductStatus,
+    type: 'singleSelect',
+    valueOptions: STATUS_OPTIONS,
+    editable: true,
+    align: 'center'
+  },
 ]
-
 
 function ManageAccount() {
   const navigate = useNavigate()
-  const [searchValue, setSearchValue] = useState('')
   const [rows, setRows] = useState()
+  const [searchValue, setSearchValue] = useState('')
+  const [searchParam, setSearchParam] = useState({})
 
+  
   const { data, isPending: isLoading } = useReadAllProduct();
   const [dialogPayload, setDialogPayload] = useState({ state: false, id: null });
-
+  
   const { mutateAsync: deleteAccount } = useDeleteProduct();
   // const { mutateAsync: updateAccountStatus } = useUpdateAccountStatus();
+  const { data: searchResult } = useSearchProductAdmin(searchParam);
+  console.log(rows);
 
 
   const breadcrumbs = [
@@ -45,37 +57,10 @@ function ManageAccount() {
     { path: '/manage-product', title: 'Quản lý sản phẩm' },
   ]
 
-  useEffect(() => setRows(data), [data])
-  console.log(data);
+  useEffect(() => setRows(data?.map(item=>({...item, category:item?.category?.categoryName}))), [data])
 
   const columns = [
     ...columnFields,
-    // {
-    //   field: 'imageURLs',
-    //   headerName: 'Hình ảnh',
-    //   width: 200,
-    //   renderCell: (params) => (
-    //     <img src={params.value[0]} alt="Product" style={{ width: '50px', height: '50px' }} />
-    //   ),
-    // },
-    // {
-    //   field: 'category',
-    //   headerName: 'Phân loại',
-    //   width: 150,
-    //   valueGetter: (value, row) => console.log(row),
-    // },
-    // {
-    //   field: 'brand',
-    //   headerName: 'Thương hiệu',
-    //   width: 150,
-    //   valueGetter: (params) => params.row.brand.name || '',
-    // },
-    // {
-    //   field: 'specs',
-    //   headerName: 'Thông số kỹ thuật',
-    //   width: 200,
-    //   renderCell: (params) => params.value.map(spec => spec.name).join(', '),
-    // },
     {
       field: 'actions',
       type: 'actions',
@@ -83,7 +68,7 @@ function ManageAccount() {
       width: 100,
       align: 'center',
       cellClassName: 'actions',
-      getActions: ({ row:{_id: id}}) => {
+      getActions: ({ row: { _id: id } }) => {
         return [
           <GridActionsCellItem
             icon={<Delete color='error' />}
@@ -96,6 +81,7 @@ function ManageAccount() {
       }
     }
   ];
+
 
   const handleDeleteClick = async (isAccept) => {
 
@@ -114,7 +100,7 @@ function ManageAccount() {
 
   const handleUpdate = async (updatedRow) => {
     console.log(updatedRow);
-    
+
     // await updateAccountStatus(updatedRow)
     // toaster("Cập nhật trạng thái tài khoản thành công", { variant: 'success' })
     return updatedRow;
@@ -125,13 +111,34 @@ function ManageAccount() {
   }
 
   const handleSearch = () => {
-    console.log(searchValue);
+    if (!searchValue && Object.keys(searchParam).length <= 2) {
+      return;
+    }
 
+    const param = {};
+    if (searchValue.startsWith('#')) {
+      param[columnFields[0].field] = searchValue.substring(1)
+    } else {
+      param[columnFields[1].field] = searchValue
+    }
+    setSearchParam(param)
   }
+
+  useEffect(() => {
+    setTimeout(() => {
+      const param = {};
+      if (searchValue.startsWith('#')) {
+        param[columnFields[0].field] = searchValue.substring(1)
+      } else {
+        param[columnFields[1].field] = searchValue
+      }
+      setSearchParam(param)
+    }, 1500);
+  }, [searchValue]);
 
 
   return (
-    <PageContainer
+    <CustomPageContainer
       title='Quản lý sản phẩm'
       breadCrumbs={breadcrumbs}
       sx={{ maxWidth: { xl: 'unset', lg: '94vw', sm: '92vw', xs: '100vw' } }}
@@ -140,6 +147,8 @@ function ManageAccount() {
         display='flex'
         width='100%'
         justifyContent='flex-end'
+        alignItems='center'
+        mb={3}
       >
         <ManagePageSearch
           {...{ searchValue, setSearchValue, handleSearch }}
@@ -153,17 +162,24 @@ function ManageAccount() {
       />
       <DataGrid
         getRowId={(row) => row.productCode}
-        rows={rows}
+        rows={searchResult ? searchResult : rows}
         columns={columns}
         slots={{ toolbar: CustomGridToolbar }}
-        slotProps={{toolbar:{onClick: ()=> navigate('create-product')}}}
-        checkboxSelection
+        slotProps={{ toolbar: { onClick: () => navigate('create-product') } }}
         processRowUpdate={handleUpdate}
         onProcessRowUpdateError={handleUpdateError}
         loading={isLoading}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 5,
+            },
+          },
+        }}
+        pageSizeOptions={[5, 10]}
       />
 
-    </PageContainer>
+    </CustomPageContainer>
   )
 }
 

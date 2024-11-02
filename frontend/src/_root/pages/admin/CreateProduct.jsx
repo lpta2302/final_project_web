@@ -3,10 +3,10 @@ import { CustomTypography, NumberInput } from "../../../components"
 import PageToolbar from "../../../components/pageContainer/PageToolbar"
 import CustomPageContainer from "../../../components/pageContainer/CustomPageContainer"
 import { AspectRatio, Autocomplete, createFilterOptions, CssVarsProvider, extendTheme } from '@mui/joy'
-import { useReadAllBrandAdmin, useReadAllCategory, useReadAllTagAdmin } from "../../../api/queries"
+import { useReadAllBrandAdmin, useReadAllCategory, useReadAllSpecificationKeyAdmin, useReadAllTagAdmin } from "../../../api/queries"
 import { useState } from "react"
 import SpecificationDataGrid from "./createProduct/SpecificationDataGrid"
-import { ArrowDropDown, Delete } from "@mui/icons-material"
+import { ArrowDropDown, Delete, Image } from "@mui/icons-material"
 
 const breadcrumbs = [
   { path: '/', title: 'Home' },
@@ -51,6 +51,7 @@ function CreateProduct() {
   const { data: categories, isLoading: isLoadingCategories } = useReadAllCategory();
   const { data: tags, isLoading: isLoadingTag } = useReadAllTagAdmin();
   const { data: brands, isLoading: isLoadingBrand } = useReadAllBrandAdmin();
+  const { data: specificatinKeys, isLoading: isLoadingSpecificationKeys } = useReadAllSpecificationKeyAdmin();
   
   
   const setSpecifications = (index, newSpecs) => {
@@ -115,7 +116,7 @@ function CreateProduct() {
     >
       <Grid2 container spacing={2}>
         <Grid2 size={{ xs: 12, md: 8 }} sx={{}}>
-          <Box p={3} borderRadius={4} bgcolor="grey.100">
+          <Box p={3} borderRadius={4} sx={{boxShadow: 3}}>
             <CustomTypography fontSize="1.2rem" variant="caption">Mô tả sản phẩm</CustomTypography>
             <TextField
               error={!!formErrors.productName}
@@ -136,13 +137,16 @@ function CreateProduct() {
 
             </Box>
           </Box>
-          <Box mt={1} p={3} borderRadius={4} bgcolor="grey.100">
-            <Box width="100%" display="flex" justifyContent="flex-end" py={2}>
+          <Box mt={1} p={3} borderRadius={4} sx={{boxShadow: 3}}>
+            <Box width="100%" display="flex" justifyContent="space-between" py={2}>
+              <CustomTypography fontSize="1.2rem" variant="caption">
+                Thông số sản phẩm
+              </CustomTypography>
               <Button
                 variant="outlined"
                 onClick={() => setVariants(prev => [...prev, { price: 0, specifications: [] }])}
               >
-                <Typography>Thêm phân loại mới</Typography>
+                <Typography>Thêm biến thể mới</Typography>
               </Button>
             </Box>
             {variants && variants.map((variant, index) => (
@@ -154,7 +158,7 @@ function CreateProduct() {
                 >
                   <Box width="100%">
                     <Box display='flex' m={0} p={0} alignItems='center' justifyContent='space-between' width='100%'>
-                      <CustomTypography fontSize="1.2rem" sx={{fontFamily:'inter'}}>{`Loại ${index + 1}`}</CustomTypography>
+                      <CustomTypography fontSize="1rem" sx={{fontFamily:'inter'}}>{`Loại ${index + 1}`}</CustomTypography>
                       <IconButton
                         onClick={() => { setVariants(prev => prev.filter((_, i) => i !== index)) }}
                         color="error" sx={{ width: '32px', height: '32px' }}>
@@ -196,14 +200,14 @@ function CreateProduct() {
                     }}
                     margin="normal"
                   />
-                  <SpecificationDataGrid specifications={variant.specifications} setSpecifications={newSpecs => setSpecifications(index, newSpecs)} key={index} />
+                  <SpecificationDataGrid specificatinKeys={specificatinKeys} specifications={variant.specifications} setSpecifications={newSpecs => setSpecifications(index, newSpecs)} key={index} />
                 </Box>
               </Accordion>
             ))}
           </Box>
         </Grid2>
         <Grid2 item size={{ xs: 12, md: 4 }}>
-          <Box p={3} borderRadius={2} bgcolor="grey.100" display="flex" flexDirection="column" alignItems="center">
+          <Box p={3} borderRadius={2} display="flex" flexDirection="column" alignItems="center" sx={{boxShadow: 3}}>
             <Box display='flex' justifyContent="flex-start" width="100%">
               <CustomTypography fontSize="1.2rem" variant="caption">Ảnh sản phẩm</CustomTypography>
             </Box>
@@ -220,21 +224,27 @@ function CreateProduct() {
                     height: '100%',
                     objectFit: 'cover', // Makes sure the image covers the square box
                     borderRadius: 2,   // Optional: for rounded corners
-                    backgroundColor: 'grey.300'
                   }}
                 />
               </AspectRatio>
             </CssVarsProvider>
             {/* Thumbnails */}
-            <Box display="flex" gap={2} mt={1}>
-              <Box width="50px" height="50px" bgcolor="grey.300" borderRadius={2}></Box>
-              <Box width="50px" height="50px" bgcolor="grey.300" borderRadius={2}></Box>
-              <Box width="50px" height="50px" bgcolor="grey.300" borderRadius={2}></Box>
-              <Box width="50px" height="50px" bgcolor="grey.300" borderRadius={2}></Box>
+            <Box display="flex" gap={2} mt={1} maxWidth="100%" sx={{overflowX:"auto"}}>
+              <Box
+                  component="img"
+                  alt="Product Image"
+                  sx={{
+                    width: '68px',
+                    height: '68px',
+                    objectFit: 'cover', // Makes sure the image covers the square box
+                    borderRadius: 2,   // Optional: for rounded corners
+                  }}
+                  src={"https://placehold.co/400"}
+                />
             </Box>
           </Box>
           {/* Category Section */}
-          <Box mt={1} p={3} borderRadius={2} bgcolor="grey.100" display="flex" flexDirection="column" alignItems="center">
+          <Box mt={1} p={3} borderRadius={2} display="flex" flexDirection="column" alignItems="center" sx={{boxShadow: 3}}>
             <Box display='flex' justifyContent="flex-start" width="100%">
               <CustomTypography fontSize="1.2rem" variant="caption">Phân loại sản phẩm</CustomTypography>
             </Box>
@@ -279,10 +289,10 @@ function CreateProduct() {
             <CssVarsProvider theme={joyTheme}>
 
               <Box width="100%" p={2}>
-                <CustomTypography fontSize="1rem" variant="caption">Tag</CustomTypography>
+                <CustomTypography fontSize="1rem" variant="caption">Gắn thẻ</CustomTypography>
                 <Autocomplete
-                value={tag}
-                onChange={(e,newValue)=>setTag(newValue)}
+                  value={tag}
+                  onChange={(e,newValue)=>setTag(newValue)}
                   variant="plain"
                   placeholder="Tag"
                   options={isLoadingTag ? [] : tags}

@@ -11,6 +11,7 @@ import CustomGridToolbar from './gridData/CustomGridToolbar'
 import CustomAddGridToolbar from './gridData/CustomAddGridToolbar'
 import CustomEditCell from './gridData/CustomEditCell'
 import CustomEditDropdownCell from './gridData/CustomEditDropdownCell'
+import FilterDrawer from './gridData/FilterDrawer'
 
 import ExpandableSearch from './inputs/ExpandableSearch'
 import ManagePageSearch from './inputs/ManagePageSearch'
@@ -32,10 +33,12 @@ export {
     NumberInputBasic as NumberInput,
 
     ManagePageSearch,
+    FilterDrawer,
     SplitButton,
     CustomGridToolbar,
     CustomEditCell,
     CustomEditDropdownCell,
+
     PageToolbar,
     CustomPageContainer,
     CustomTypography,

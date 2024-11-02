@@ -6,22 +6,19 @@ import DataGridConfirmDialog from "../../../../components/dialogs/DataGridConfir
 
 
 const columnFields = [
-    { field: 'specificationKey', headerName: 'Thông số', width: 150, editable: true },
-    { field: 'specificationValue', headerName: 'Giá trị', width: 150, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} isRequired />), isRequired: true },
+    { field: 'key', headerName: 'Thông số', width: 300, editable: true },
+    { field: 'specificationValue', headerName: 'Giá trị', width: 300, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} isRequired />), isRequired: true },
 ];
 
 
-function SpecificationDataGrid({ specifications, setSpecifications }) {
+function SpecificationDataGrid({specificatinKeys, specifications, setSpecifications }) {
     const [rowModesModel, setRowModesModel] = useState({});
     const [deleteDialogPayload, setDeleteDialogPayload] = useState({ state: false, id: null });
     const [updateCellError, setUpdateCellError] = useState({})
-    const [editingRowId, setEditingRowId] = useState();
-
-
-    const specificatinKeys = ['Ram', 'Ổ cứng', 'Màn hình', 'Pin'];
+    const [editingRowId, setEditingRowId] = useState();    
 
     columnFields[0].renderEditCell = (params) => (
-        <CustomEditDropdownCell {...params} options={specificatinKeys} />
+        <CustomEditDropdownCell {...params} options={specificatinKeys.map(specKey=>specKey.key)} />
     );
 
     columnFields.forEach(col => {
@@ -103,7 +100,6 @@ function SpecificationDataGrid({ specifications, setSpecifications }) {
     }
 
     const handleRowUpdate = (newRow) => {
-        console.log(newRow);
         
         const hasEmptyField = Object.values(newRow).some(value => !value || value === "");
         
@@ -111,6 +107,8 @@ function SpecificationDataGrid({ specifications, setSpecifications }) {
             setSpecifications(specifications.filter(row=>row.id !== newRow.id))
             throw new Error("Row contains empty values.");
         }
+
+        setSpecifications(specifications.map(row=>row.id === newRow.id ? newRow : row))
         
         return newRow;
     };

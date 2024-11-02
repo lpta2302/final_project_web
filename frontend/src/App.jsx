@@ -23,6 +23,10 @@ import Product from "./pages/Product.jsx";
 import { CssVarsProvider, extendTheme } from "@mui/joy";
 
 const muiTheme = createTheme({
+  colorSchemes:{
+    dark: true
+  },
+  defaultColorScheme:"light",
   palette: {
     white: {
       main: "#fff",
@@ -46,22 +50,23 @@ const muiTheme = createTheme({
     fontFamily: "inter",
   },
   components: {
+    MuiAppBar: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          backgroundColor: theme.palette.mode === 'dark' ? "#1d1d1d" : "#ffffff",
+          color: theme.palette.mode === 'dark' ? "#ffffff" : "#000000",
+        }),
+      },
+    },
     MuiButton: {
       styleOverrides: {
         text: {
           "&:hover": {
-            backgroundColor: "rgba(0,0,0,0.035)",
+            backgroundColor: "rgba(255,255,255,0.1)",
           },
         },
       },
     },
-    MuiAppBar: {
-      styleOverrides: {
-        root: {
-          backgroundColor: '#fff'
-        }
-      }
-    }
   },
 });
 
