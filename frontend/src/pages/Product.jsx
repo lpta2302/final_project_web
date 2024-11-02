@@ -5,7 +5,7 @@ import {
 import { Add, Remove, Favorite, FavoriteBorder } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
 import { useAddNewReview, useReadProductDetail, useReadAllReviewsAdmin } from '../api/queries';
-import moment from 'moment'
+import moment from 'moment';
 
 const Product = () => {
   const { productId } = useParams();
@@ -123,7 +123,7 @@ const Product = () => {
               />
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-              {product.imageURLs.map((url, index) => (
+              {product.imageURLs?.map((url, index) => (
                 <img
                   key={index}
                   src={url}

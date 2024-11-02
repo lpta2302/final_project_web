@@ -24,7 +24,7 @@ import GridProduct from "./pages/GridProduct.jsx";
 import CheckoutPage from "./_root/pages/customer/Checkoutpage.jsx";
 import CustomerProfile from "./_root/pages/customer/CustomProfile.jsx";
 
-const muiTheme = createTheme({
+const theme = createTheme({
   palette: {
     white: {
       main: "#fff",
@@ -38,7 +38,7 @@ const muiTheme = createTheme({
       main: "#09083d",
     },
     primary: {
-      main: "#1463f3",
+      main: "#0672cb",
     },
     error: {
       main: "#f53935",

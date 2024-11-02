@@ -25,7 +25,7 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { Link, useNavigate } from "react-router-dom";
 import DiscountSection from "../../../components/Cart/usevoucher";
-import { useReadAllCart } from "../../../api/queries";
+//import { useReadAllCart } from "../../../api/queries";
 const Cart = () => {
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([
@@ -58,7 +58,7 @@ const Cart = () => {
   const [shippingFee, setShippingFee] = useState(0);
   const [discountValue, setDiscountValue] = useState(0);
 
-  const {} = useReadAllCart();
+  //const {} = useReadAllCart();
   const isMobile = useMediaQuery("(max-width:600px)");
 
   const handleQuantityChange = (id, operation) => {

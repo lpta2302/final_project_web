@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import { Card, CardMedia, IconButton } from "@mui/material";
-import { useReadAllCarousel } from "../../api/queries";
+//import { useReadAllCarousel } from "../../api/queries";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import "slick-carousel/slick/slick.css"; // Import slick CSS
@@ -60,7 +60,7 @@ const PrevArrow = (props) => {
 };
 
 const BannerSlider = () => {
-  const { data: banners, isLoading, isError, error } = useReadAllCarousel();
+  //const { data: banners, isLoading, isError, error } = useReadAllCarousel();
   const settings = {
     dots: true,
     infinite: true,
