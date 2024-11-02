@@ -32,7 +32,26 @@ export const detail = async (req, res) => {
   try {
     const orderId = req.params.orderId;
 
-    const order = await Order.findOne({ _id: orderId });
+    const order = await Order.findOne({ _id: orderId })
+      .populate({
+        path: "address",
+      })
+      .populate({
+        path: "voucher",
+      })
+      .populate({
+        path: "cart",
+        populate: {
+          path: "cartItems",
+          populate: {
+            path: "spec",
+            populate: {
+              path: "products",
+            },
+          },
+        },
+      });
+
     res.status(200).json(order);
   } catch (error) {
     res.status(500).json(false);
@@ -44,7 +63,25 @@ export const orderOfUser = async (req, res) => {
   try {
     const userId = req.params.userId;
 
-    const order = await Order.find({ userId: userId });
+    const order = await Order.find({ userId: userId })
+      .populate({
+        path: "address",
+      })
+      .populate({
+        path: "voucher",
+      })
+      .populate({
+        path: "cart",
+        populate: {
+          path: "cartItems",
+          populate: {
+            path: "spec",
+            populate: {
+              path: "products",
+            },
+          },
+        },
+      });
     res.status(200).json(order);
   } catch (error) {
     res.status(500).json(false);
@@ -101,7 +138,25 @@ export const search = async (req, res) => {
     }
 
     // Tìm kiếm với bộ lọc filter
-    const order = await Order.find(filter);
+    const order = await Order.find(filter)
+      .populate({
+        path: "address",
+      })
+      .populate({
+        path: "voucher",
+      })
+      .populate({
+        path: "cart",
+        populate: {
+          path: "cartItems",
+          populate: {
+            path: "spec",
+            populate: {
+              path: "products",
+            },
+          },
+        },
+      });
 
     // Trả về kết quả
     res.status(200).json(order);
