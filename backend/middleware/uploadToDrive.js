@@ -8,9 +8,7 @@ async function uploadToDrive(req, res, next) {
 
     const authorization = await drive();
     if (!authorization) {
-      return res
-        .status(500)
-        .json({ message: "Unable to authorize Google Drive" });
+      return res.status(500).json(false);
     }
 
     if (!files || files.length === 0) {
@@ -59,9 +57,7 @@ async function uploadToDrive(req, res, next) {
 
     next();
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Internal Server Error", error: error.message });
+    res.status(500).json(false);
   }
 }
 
