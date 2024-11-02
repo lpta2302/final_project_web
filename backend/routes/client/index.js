@@ -9,6 +9,7 @@ import wishListRoutes from "./wishList.route.js";
 import accountRoutes from "./account.route.js";
 import orderRoutes from "./order.route.js";
 import reviewRoutes from "./reviews.route.js";
+import { authenticateJWT } from "../../middleware/authMiddleware.js";
 
 export default (app) => {
   app.use("/client/voucher", voucherRoutes);

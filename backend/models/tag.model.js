@@ -26,6 +26,6 @@ const tagSchema = new mongoose.Schema(
 );
 
 // Tạo model Category từ schema
-const Tag = mongoose.model("tag", tagSchema, "tag");
+const Tag = mongoose.model("Tag", tagSchema, "tag");
 
 export default Tag;

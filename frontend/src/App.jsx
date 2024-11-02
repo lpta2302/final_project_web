@@ -6,20 +6,23 @@ import {
   ThemeProvider,
 } from "@mui/material";
 import AuthProvider from "./context/AuthContext";
-import RootLayout from './_root/RootLayout';
-import { CreateProduct, HomePage, Profile } from './_root/pages';
-import './globalStyle.css'
-import AdminLayout from './_root/AdminLayout';
-import AdminHomePage from './_root/pages/admin/AdminHomePage';
-import { adminNav, customerNav } from './constance/constance.jsx';
-import { Login } from './components/index.js';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { SnackbarProvider } from 'notistack'
+import RootLayout from "./_root/RootLayout";
+import { HomePage, Profile } from "./_root/pages";
+import "./globalStyle.css";
+import AdminLayout from "./_root/AdminLayout";
+import AdminHomePage from "./_root/pages/admin/AdminHomePage";
+import { adminNav, customerNav } from "./constance/constance.jsx";
+import { Login } from "./components/index.js";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { SnackbarProvider } from "notistack";
 import ManagePersonalProfile from "./pages/ManagePersonalProfile.jsx";
 import ManagePersonalOrder from "./pages/ManagePersonalOrder.jsx";
 import Favorite from "./pages/Favorite.jsx";
 import Product from "./pages/Product.jsx";
+import GridProduct from "./pages/GridProduct.jsx";
+import CheckoutPage from "./_root/pages/customer/Checkoutpage.jsx";
+import CustomerProfile from "./_root/pages/customer/CustomProfile.jsx";
 
 const muiTheme = createTheme({
   palette: {
@@ -38,8 +41,8 @@ const muiTheme = createTheme({
       main: "#1463f3",
     },
     error: {
-      main: "#f53935"
-    }
+      main: "#f53935",
+    },
   },
   typography: {
     fontFamily: "inter",
@@ -57,64 +60,74 @@ const muiTheme = createTheme({
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundColor: '#fff'
-        }
-      }
-    }
+          backgroundColor: "#fff",
+        },
+      },
+    },
   },
 });
 
 const queryClient = new QueryClient();
 
 function App() {
-
   return (
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={true} />
-      <Container
-        component='main'
-        maxWidth='xl'
-        disableGutters
-      >
-
-        <ThemeProvider theme={muiTheme}>
+      <Container component="main" maxWidth="xl" disableGutters>
+        <ThemeProvider theme={theme}>
           <SnackbarProvider
-            anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+            anchorOrigin={{ horizontal: "right", vertical: "top" }}
             autoHideDuration={3000}
           >
             <CssBaseline />
             <AuthProvider>
               <Routes>
                 <Route element={<RootLayout />}>
-                  <Route index element={<HomePage />} path='/' />
+                  <Route index element={<HomePage />} path="/" />
+
                   <Route path="/profile" element={<Profile />} />
-                  <Route path="/manage-profile" element={<ManagePersonalProfile />} />
-                  <Route path="/manage-order" element={<ManagePersonalOrder />} />
+                  <Route
+                    path="/manage-profile"
+                    element={<ManagePersonalProfile />}
+                  />
+                  <Route
+                    path="/manage-order"
+                    element={<ManagePersonalOrder />}
+                  />
                   <Route path="/favorite" element={<Favorite />} />
                   <Route path="/product/:productId" element={<Product />} />
+                  <Route path="/productgrid" element={<GridProduct />} />
+                  <Route path="/checkoutpage" element={<CheckoutPage />} />
+                  <Route path="/customprofile" element={<CustomerProfile />} />
 
-
-                  {customerNav.map(navItem =>
-                    <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
-                  )}
+                  {customerNav.map((navItem) => (
+                    <Route
+                      path={navItem.segment}
+                      element={navItem.element}
+                      key={navItem.title}
+                    />
+                  ))}
                 </Route>
               </Routes>
             </AuthProvider>
             <Routes>
-              <Route path='/admin' element={<AdminLayout />}>
+              <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminHomePage />} />
-                {adminNav.map(navItem =>
-                  <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
-                )}
-                <Route path="manage-product/create-product" element={<CreateProduct />} />
+                {adminNav.map((navItem) => (
+                  <Route
+                    path={navItem.segment}
+                    element={navItem.element}
+                    key={navItem.title}
+                  />
+                ))}
               </Route>
-              <Route path='admin/login' element={<Login />} />
+              <Route path="admin/login" element={<Login />} />
             </Routes>
           </SnackbarProvider>
         </ThemeProvider>
       </Container>
     </QueryClientProvider>
-  )
+  );
 }
 
 export default App;
