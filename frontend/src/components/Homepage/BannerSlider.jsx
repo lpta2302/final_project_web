@@ -7,6 +7,7 @@ import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import "slick-carousel/slick/slick.css"; // Import slick CSS
 import "slick-carousel/slick/slick-theme.css"; // Import slick-theme CSS
+import CircularProgress from "@mui/material/CircularProgress";
 
 // Component custom arrow phải
 const NextArrow = (props) => {
@@ -78,7 +79,7 @@ const BannerSlider = () => {
     <Slider {...settings}>
       {banners.map((banner) => (
         <Link
-          to={`/products/${banner.id}`}
+          to={`/products/${banner.slug}`}
           key={banner.id}
           style={{ textDecoration: "none" }}
         >
@@ -93,10 +94,13 @@ const BannerSlider = () => {
           >
             <CardMedia
               component="img"
-              image={banner.image}
+              image={banner.imgUrl}
               alt={banner.title}
               sx={{
-                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                margin: "0 auto",
+                width: "50%", // Độ rộng 50% của container
                 height: "auto",
                 objectFit: "cover",
                 maxHeight: "320px",

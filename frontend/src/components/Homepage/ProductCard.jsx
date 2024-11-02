@@ -1,51 +1,91 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import {
-  Card,
-  CardContent,
-  CardMedia,
+  Box,
   Typography,
+  Card,
+  CardMedia,
+  CardContent,
   IconButton,
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { Link } from "react-router-dom"; // Import Link từ react-router-dom
 
-const ProductCard = ({ product, handleToggleFavorite, isFavorite }) => (
-  <div style={{ padding: "0 10px", marginBottom: "10px" }}>
-    <Link
-      to={`/product-detail/${product.id}`}
-      style={{ textDecoration: "none" }}
+const ProductCard = ({ product, handleToggleFavorite, isFavorite }) => {
+  return (
+    <Card
+      sx={{
+        maxWidth: 300,
+        width: "100%",
+        margin: "0 auto",
+        display: "flex",
+        flexDirection: "column",
+        height: "525px", // Chiều cao cố định cho các thẻ card
+      }}
     >
-      <Card sx={{ maxWidth: "100%", marginBottom: 2 }}>
+      <Link
+        to={`/product/${product.slug}`}
+        style={{ textDecoration: "none", color: "inherit" }}
+      >
         <CardMedia
           component="img"
-          height="300"
-          image={product.imageUrl}
-          alt={product.title}
+          image={product.imageURLs[0]}
+          alt={product.productName}
+          sx={{
+            width: "100%",
+            height: "300px",
+            objectFit: "cover",
+            borderRadius: "8px 8px 0 0",
+          }}
         />
-        <CardContent>
-          <Typography variant="h6" align="center" color="textPrimary">
-            {product.title}
-          </Typography>
-          <Typography variant="body2" color="text.secondary" align="center">
-            Tình trạng: {product.status}
-          </Typography>
-          <Typography variant="body2" color="error" align="center">
-            {product.originalPrice} VND
+        <CardContent
+          sx={{
+            flexGrow: 1,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          <Box>
+            <Typography variant="h6" component="div">
+              {product.productName}
+            </Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ marginBottom: "8px" }}
+            >
+              {product.description}
+            </Typography>
+          </Box>
+          <Typography
+            variant="body1"
+            style={{
+              color: product.productStatus === "available" ? "green" : "red",
+            }}
+          >
+            Trạng thái:{" "}
+            {product.productStatus === "available" ? "Còn hàng" : "Hết hàng"}
           </Typography>
         </CardContent>
-      </Card>
-    </Link>
-
-    {/* Favorite button */}
-    <IconButton
-      onClick={() => handleToggleFavorite(product)}
-      color={isFavorite ? "error" : "default"}
-      sx={{ display: "block", margin: "0 auto" }}
-    >
-      {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-    </IconButton>
-  </div>
-);
+      </Link>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        p={2}
+      >
+        <IconButton
+          color="error"
+          onClick={() => handleToggleFavorite(product)}
+          aria-label="favorite"
+        >
+          {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+        </IconButton>
+        <Typography variant="body2">Mã: {product.productCode}</Typography>
+      </Box>
+    </Card>
+  );
+};
 
 export default ProductCard;
