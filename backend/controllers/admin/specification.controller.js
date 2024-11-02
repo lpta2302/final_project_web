@@ -1,5 +1,6 @@
 import Spec from "../../models/specification.model.js";
 import Product from "../../models/product.model.js";
+import specsKey from "../../models/specsKey.model.js";
 
 const specController = {
   // [GET] /spec
@@ -19,27 +20,45 @@ const specController = {
       // Lấy dữ liệu từ request body
       const { specCode, specifications, stockQuantity, price, products } =
         req.body;
-      const specExist = await Spec.findOne({ specCode: specCode });
 
+      // Kiểm tra nếu mã Specification đã tồn tại
+      const specExist = await Spec.findOne({ specCode: specCode });
       if (specExist) {
         return res.status(400).json(false);
       }
 
+      // Kiểm tra từng key của specifications nếu có (không yêu cầu tất cả phải tồn tại)
+      const validSpecs = await Promise.all(
+        specifications.map(async (spec) => {
+          // Kiểm tra key có trong SpecificationKey không
+          const isValidKey = await specsKey.findById(spec.key); // Sửa lại từ `_id` thành `key`
+          return isValidKey ? { key: spec.key, value: spec.value } : null; // Chỉ giữ các specifications hợp lệ
+        })
+      );
+
+      // Lọc các specifications hợp lệ
+      const filteredSpecs = validSpecs.filter((spec) => spec !== null);
+
+      // Tạo mới Specification với các specifications hợp lệ
       const newSpec = new Spec({
         specCode,
-        specifications, // Map thông số kỹ thuật
+        specifications: filteredSpecs,
         stockQuantity,
         price,
-        products, // Danh sách ObjectId của sản phẩm
+        products,
       });
 
       await newSpec.save();
+
+      // Cập nhật Product với Specification mới
       const productOrigin = await Product.findById(products);
-      await productOrigin.updateOne({ $push: { specs: newSpec._id } });
+      if (productOrigin) {
+        await productOrigin.updateOne({ $push: { specs: newSpec._id } });
+      }
 
       res.status(200).json(newSpec);
     } catch (err) {
-      res.json({ message: false });
+      res.status(500).json({ message: false });
     }
   },
 
@@ -145,6 +164,76 @@ const specController = {
       res.status(200).json(filteredSpecifications);
     } catch (err) {
       // Xử lý lỗi
+      res.status(500).json(false);
+    }
+  },
+
+  // [GET] /specification-keys
+  showSpecKey: async (req, res) => {
+    try {
+      const _specKey = await specsKey.find();
+
+      if (!_specKey || _specKey.length === 0) {
+        res.status(400).json(false);
+      }
+
+      res.status(200).json(_specKey);
+    } catch (err) {
+      res.status(500).json(false);
+    }
+  },
+
+  // [POST] /specification-keys
+  addSpecKey: async (req, res) => {
+    try {
+      // Nếu chỉ có một đối tượng thì chuyển thành mảng chứa một phần tử
+      const keys = Array.isArray(req.body.keys) ? req.body.keys : [req.body];
+
+      // Tìm các khóa đã tồn tại để tránh trùng lặp
+      const existingKeys = await specsKey
+        .find({ key: { $in: keys.map((k) => k.key) } })
+        .select("key");
+      const existingKeyNames = existingKeys.map((key) => key.key);
+
+      // Lọc ra các khóa chưa tồn tại
+      const newKeys = keys.filter((k) => !existingKeyNames.includes(k.key));
+
+      // Tạo các bản ghi specsKey mới
+      const specKeyInstances = newKeys.map((k) => new specsKey({ key: k.key }));
+
+      // Thêm các khóa mới vào cơ sở dữ liệu
+      if (specKeyInstances.length > 0) {
+        await specsKey.insertMany(specKeyInstances);
+      }
+
+      res.status(200).json(specKeyInstances);
+    } catch (err) {
+      res.status(500).json(false);
+    }
+  },
+
+  // [DELETE] /specification-keys/:id
+  delSpecKey: async (req, res) => {
+    try {
+      await specsKey.findByIdAndDelete(req.params.id);
+
+      res.status(200).json(true);
+    } catch (err) {
+      res.status(500).json(false);
+    }
+  },
+
+  // [PATCH] /specification-keys/:id
+  updtSpecKey: async (req, res) => {
+    try {
+      const result = await specsKey.findByIdAndUpdate(
+        req.params.id,
+        { $set: req.body },
+        { new: true }
+      );
+
+      res.status(200).json(result);
+    } catch (err) {
       res.status(500).json(false);
     }
   },

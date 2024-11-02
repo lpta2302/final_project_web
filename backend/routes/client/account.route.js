@@ -9,4 +9,7 @@ accountRouter.get("/details/:id", accountController.showDetailsInfo);
 // Sửa thông tin cá nhân
 accountRouter.patch("/details/:id", accountController.updateDetailsInfo);
 
+// Detail thông qua token
+accountRouter.get("/token/information", accountController.detailInformation);
+
 export default accountRouter;
