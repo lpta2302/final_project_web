@@ -105,7 +105,7 @@ function FilterDrawer({ filterList, toggleDrawer }) {
 }
 
 FilterDrawer.propTypes = {
-  filterList: PropTypes.array.isRequired,
+  filterList: PropTypes.object.isRequired,
   toggleDrawer: PropTypes.func
 }
 

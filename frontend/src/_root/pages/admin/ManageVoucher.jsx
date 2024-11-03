@@ -19,7 +19,7 @@ const StyledBox = styled('div')(({ theme }) => ({
 }));
 
 const columnFields = [
-  // { field: 'voucherCode', headerName: 'Mã code', width: 150, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true },
+  { field: 'voucherCode', headerName: 'Mã voucher', width: 200, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true },
   { field: 'voucherName', headerName: 'Tên voucher', width: 200, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true },
   {
     field: 'discountPercentage', headerName: 'Tỉ lệ giảm (%)',
@@ -27,7 +27,7 @@ const columnFields = [
       if (value == null) {
         return '';
       }
-      return `${(value*100).toLocaleString()} %`;
+      return `${(value * 100).toLocaleString()} %`;
     },
     type: 'number',
     width: 200, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />)
@@ -43,7 +43,7 @@ function ManageVoucher() {
   const [rowModesModel, setRowModesModel] = useState({})
   const [rowChanges, setRowChanges] = useState(null)
 
-  const [searchValue, setSearchValue] = useState('')
+  const [searchValue, setSearchValue] = useState()
   const [searchParam, setSearchParam] = useState("")
 
 
@@ -56,6 +56,7 @@ function ManageVoucher() {
 
   const [deleteDialogPayload, setDeleteDialogPayload] = useState({ state: false, id: null });
   const [updateDialogPayload, setUpdateDialogPayload] = useState({ state: false, id: null });
+  console.log(rows);
 
   const breadcrumbs = [
     { path: '/', title: 'Home' },
@@ -78,12 +79,14 @@ function ManageVoucher() {
 
   useEffect(() => {
     setTimeout(() => {
+      if (!searchValue && Object.keys(searchParam) < 1) {
+        return;
+      }
       const param = {};
       if (searchValue.startsWith('#')) {
         param[columnFields[0].field] = searchValue.substring(1)
       } else {
-        // param[columnFields[1].field] = searchValue
-        param[columnFields[0].field] = searchValue
+        param[columnFields[1].field] = searchValue
       }
       console.log(param);
 
@@ -163,16 +166,16 @@ function ManageVoucher() {
           label: '% Giảm tối thiểu',
           onChange: (e) => {
             const value = e.target.value;
-            const newValue = value.endsWith('%') ? value/100 : value; 
+            const newValue = value.endsWith('%') ? value / 100 : value;
             handleAddParam('minDiscount', newValue)
           },
           placeholder: '0.01 ~ 10%'
         },
         maxDiscount: {
           label: '% Giảm tối đa',
-          onChange: (e) =>{
+          onChange: (e) => {
             const value = e.target.value;
-            const newValue = value.endsWith('%') ? value/100 : value; 
+            const newValue = value.endsWith('%') ? value / 100 : value;
             handleAddParam('minDiscount', newValue)
           },
           placeholder: '0.01 ~ 10%'
@@ -281,7 +284,7 @@ function ManageVoucher() {
   const handleUpdateError = (error) => {
     console.error(error);
   }
-  
+
 
   const handleRowModesModelChange = (newRowModesModel) => {
     setRowModesModel(newRowModesModel);
@@ -289,12 +292,12 @@ function ManageVoucher() {
 
 
   const handleSearch = () => {
-    if (!searchValue && Object.keys(searchParam) <= 1) {
+    if (!searchValue && Object.keys(searchParam) < 1) {
       return;
     }
-    setSearchParam(prev=>({...prev, voucherName: searchValue}))
+    setSearchParam(prev => ({ ...prev, voucherName: searchValue }))
     console.log(searchParam);
-    
+
   }
 
   const toggleDrawer = (newState) => (event) => {
@@ -329,7 +332,7 @@ function ManageVoucher() {
         width='100%'
         justifyContent='flex-end'
         mb={3}
-        
+
       >
         <ButtonGroup color='black.light' sx={{ mr: 1 }}>
           <Button

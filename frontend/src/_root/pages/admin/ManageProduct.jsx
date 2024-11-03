@@ -49,8 +49,6 @@ function ManageAccount() {
   const { mutateAsync: deleteAccount } = useDeleteProduct();
   // const { mutateAsync: updateAccountStatus } = useUpdateAccountStatus();
   const { data: searchResult } = useSearchProductAdmin(searchParam);
-  console.log(rows);
-
 
   const breadcrumbs = [
     { path: '/', title: 'Home' },
@@ -134,7 +132,7 @@ function ManageAccount() {
       }
       setSearchParam(param)
     }, 1500);
-  }, [searchValue]);
+  }, [searchValue]);  
 
 
   return (

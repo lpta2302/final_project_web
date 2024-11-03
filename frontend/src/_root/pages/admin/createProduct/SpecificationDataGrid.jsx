@@ -1,7 +1,7 @@
 import { DataGrid, GridActionsCellItem, GridRowModes } from "@mui/x-data-grid";
 import { CustomAddGridToolbar, CustomEditCell, CustomEditDropdownCell } from "../../../../components";
-import { useState, useCallback, useEffect } from "react";
-import { Cancel, Delete, Edit, Save } from "@mui/icons-material";
+import { useState } from "react";
+import { Delete } from "@mui/icons-material";
 import DataGridConfirmDialog from "../../../../components/dialogs/DataGridConfirmDialog";
 
 
@@ -11,14 +11,14 @@ const columnFields = [
 ];
 
 
-function SpecificationDataGrid({specificatinKeys, specifications, setSpecifications }) {
+function SpecificationDataGrid({ specificatinKeys, specifications, setSpecifications }) {
     const [rowModesModel, setRowModesModel] = useState({});
     const [deleteDialogPayload, setDeleteDialogPayload] = useState({ state: false, id: null });
     const [updateCellError, setUpdateCellError] = useState({})
-    const [editingRowId, setEditingRowId] = useState();    
+    const [editingRowId, setEditingRowId] = useState();
 
     columnFields[0].renderEditCell = (params) => (
-        <CustomEditDropdownCell {...params} options={specificatinKeys.map(specKey=>specKey.key)} />
+        <CustomEditDropdownCell {...params} options={specificatinKeys.map(specKey => specKey.key)} />
     );
 
     columnFields.forEach(col => {
@@ -28,7 +28,7 @@ function SpecificationDataGrid({specificatinKeys, specifications, setSpecificati
 
             if (isRequired) {
                 const errorMessage = (!value || value.trim() === "") ? "Require" : ""
-                setUpdateCellError(prev => ({[id]:{ ...prev, [field]: errorMessage }}))
+                setUpdateCellError(prev => ({ [id]: { ...prev, [field]: errorMessage } }))
                 return { ...props, error: value !== row[field] && errorMessage };
             }
             return { ...props };
@@ -58,62 +58,60 @@ function SpecificationDataGrid({specificatinKeys, specifications, setSpecificati
         }
     }
     ];
- 
+
     const handleDeleteClick = (isAccept) => {
         const { id } = deleteDialogPayload;
-        
+
         if (!isAccept) {
             setDeleteDialogPayload({ state: false, id: null });
             return;
         }
-        
         setDeleteDialogPayload({ state: false, id: null });
-        
+        setRowModesModel({})
         setSpecifications(specifications.filter((row) => row._id !== id && row.id !== id));
     };
-    
+
     const handleRowModesModelChange = (newRowModesModel) => {
         // Update to only allow editing a single row at a time
         if (Object.keys(newRowModesModel).length > 1) {
             newRowModesModel = Object.keys(newRowModesModel).reduce(
                 (acc, modeId) => {
-                    
-                    return {...acc, [modeId]: modeId != editingRowId ?
+                    return {
+                        ...acc, [modeId]: modeId != editingRowId ?
                             newRowModesModel[modeId] :
                             {
-                                mode: GridRowModes.View, 
+                                mode: GridRowModes.View,
                                 ignoreModifications: !!updateCellError[editingRowId]
                             }
                     }
-                },{}
+                }, {}
             )
         }
         setUpdateCellError({})
         setRowModesModel(newRowModesModel);
-        return newRowModesModel;
     };
 
-    const handleOnRowEditStart = (param)=>{
-        console.log(param);
-        
+    const handleOnRowEditStart = (param) => {
         setEditingRowId(param.id)
     }
 
     const handleRowUpdate = (newRow) => {
-        
+
         const hasEmptyField = Object.values(newRow).some(value => !value || value === "");
-        
+
         if (hasEmptyField) {
-            setSpecifications(specifications.filter(row=>row.id !== newRow.id))
-            throw new Error("Row contains empty values.");
+            setEditingRowId(undefined);
+            setSpecifications(specifications.filter(row => row.id !== newRow.id));
+            setRowModesModel({})
+            return null;
         }
 
-        setSpecifications(specifications.map(row=>row.id === newRow.id ? newRow : row))
-        
+        setSpecifications(specifications.map(row => row.id === newRow.id ? newRow : row))
+
         return newRow;
     };
 
-    const handleProcessRowUpdateError = (error) => console.log(error);
+    // const handleProcessRowUpdateError = (error) => console.log(error);
 
     return (
         <>
@@ -131,10 +129,10 @@ function SpecificationDataGrid({specificatinKeys, specifications, setSpecificati
                 rowModesModel={rowModesModel}
                 onRowModesModelChange={handleRowModesModelChange}
                 onRowEditStart={handleOnRowEditStart}
-                onProcessRowUpdateError={handleProcessRowUpdateError}
+                // onProcessRowUpdateError={handleProcessRowUpdateError}
                 processRowUpdate={handleRowUpdate}
                 slots={{ toolbar: CustomAddGridToolbar }}
-                slotProps={{ toolbar: { setRows: setSpecifications, rows: specifications, setRowModesModel, columnFields: columnFields.map(col=>col.field) } }} // Update slotProps for add row
+                slotProps={{ toolbar: { setRows: setSpecifications, rows: specifications, setRowModesModel, columnFields: columnFields.map(col => col.field) } }} // Update slotProps for add row
                 initialState={{
                     pagination: {
                         paginationModel: {
