@@ -17,22 +17,23 @@ const accountController = {
   // [PATCH] client/account/details/:id
   updateDetailsInfo: async (req, res) => {
     try {
-      const allowedUpdates = [
-        "password",
-        "firstName",
-        "lastName",
-        "email",
-        "phoneNumber",
-        "dateOfBirth",
-      ];
+      // const allowedUpdates = [
+      //   "password",
+      //   "firstName",
+      //   "lastName",
+      //   "email",
+      //   "phoneNumber",
+      //   "dateOfBirth",
+      // ];
       const updates = Object.keys(req.body);
-      const isValidOperation = updates.every((update) =>
-        allowedUpdates.includes(update)
-      );
+      
+      // const isValidOperation = updates.every((update) =>
+      //   allowedUpdates.includes(update)
+      // );
 
-      if (!isValidOperation) {
-        return res.status(400).json(true);
-      }
+      // if (!isValidOperation) {
+      //   return res.status(400).json(true);
+      // }
 
       const client = await Account.findByIdAndUpdate(req.params.id, req.body, {
         new: true,

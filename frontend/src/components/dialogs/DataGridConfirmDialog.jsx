@@ -1,7 +1,26 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import PropTypes from 'prop-types';
+import { useEffect } from 'react';
 
 function DataGridConfirmDialog({ state, onClick, title, content }) {
+    useEffect(() => {
+        const handleKeyDown = async (e) => {
+          if (e.key === 'Enter') {
+            console.log("Enter key pressed");
+            await onClick(true); 
+          }
+        };
+    
+        if (state) {
+          document.addEventListener('keydown', handleKeyDown);
+        }
+        
+        return () => {
+          document.removeEventListener('keydown', handleKeyDown);
+        };
+      }, [state, onClick]);
+
+
     return (
         <Dialog
             maxWidth="md"
@@ -14,10 +33,10 @@ function DataGridConfirmDialog({ state, onClick, title, content }) {
                 {content || `Warning: The user and his data will be permanently deleted.`}
             </DialogContent>
             <DialogActions>
-                <Button sx={{mr: '0.5rem'}} variant='outlined' onClick={() => onClick(false)}>
+                <Button sx={{ mr: '0.5rem' }} variant='outlined' onClick={() => onClick(false)}>
                     No
                 </Button>
-                <Button variant='contained' onClick={() => onClick(true)}>Yes</Button>
+                <Button variant='contained' onClick={() => onClick(true)} autoFocus>Yes</Button>
             </DialogActions>
         </Dialog>
     );

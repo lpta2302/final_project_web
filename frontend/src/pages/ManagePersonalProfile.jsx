@@ -1,55 +1,57 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Container, Paper, Typography, TextField, Button, Grid2, Box, Avatar } from '@mui/material';
+import { Container, Typography, TextField, Button, Grid2, Box, Avatar } from '@mui/material';
+import { useAuthContext } from '../context/AuthContext';
+import { useUpdateAccount } from '../api/queries';
 
 const ManagePersonalProfile = () => {
+  const { isAuthenticated, isLoading: isLoadingUser, user } = useAuthContext();
+  const { mutateAsync: updateAccount } = useUpdateAccount();
+  
+  
+  // Khởi tạo state với các giá trị từ `user`
   const [inputs, setInputs] = useState({
     username: "",
-    password: "",
     firstName: "",
     lastName: "",
     email: "",
-    phone: "",
-    birthDate: "",
+    phoneNumber: "",
+    dateOfBirth: "",
     avatar: "",
   });
+  console.log(inputs.dateOfBirth);
 
   const [error, setError] = useState({
-    username: "",
-    password: "",
     firstName: "",
     lastName: "",
-    email: "",
-    phone: "",
-    birthDate: "",
+    phoneNumber: "",
   });
 
+  // Đặt ảnh đại diện mặc định
+  const defaultAvatar = "https://static-00.iconduck.com/assets.00/avatar-icon-512x512-gu21ei4u.png";
+  const fileInputRef = useRef(null);
+
+  // Cập nhật các giá trị `inputs` khi `user` thay đổi
   useEffect(() => {
-    const fetchUserData = async () => {
-      const response = {
-        avatar: "",
-        username: "existing_user",
-        password: "password",
-        firstName: "John",
-        lastName: "Doe",
-        email: "john.doe@example.com",
-        phone: "0123456789",
-        birthDate: "1990-01-01",
-      };
+    if (user) {
+      setInputs({
+        username: user.username,
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+        phoneNumber: user.phoneNumber || "",
+        dateOfBirth: user.dateOfBirth || "",
+        avatar: user.avatar || "",
+      });
+    }
+  }, [user]);
 
-      setInputs(response);
-    };
-
-    fetchUserData();
-  }, []);
-
+  // Xử lý thay đổi dữ liệu
   const handleChange = (event) => {
     const { name, value } = event.target;
     setInputs((values) => ({ ...values, [name]: value }));
   };
 
-  const fileInputRef = useRef(null);
-  const defaultAvatar = "https://static-00.iconduck.com/assets.00/avatar-icon-512x512-gu21ei4u.png";
-
+  // Xử lý thay đổi ảnh đại diện
   const handleAvatarChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -58,39 +60,17 @@ const ManagePersonalProfile = () => {
     }
   };
 
-  const handleSave = (event) => {
+  // Xử lý lưu thay đổi
+  const handleSave = async (event) => {
     event.preventDefault();
-    let tempError = {
-      username: "",
-      password: "",
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      birthDate: "",
-    };
+    let tempError = { firstName: "", lastName: "", phoneNumber: "" };
 
-    if (!inputs.username) {
-      tempError.username = "Tên tài khoản không được để trống";
-    }
-    if (!inputs.password) {
-      tempError.password = "Mật khẩu không được để trống";
-    }
-    if (!inputs.firstName) {
-      tempError.firstName = "Tên không được để trống";
-    }
-    if (!inputs.lastName) {
-      tempError.lastName = "Họ không được để trống";
-    }
-    if (!inputs.email) {
-      tempError.email = "Email không được để trống";
-    } else if (!/\S+@\S+\.\S+/.test(inputs.email)) {
-      tempError.email = "Email không hợp lệ";
-    }
-    if (!inputs.phone) {
-      tempError.phone = "Số điện thoại không được để trống";
-    } else if (!/^\d+$/.test(inputs.phone)) {
-      tempError.phone = "Số điện thoại không hợp lệ";
+    if (!inputs.firstName) tempError.firstName = "Tên không được để trống";
+    if (!inputs.lastName) tempError.lastName = "Họ không được để trống";
+    if (!inputs.phoneNumber) {
+      tempError.phoneNumber = "Số điện thoại không được để trống";
+    } else if (!/^\d+$/.test(inputs.phoneNumber)) {
+      tempError.phoneNumber = "Số điện thoại không hợp lệ";
     }
 
     if (Object.values(tempError).some((error) => error)) {
@@ -98,7 +78,13 @@ const ManagePersonalProfile = () => {
       return;
     }
 
-    console.log("Thay đổi thông tin thành công:", inputs);
+    setError({ firstName: "", lastName: "", phoneNumber: "" });
+    try {
+      await updateAccount(inputs);
+      console.log("Thay đổi thông tin thành công:", inputs);
+    } catch (error) {
+      console.error("Lỗi khi cập nhật thông tin:", error);
+    }
   };
 
   return (
@@ -143,40 +129,8 @@ const ManagePersonalProfile = () => {
           name="username"
           fullWidth
           value={inputs.username}
-          onChange={handleChange}
-          error={!!error.username}
-          helperText={error.username}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              borderRadius: "12px",
-            },
-          }}
-          slotProps={{
-            input: {
-              readOnly: true,
-            },
-          }}
-        />
-        <TextField
-          id="outlined-password-input"
-          label="Mật khẩu"
-          type="password"
-          name="password"
-          fullWidth
-          value={inputs.password}
-          onChange={handleChange}
-          error={!!error.password}
-          helperText={error.password}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              borderRadius: "12px",
-            },
-          }}
-          slotProps={{
-            input: {
-              readOnly: true,
-            },
-          }}
+          InputProps={{ readOnly: true }}
+          sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
         />
         <Grid2 container spacing={1}>
           <Grid2 size={{ xs: 12, sm: 6 }}>
@@ -189,11 +143,7 @@ const ManagePersonalProfile = () => {
               onChange={handleChange}
               error={!!error.lastName}
               helperText={error.lastName}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: "12px",
-                },
-              }}
+              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
             />
           </Grid2>
           <Grid2 size={{ xs: 12, sm: 6 }}>
@@ -206,11 +156,7 @@ const ManagePersonalProfile = () => {
               onChange={handleChange}
               error={!!error.firstName}
               helperText={error.firstName}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  borderRadius: "12px",
-                },
-              }}
+              sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
             />
           </Grid2>
         </Grid2>
@@ -220,56 +166,31 @@ const ManagePersonalProfile = () => {
           name="email"
           fullWidth
           value={inputs.email}
-          onChange={handleChange}
-          error={!!error.email}
-          helperText={error.email}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              borderRadius: "12px",
-            },
-          }}
-          InputProps={{
-            readOnly: true,
-          }}
+          InputProps={{ readOnly: true }}
+          sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
         />
         <TextField
-          id="outlined-phone"
+          id="outlined-phoneNumber"
           label="Số điện thoại"
-          name="phone"
+          name="phoneNumber"
           fullWidth
-          value={inputs.phone}
+          value={inputs.phoneNumber}
           onChange={handleChange}
-          error={!!error.phone}
-          helperText={error.phone}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              borderRadius: "12px",
-            },
-          }}
+          error={!!error.phoneNumber}
+          helperText={error.phoneNumber}
+          sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
         />
         <TextField
-          id="outlined-birthdate"
+          id="outlined-dateOfBirth"
           label="Ngày sinh"
           type="date"
-          name="birthDate"
+          name="dateOfBirth"
           fullWidth
-          value={inputs.birthDate}
+          value={inputs.dateOfBirth}
           onChange={handleChange}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              borderRadius: "12px",
-            },
-          }}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          slotProps={{
-            input: {
-              readOnly: true,
-            },
-          }}
+          InputLabelProps={{ shrink: true }}
+          sx={{ "& .MuiOutlinedInput-root": { borderRadius: "12px" } }}
         />
-
         <Button
           type="submit"
           variant="contained"

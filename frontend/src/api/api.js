@@ -1,26 +1,24 @@
-import { CREATE_URL, DELETE, READ_ALL_URL, UPDATE_URL } from './API_URL';
+import { AUTH_URL } from './API_URL';
 import axios from './myAxios'
 
 //----------------------------- General -----------------------------
-export async function createRecord(createType, data) {
-    try {
-        const newData = (await axios.post(CREATE_URL[createType], data)).data;
+export async function createRecord(url, data) {
+  try {
+    const newData = (await axios.post(url, data)).data;
 
-        if (!newData)
-            throw Error;
+    if (!newData)
+      throw Error;
 
-        return newData;
-    } catch (error) {
-        console.error(error);
-        return data;
-    }
+    return newData;
+  } catch (error) {
+    console.error(error);
+    return data;
+  }
 }
 
-export async function readAll(readType, id) {
+export async function readAll(url) {
   try {
-    console.log(READ_ALL_URL(id)[readType]);
-
-    const data = (await axios.get(READ_ALL_URL(id)[readType])).data;
+    const data = (await axios.get(url)).data;
     return data;
   } catch (error) {
     console.error(error);
@@ -29,43 +27,99 @@ export async function readAll(readType, id) {
 }
 
 
-export async function updateRecord(updateType, data) {
-    try {
-        const newData = (await axios.patch(UPDATE_URL(data._id)[updateType], data)).data;
+export async function updateRecord(url, data) {
+  try {
+    
+    const newData = (await axios.patch(url, data)).data;
 
-        if (!newData)
-            throw Error;
+    console.log(newData);
+    
 
-        return newData;
-    } catch (error) {
-        console.error(error);
-        return data;
-    }
+    if (!newData)
+      throw Error(newData);
+
+    return newData;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
-export async function deleteRecord(id, deleteType) {
+export async function deleteRecord(url) {
   try {
-    const status = (await axios.delete(DELETE(id)[deleteType])).status;
-    if (status) return status;
+    const data = (await axios.delete(url)).data;
+    if (data) return data;
     throw Error;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function search(url, searchParam) {
+  try {
+    const data = (await axios.get(url, {params:searchParam})).data;
+    if (data)
+      return data;
+    throw Error;
+
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+//----------------------------- Auth -----------------------------
+
+export async function login(loginInfo) {
+  try {
+    const token = (await axios.post(AUTH_URL.login, loginInfo)).data;
+
+    if (!token)
+      throw Error;
+
+    return token
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function getCurrentUser() {
+  try {
+    const user = (await axios.get(AUTH_URL.getCurrentUser)).data;
+
+    if (!user)
+      throw Error;
+
+    return user
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+
+
+// export async function readAll(readType, id) {
+//   try {
+//     console.log(READ_ALL_URL(id)[readType]);
+
+//     const data = (await axios.get(READ_ALL_URL(id)[readType])).data;
+//     return data;
+//   } catch (error) {
+//     console.error(error);
+//     return error;
+//   }
+// }
+
+//----------------------------- Account -----------------------------
+export async function createAccount(user) {
+  try {
+    const data = (await axios.post('/auth/register', user)).data;
+    if (!data)
+      throw Error
+
+    return data;
   } catch (error) {
     console.error(error);
     return error;
   }
-}
-
-//----------------------------- Account -----------------------------
-export async function createAccount(user) {
-    try {
-        const data = (await axios.post('/auth/register', user)).data;
-        if (!data)
-            throw Error
-
-        return data;
-    } catch (error) {
-        console.error(error);
-        return error;
-    }
 }
 
 export async function updateAccountStatus(user) {
