@@ -4,7 +4,7 @@ const productController = {
   // [GET] /client/product
   showProduct: async (req, res) => {
     try {
-      const products = await Product.find();
+      const products = await Product.find().populate("tag category specs");
 
       res.status(200).json(products);
     } catch (err) {

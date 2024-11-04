@@ -136,5 +136,11 @@ export const admin_url = {
         search: (id) => '/reviews/' + id + '/search/',
         deleteReview: (id) => '/reviews/' + id,
         getReview: (id) => '/reviews/' + id
+    },
+    specificationKey: {
+        getAllSpecificationKey: () => '/spec/specification-keys',
+        addSpecificationKey: () => '/spec/specification-keys',
+        deleteSpecificationKey: (id) => '/spec/specification-keys/'+id,
+        // updateSpecificationKey: (id) => '/spec/'+id
     }
 }

@@ -8,7 +8,7 @@ import wishList from "../../models/wishlist.model.js";
 
 // [GET] /products
 export const index = async (req, res) => {
-  const product = await Product.find({});
+  const product = await Product.find({}).populate("tag category");
 
   res.status(200).json(product);
 };
@@ -16,19 +16,15 @@ export const index = async (req, res) => {
 // [POST] /products/postProduct
 export const postProduct = async (req, res) => {
   try {
-    // Kiểm tra nếu productCode đã tồn tại
-    const existingProductCode = await Product.findOne({
-      productCode: req.body.productCode,
-    });
+    const productCode = req.body.productCode; // Lấy productCode
+    const existingProductCode = await Product.findOne({ productCode });
 
     if (existingProductCode) {
       return res.status(400).json(false);
     }
 
-    // Kiểm tra nếu productName đã tồn tại
-    const existingProductName = await Product.findOne({
-      productName: req.body.productName,
-    });
+    const productName = req.body.productName; // Lấy productName
+    const existingProductName = await Product.findOne({ productName });
 
     if (existingProductName) {
       return res.status(400).json({
@@ -37,17 +33,36 @@ export const postProduct = async (req, res) => {
       });
     }
 
+    // Phân tích các trường JSON nếu cần
+    const tag = JSON.parse(req.body.tag);
+    const relativeProduct = JSON.parse(req.body.relativeProduct);
+
     // Tạo sản phẩm mới
-    const record = new Product(req.body);
+    const record = new Product({
+      productCode,
+      productName,
+      description: req.body.description,
+      price: req.body.price,
+      discountPercentage: req.body.discountPercentage,
+      stockQuantity: req.body.stockQuantity,
+      productStatus: req.body.productStatus,
+      imageURLs: req.imageUrl ? [req.imageUrl] : [],
+      category: req.body.category, // Kiểm tra nếu có category
+      tag, // Gán tag
+      brand: req.body.brand, // Gán brand
+      relativeProduct, // Gán relativeProduct
+      slug: req.body.slug, // Gán slug
+    });
+
     const savedProduct = await record.save();
 
-    // Thêm sản phẩm vào danh sách sản phẩm của thương hiệu
+    // Cập nhật thương hiệu
     const brand = await Brand.findById(req.body.brand);
     await brand.updateOne({ $push: { products: savedProduct._id } });
 
-    // Thêm tag vào bảng tag
-    if (Array.isArray(req.body.tag) && req.body.tag.length > 0) {
-      for (const tagId of req.body.tag) {
+    // Cập nhật tag
+    if (Array.isArray(tag) && tag.length > 0) {
+      for (const tagId of tag) {
         const tag = await Tag.findById(tagId);
         if (tag) {
           await tag.updateOne({ $push: { products: savedProduct._id } });
@@ -58,7 +73,7 @@ export const postProduct = async (req, res) => {
     res.status(200).json(savedProduct);
   } catch (error) {
     console.log(error);
-    return res.status(400).json(false);
+    return res.status(400).json(error);
   }
 };
 
@@ -182,13 +197,93 @@ export const search = async (req, res) => {
   }
 };
 
+// [GET] /stats/specs-per-product
+export const getProductSpecsStatistics = async (req, res) => {
+  try {
+    const sort = req.query.sort === "asc" ? 1 : -1;
+    const stats = await Product.aggregate([
+      {
+        $lookup: {
+          from: "specifications", // Bảng tham chiếu
+          localField: "specs", // Trường specs trong Product
+          foreignField: "_id", // Liên kết với _id trong specifications
+          as: "specifications", // Tên trường sẽ chứa các specs liên kết
+        },
+      },
+      {
+        $project: {
+          productName: 1,
+          specsCount: { $size: "$specifications" }, // Số lượng specs
+          specsIDs: "$specs", // Mảng chứa các specs ID
+        },
+      },
+      { $sort: { specsCount: sort } }, // Sắp xếp theo số lượng specs
+    ]);
+
+    res.status(200).json(stats);
+  } catch (err) {
+    res.status(500).json(false);
+  }
+};
+
+// [GET] /stats/product-discount
+export const getProductWithDiscountStatistics = async (req, res) => {
+  try {
+    const sort = req.query.sort === "asc" ? 1 : -1;
+    const stats = await Specs.aggregate([
+      {
+        $group: {
+          _id: {
+            $cond: {
+              if: { $gt: ["$discountPercentage", 0] },
+              then: "Discounted",
+              else: "No Discount",
+            },
+          }, // Nhóm theo có/không giảm giá
+          count: { $sum: 1 }, // Đếm số lượng sản phẩm
+          productIDs: { $push: "$products" }, // Mảng chứa các product ID có giảm giá
+        },
+      },
+      { $sort: { count: sort } }, // Sắp xếp theo số lượng
+    ]);
+
+    res.status(200).json(stats);
+  } catch (err) {
+    res.status(500).json(false);
+  }
+};
+
+// [GET] /stats/total-stock-value
+export const getTotalStockValue = async (req, res) => {
+  try {
+    const stats = await Specs.aggregate([
+      {
+        $group: {
+          _id: null, // Không nhóm theo trường nào cụ thể
+          totalStockValue: {
+            $sum: { $multiply: ["$price", "$stockQuantity"] },
+          }, // Tính tổng giá trị hàng tồn kho
+        },
+      },
+      {
+        $project: {
+          _id: 0, // Không hiển thị _id
+          totalStockValue: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json(stats);
+  } catch (err) {
+    res.status(500).json(false);
+  }
+};
+
 // [GET] /products/statistic-brand/:brandId
 export const statisticBrand = async (req, res) => {
   try {
     const brandId = req.params.brandId;
-
     const brand = await Brand.findOne({ _id: brandId }).populate("products");
-
     res.status(200).json(brand.products);
   } catch (error) {
     console.log(error);

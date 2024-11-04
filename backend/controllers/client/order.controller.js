@@ -5,7 +5,25 @@ export const index = async (req, res) => {
   try {
     const id = req.params.id;
 
-    const order = await Order.find({ userId: id });
+    const order = await Order.find({ userId: id })
+      .populate({
+        path: "address",
+      })
+      .populate({
+        path: "voucher",
+      })
+      .populate({
+        path: "cart",
+        populate: {
+          path: "cartItems",
+          populate: {
+            path: "spec",
+            populate: {
+              path: "products",
+            },
+          },
+        },
+      });
 
     res.json(order);
   } catch (error) {
@@ -58,7 +76,25 @@ export const detail = async (req, res) => {
 
     console.log(orderId);
 
-    const record = await Order.findOne({ _id: orderId });
+    const record = await Order.findOne({ _id: orderId })
+      .populate({
+        path: "address",
+      })
+      .populate({
+        path: "voucher",
+      })
+      .populate({
+        path: "cart",
+        populate: {
+          path: "cartItems",
+          populate: {
+            path: "spec",
+            populate: {
+              path: "products",
+            },
+          },
+        },
+      });
 
     res.json(record);
   } catch (error) {

@@ -28,7 +28,6 @@ export async function readAll(url) {
 
 
 export async function updateRecord(url, data) {
-  console.log("🚀 ~ updateRecord ~ url, data:", url, data)
   try {
     
     const newData = (await axios.patch(url, data)).data;
@@ -57,7 +56,7 @@ export async function deleteRecord(url) {
 
 export async function search(url, searchParam) {
   try {
-    const data = (await axios.get(url, searchParam)).data;
+    const data = (await axios.get(url, {params:searchParam})).data;
     if (data)
       return data;
     throw Error;
