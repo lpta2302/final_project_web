@@ -30,6 +30,7 @@ import {
   SEARCH_ACCOUNT,
   ORDER_DETAIL,
   READ_ALL_SPECIFICATION_KEY,
+  USE_READ_OWN_CART,
 } from "./queryKeys";
 import { admin_url, customer_url } from "./API_URL";
 
@@ -114,6 +115,14 @@ export const useDeleteAccount = () => {
 };
 
 export const useSearchAccount = (searchParam) => {
+  return useQuery({
+    queryKey: [SEARCH_ACCOUNT, searchParam],
+    queryFn: () => search(admin_account_url.search(), searchParam),
+    enabled: !!searchParam
+  });
+};
+
+export const useGetCurrentUser = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_ACCOUNT, searchParam],
     queryFn: () => search(admin_account_url.search(), searchParam),
@@ -665,5 +674,36 @@ export const useSearchSpecificationKey = (searchParam) => {
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(admin_review_url.search(), searchParam),
     enabled: !!searchParam
+  });
+};
+
+//----------------------------- CART -----------------------------
+//client
+const customerCart = customer_url.cart;
+export const useReadOwnCart = (id) => {
+  return useQuery({
+    queryKey: [USE_READ_OWN_CART],
+    queryFn: () => readAll(customerCart.getOwnCart(id)),
+  });
+};
+export const useAddCartItem = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (item) =>
+      deleteRecord(customerCart.addItem(item)),
+    onSuccess: () => {
+      queryClient.invalidateQueries([USE_READ_OWN_CART]);
+    },
+  });
+};
+export const useDeleteCartItem = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () =>
+      deleteRecord(customerCart.deleteItem()),
+    onSuccess: () => {
+      queryClient.invalidateQueries([USE_READ_OWN_CART]);
+    },
   });
 };

@@ -6,7 +6,7 @@ import { CustomGridToolbar, CustomPageContainer, FilterDrawer, ManagePageSearch 
 import { enqueueSnackbar as toaster } from 'notistack';
 import { Box, Button, ButtonGroup, Drawer, IconButton, useTheme } from '@mui/material';
 import { Delete, Filter, FilterAlt, FilterAltOff } from '@mui/icons-material';
-import { useDeleteProduct, useReadAllProduct, useSearchProductAdmin } from '../../../api/queries.js';
+import { useDeleteProduct, useReadAllProduct, useReadAllProductAdmin, useSearchProductAdmin } from '../../../api/queries.js';
 import { useNavigate } from 'react-router-dom';
 import renderImageSamples from './customRenderer/renderImageSamples.jsx';
 
@@ -43,7 +43,7 @@ function ManageAccount() {
   const [searchParam, setSearchParam] = useState({})
 
   
-  const { data, isPending: isLoading } = useReadAllProduct();
+  const { data, isPending: isLoading } = useReadAllProductAdmin();
   const [dialogPayload, setDialogPayload] = useState({ state: false, id: null });
   
   const { mutateAsync: deleteAccount } = useDeleteProduct();

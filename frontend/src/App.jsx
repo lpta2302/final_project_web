@@ -23,10 +23,10 @@ import Product from "./pages/Product.jsx";
 import { CssVarsProvider, extendTheme } from "@mui/joy";
 
 const muiTheme = createTheme({
-  colorSchemes:{
+  colorSchemes: {
     dark: true
   },
-  defaultColorScheme:"light",
+  defaultColorScheme: "light",
   palette: {
     white: {
       main: "#fff",
@@ -75,7 +75,6 @@ const joyTheme = extendTheme();
 const queryClient = new QueryClient();
 
 function App() {
-
   return (
     <QueryClientProvider client={queryClient}>
       <ReactQueryDevtools initialIsOpen={true} />
@@ -107,20 +106,20 @@ function App() {
               </Routes>
             </AuthProvider>
             <Routes>
-              <Route path='/admin' element={<AdminLayout />}>
+              <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<AdminHomePage />} />
                 {adminNav.map(navItem =>
                   <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
                 )}
                 <Route path="manage-product/create-product" element={<CreateProduct />} />
               </Route>
-              <Route path='admin/login' element={<Login />} />
+              <Route path="admin/login" element={<Login />} />
             </Routes>
           </SnackbarProvider>
         </ThemeProvider>
       </Container>
     </QueryClientProvider>
-  )
+  );
 }
 
 export default App;
