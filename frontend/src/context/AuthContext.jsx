@@ -1,6 +1,8 @@
 /* eslint-disable react/prop-types */
 import { createContext, useEffect, useState, useContext } from "react";
 import { getLocalstorage } from "../util/localstorage";
+import { setBearerToken } from "../api/myAxios";
+import { getCurrentUser } from "../api/api";
 const INIT_USER = {
     id: '',
     name: '',
@@ -36,15 +38,20 @@ export default function AuthProvider({ children }) {
             
             if(!cookieFallback)
                 return false;
+
+            setBearerToken(cookieFallback);
             
-            setUser(cookieFallback)
-            // const { id, ...userInfo } = await getCurrentUser(cookieFallback);
+            // if return user
+            // setUser(cookieFallback)
+
+            // if return token
+            const user = await getCurrentUser();
+            const { id} = user
             
-            // if (!user.id)
-            //     return false
-            // else
-            //     // setUser({ id, ...userInfo })
-            //     setUser(user)
+            if (id)
+                return false
+            else
+                setUser(user)
 
             setIsAuthenticated(true);
             return true;

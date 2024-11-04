@@ -9,6 +9,7 @@ import {
   search,
   updateRecord,
 } from "./api";
+import { createAccount, createRecord, deleteRecord, getCurrentUser, login, readAll, updateAccountStatus, updateRecord } from "./api";
 import {
   READ_ALL_ACCOUNTS,
   ADMIN_ACCOUNT_DETAIL,
@@ -31,6 +32,21 @@ import {
   ORDER_DETAIL,
   READ_ALL_SPECIFICATION_KEY,
   USE_READ_OWN_CART,
+  READ_ALL_ACCOUNTS,
+  READ_ALL_PRODUCTS,
+  READ_ALL_TAGS,
+  READ_ALL_CATEGORIES,
+  READ_ALL_BRANDS,
+  READ_ALL_VOUCHERS,
+  READ_ALL_SPECIFICATION,
+  READ_ALL_WISHLISTS,
+  READ_ALL_CARTS,
+  READ_ALL_ADDRESSES,
+  READ_ALL_REVIEWS,
+  READ_ALL_ORDERS,
+  READ_ALL_CAROUSEL,
+  CURRENT_TOKEN,
+  CURRENT_USER
 } from "./queryKeys";
 import { admin_url, customer_url } from "./API_URL";
 
@@ -40,6 +56,21 @@ export const useLogin = () => {
     mutationFn: (loginInfo) => login(loginInfo),
   });
 };
+
+export const useGetCurrentUser = () => {
+  return useQuery({
+    queryKey: [CURRENT_USER],
+    queryFn: () => getCurrentUser(),
+  });
+};
+
+// export const useGetCurrentUser = () => {
+//     return useQuery({
+//         queryKey: [CURRENT_USER],
+//         queryFn: (token) => 
+//     })
+// }
+
 
 //----------------------------- Account -----------------------------
 //client
