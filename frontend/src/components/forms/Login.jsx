@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
 import PropTypes from "prop-types";
+import { setBearerToken } from "../../api/myAxios";
 
 const Login = ({ setModalType, isAdmin }) => {
   const [inputs, setInputs] = useState({ username: "", password: "" });
