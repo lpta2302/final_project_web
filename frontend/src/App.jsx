@@ -86,27 +86,15 @@ function App() {
                   <Route index element={<HomePage />} path="/" />
 
                   <Route path="/profile" element={<Profile />} />
-                  <Route
-                    path="/manage-profile"
-                    element={<ManagePersonalProfile />}
-                  />
-                  <Route
-                    path="/manage-order"
-                    element={<ManagePersonalOrder />}
-                  />
+                  <Route path="/manage-profile" element={<ManagePersonalProfile />} />
+                  <Route path="/manage-order" element={<ManagePersonalOrder />} />
                   <Route path="/favorite" element={<Favorite />} />
-                  <Route path="/product/productId" element={<Product />} />
-                  <Route path="/productgrid" element={<GridProduct />} />
-                  <Route path="/checkoutpage" element={<CheckoutPage />} />
-                  <Route path="/customprofile" element={<CustomerProfile />} />
+                  <Route path="/product/:productId" element={<Product />} />
 
-                  {customerNav.map((navItem) => (
-                    <Route
-                      path={navItem.segment}
-                      element={navItem.element}
-                      key={navItem.title}
-                    />
-                  ))}
+
+                  {customerNav.map(navItem =>
+                    <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
+                  )}
                 </Route>
               </Routes>
             </AuthProvider>

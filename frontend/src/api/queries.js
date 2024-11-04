@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createAccount, createRecord, deleteRecord, readAll, updateAccountStatus, updateRecord } from "./api";
+import { createAccount, createRecord, deleteRecord, login, readAll, updateAccountStatus, updateRecord } from "./api";
 import {
     READ_ALL_ACCOUNTS,
     READ_ALL_PRODUCTS,
@@ -13,8 +13,24 @@ import {
     READ_ALL_ADDRESSES,
     READ_ALL_REVIEWS,
     READ_ALL_ORDERS,
-    READ_ALL_CAROUSEL
+    READ_ALL_CAROUSEL,
+    CURRENT_TOKEN
 } from "./queryKeys";
+
+//----------------------------- Auth -----------------------------
+export const useLogin = () => {
+    return useMutation({
+        mutationFn: (loginInfo) => login(loginInfo),
+    });
+};
+
+// export const useGetCurrentUser = () => {
+//     return useQuery({
+//         queryKey: [CURRENT_USER],
+//         queryFn: (token) => 
+//     })
+// }
+
 
 //----------------------------- Account -----------------------------
 export const useCreateAccount = () => {
