@@ -21,7 +21,7 @@ import ManagePersonalOrder from "./pages/ManagePersonalOrder.jsx";
 import Favorite from "./pages/Favorite.jsx";
 import Product from "./pages/Product.jsx";
 import GridProduct from "./pages/GridProduct.jsx";
-import CheckoutPage from "./_root/pages/customer/Checkoutpage.jsx";
+// import CheckoutPage from "./_root/pages/customer/Checkoutpage.jsx";
 import CustomerProfile from "./_root/pages/customer/CustomProfile.jsx";
 
 const theme = createTheme({

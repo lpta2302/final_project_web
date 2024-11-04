@@ -6,7 +6,7 @@ const axiosInstance = (function () {
 
     const setBearerToken = (newToken) => {
         token = newToken;
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;        
     };
 
     return {

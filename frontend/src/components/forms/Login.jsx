@@ -15,6 +15,7 @@ import PropTypes from "prop-types";
 import { useLogin } from "../../api/queries";
 import { enqueueSnackbar as toaster } from 'notistack';
 import { useAuthContext } from "../../context/AuthContext";
+import { setBearerToken } from "../../api/myAxios";
 
 const init_error_message = { username: '', password: '' }
 

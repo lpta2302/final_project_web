@@ -1,7 +1,8 @@
 export const AUTH_URL = {
     login: '/auth/login',
     register: '/auth/register',
-    forgotPassword: ''
+    forgotPassword: '',
+    getCurrentUser: '/client/account/token/information'
 }
 
 //----------------------------- CREATE -----------------------------
