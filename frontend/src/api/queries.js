@@ -8,8 +8,8 @@ import {
   readAll,
   search,
   updateRecord,
+  getCurrentUser
 } from "./api";
-import { createAccount, createRecord, deleteRecord, getCurrentUser, login, readAll, updateAccountStatus, updateRecord } from "./api";
 import {
   READ_ALL_ACCOUNTS,
   ADMIN_ACCOUNT_DETAIL,
@@ -32,20 +32,6 @@ import {
   ORDER_DETAIL,
   READ_ALL_SPECIFICATION_KEY,
   USE_READ_OWN_CART,
-  READ_ALL_ACCOUNTS,
-  READ_ALL_PRODUCTS,
-  READ_ALL_TAGS,
-  READ_ALL_CATEGORIES,
-  READ_ALL_BRANDS,
-  READ_ALL_VOUCHERS,
-  READ_ALL_SPECIFICATION,
-  READ_ALL_WISHLISTS,
-  READ_ALL_CARTS,
-  READ_ALL_ADDRESSES,
-  READ_ALL_REVIEWS,
-  READ_ALL_ORDERS,
-  READ_ALL_CAROUSEL,
-  CURRENT_TOKEN,
   CURRENT_USER
 } from "./queryKeys";
 import { admin_url, customer_url } from "./API_URL";
@@ -57,20 +43,12 @@ export const useLogin = () => {
   });
 };
 
-export const useGetCurrentUser = () => {
+export function useGetCurrentUser() {
   return useQuery({
     queryKey: [CURRENT_USER],
     queryFn: () => getCurrentUser(),
   });
-};
-
-// export const useGetCurrentUser = () => {
-//     return useQuery({
-//         queryKey: [CURRENT_USER],
-//         queryFn: (token) => 
-//     })
-// }
-
+}
 
 //----------------------------- Account -----------------------------
 //client
@@ -80,10 +58,11 @@ export const useCreateAccount = () => {
   });
 };
 
-export const useGetAccountDetail = (id) => {
+export const useGetAccountDetail = (accountId) => {
   return useQuery({
-    queryKey: [ADMIN_ACCOUNT_DETAIL, id],
-    queryFn: () => readAll(customer_url.account.getAccountDetail(id)),
+    queryKey: [ADMIN_ACCOUNT_DETAIL, accountId],
+    queryFn: () => readAll(customer_url.account.getAccountDetail(accountId)),
+    enabled: !!accountId
   });
 };
 
@@ -113,10 +92,11 @@ export const useReadAllAccount = () => {
   });
 };
 
-export const useGetAdminAccountDetail = (id) => {
+export const useGetAdminAccountDetail = (accountId) => {
   return useQuery({
-    queryKey: [ADMIN_ACCOUNT_DETAIL, id],
-    queryFn: () => readAll(admin_account_url.getAccountDetail(id)),
+    queryKey: [ADMIN_ACCOUNT_DETAIL, accountId],
+    queryFn: () => readAll(admin_account_url.getAccountDetail(accountId)),
+    enabled: !!accountId
   });
 };
 
@@ -152,14 +132,6 @@ export const useSearchAccount = (searchParam) => {
     enabled: !!searchParam
   });
 };
-
-export const useGetCurrentUser = (searchParam) => {
-  return useQuery({
-    queryKey: [SEARCH_ACCOUNT, searchParam],
-    queryFn: () => search(admin_account_url.search(), searchParam),
-    enabled: !!searchParam
-  });
-};
 //----------------------------- Product -----------------------------
 //client
 const customer_product_url = customer_url.product;
@@ -178,24 +150,27 @@ export const useSearchProduct = (searchParam) => {
   });
 };
 
-export const useReadProductByTag = (id) => {
+export const useReadProductByTag = (tagId) => {
   return useQuery({
-    queryKey: [READ_ALL_PRODUCTS, id],
-    queryFn: () => readAll(customer_product_url.getProductByTag(id)),
+    queryKey: [READ_ALL_PRODUCTS, tagId],
+    queryFn: () => readAll(customer_product_url.getProductByTag(tagId)),
+    enabled: !!tagId
   });
 };
 
-export const useReadProductDetail = (id) => {
+export const useReadProductDetail = (productId) => {
   return useQuery({
-    queryKey: [READ_PRODUCT_DETAIL, id],
-    queryFn: () => readAll(customer_product_url.getDetailProduct(id)),
+    queryKey: [READ_PRODUCT_DETAIL, productId],
+    queryFn: () => readAll(customer_product_url.getDetailProduct(productId)),
+    enabled: !!productId
   });
 };
 
-export const useReadRelativeProducts = (id) => {
+export const useReadRelativeProducts = (productId) => {
   return useQuery({
-    queryKey: [RELATIVE_PRODUCTS, id],
-    queryFn: () => readAll(customer_product_url.getRelativeProducts(id)),
+    queryKey: [RELATIVE_PRODUCTS, productId],
+    queryFn: () => readAll(customer_product_url.getRelativeProducts(productId)),
+    enabled: !!productId
   });
 };
 //admin
@@ -207,10 +182,11 @@ export const useReadAllProductAdmin = () => {
   });
 };
 
-export const useReadProductDetailAdmin = (id) => {
+export const useReadProductDetailAdmin = (productId) => {
   return useQuery({
-    queryKey: [PRODUCT_DETAIL, id],
-    queryFn: () => readAll(admin_product_url.getProductDetail(id)),
+    queryKey: [PRODUCT_DETAIL, productId],
+    queryFn: () => readAll(admin_product_url.getProductDetail(productId)),
+    enabled: !!productId
   });
 };
 
@@ -258,10 +234,11 @@ export const useSearchProductAdmin = (searchParam) => {
   });
 };
 
-export const useReadStatisticBrand = (id) => {
+export const useReadStatisticBrand = (brandId) => {
   return useQuery({
-    queryKey: [STATISTIC_BRAND, id],
-    queryFn: () => readAll(admin_product_url.statisticBrand(id)),
+    queryKey: [STATISTIC_BRAND, brandId],
+    queryFn: () => readAll(admin_product_url.statisticBrand(brandId)),
+    enabled: !!brandId
   });
 };
 
@@ -275,17 +252,18 @@ export const useReadAllVouchers = () => {
   });
 };
 
-export const useReadOwnVouchers = (id) => {
+export const useReadOwnVouchers = (currentAccountId) => {
   return useQuery({
-    queryKey: [READ_ALL_VOUCHERS, id],
-    queryFn: () => readAll(customer_voucher_url.getOwnVouchers(id)),
+    queryKey: [READ_ALL_VOUCHERS, currentAccountId],
+    queryFn: () => readAll(customer_voucher_url.getOwnVouchers(currentAccountId)),
+    enabled: !!currentAccountId
   });
 };
 
-export const useReadVoucher = (id) => {
+export const useReadVoucher = (voucherId) => {
   return useQuery({
-    queryKey: [READ_VOUCHER, id],
-    queryFn: () => readAll(customer_voucher_url.readVoucher(id)),
+    queryKey: [READ_VOUCHER, voucherId],
+    queryFn: () => readAll(customer_voucher_url.readVoucher(voucherId)),
   });
 };
 
@@ -556,10 +534,11 @@ export const useDeleteCarousel = () => {
 //----------------------------- Orders -----------------------------
 //client
 const customer_order_url = customer_url.order;
-export const useReadAllOrdersOfUser = (id) => {
+export const useReadAllOrdersOfUser = (userId) => {
   return useQuery({
-    queryKey: [READ_ALL_ORDERS, id],
-    queryFn: () => readAll(customer_order_url.getOwnOrders(id)),
+    queryKey: [READ_ALL_ORDERS, userId],
+    queryFn: () => readAll(customer_order_url.getOwnOrders(userId)),
+    enabled: !!userId
   });
 };
 export const useCreateNewOrder = () => {
@@ -571,10 +550,11 @@ export const useCreateNewOrder = () => {
     },
   });
 };
-export const useGetOrderDetail = (id) => {
+export const useGetOrderDetail = (orderId) => {
   return useQuery({
-    queryKey: [ORDER_DETAIL, id],
-    queryFn: () => readAll(customer_order_url.getOrderDetail(id)),
+    queryKey: [ORDER_DETAIL, orderId],
+    queryFn: () => readAll(customer_order_url.getOrderDetail(orderId)),
+    enabled: !!orderId
   });
 };
 //admin
@@ -585,16 +565,18 @@ export const useReadAllOrdersAdmin = () => {
     queryFn: () => readAll(admin_order_url.getAllOrders()),
   });
 };
-export const useReadOrdersOfUserAdmin = (id) => {
+export const useReadOrdersOfUserAdmin = (userId) => {
   return useQuery({
-    queryKey: [READ_ALL_ORDERS, id],
-    queryFn: () => readAll(admin_order_url.getOrderOfUser(id)),
+    queryKey: [READ_ALL_ORDERS, userId],
+    queryFn: () => readAll(admin_order_url.getOrderOfUser(userId)),
+    enabled: !!userId
   });
 };
-export const useGetOrderDetailAdmin = (id) => {
+export const useGetOrderDetailAdmin = (orderId) => {
   return useQuery({
-    queryKey: [ORDER_DETAIL, id],
-    queryFn: () => readAll(admin_order_url.getOrderDetail(id)),
+    queryKey: [ORDER_DETAIL, orderId],
+    queryFn: () => readAll(admin_order_url.getOrderDetail(orderId)),
+    enabled: !!orderId
   });
 };
 export const useUpdateOrderAdmin = () => {
@@ -678,11 +660,11 @@ export const useCreateSpecificationKey = () => {
 export const useUpdateSpecificationKey = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (SpecificationKey) => console.log('updated'),
-    // updateRecord(
-    //   admin_specificationKey_url.updateSpecificationKey(SpecificationKey._id),
-    //   SpecificationKey
-    // ),
+    mutationFn: (SpecificationKey) => 
+    updateRecord(
+      admin_specificationKey_url.updateSpecificationKey(SpecificationKey._id),
+      SpecificationKey
+    ),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_SPECIFICATION_KEY]);
     },
@@ -703,7 +685,9 @@ export const useDeleteSpecificationKey = () => {
 export const useSearchSpecificationKey = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
-    queryFn: () => search(admin_review_url.search(), searchParam),
+    queryFn: () => 
+      // search(admin_specificationKey_url.search(), searchParam),
+      console.log("searching"),
     enabled: !!searchParam
   });
 };
@@ -711,10 +695,11 @@ export const useSearchSpecificationKey = (searchParam) => {
 //----------------------------- CART -----------------------------
 //client
 const customerCart = customer_url.cart;
-export const useReadOwnCart = (id) => {
+export const useReadOwnCart = (currentAccountId) => {
   return useQuery({
     queryKey: [USE_READ_OWN_CART],
-    queryFn: () => readAll(customerCart.getOwnCart(id)),
+    queryFn: () => readAll(customerCart.getOwnCart(currentAccountId)),
+    enabled: !!currentAccountId
   });
 };
 export const useAddCartItem = () => {

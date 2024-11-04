@@ -1,5 +1,6 @@
 // queryKeys.js
 export const CURRENT_TOKEN = "CURRENT_TOKEN";
+export const CURRENT_USER = "CURRENT_USER";
 
 export const READ_ALL_ACCOUNTS = "READ_ALL_ACCOUNTS";
 export const ADMIN_ACCOUNT_DETAIL = "ADMIN_ACCOUNT_DETAIL";

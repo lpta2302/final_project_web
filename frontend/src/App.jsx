@@ -24,7 +24,8 @@ import { CssVarsProvider, extendTheme } from "@mui/joy";
 
 const muiTheme = createTheme({
   colorSchemes: {
-    dark: true
+    dark: true,
+    light: true
   },
   defaultColorScheme: "light",
   palette: {
@@ -87,7 +88,7 @@ function App() {
         <ThemeProvider theme={muiTheme}>
           <SnackbarProvider
             anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
-            autoHideDuration={3000}
+            autoHideDuration={1500}
           >
             <CssBaseline />
             <AuthProvider>

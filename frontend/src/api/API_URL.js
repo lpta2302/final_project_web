@@ -142,6 +142,6 @@ export const admin_url = {
         getAllSpecificationKey: () => '/spec/specification-keys',
         addSpecificationKey: () => '/spec/specification-keys',
         deleteSpecificationKey: (id) => '/spec/specification-keys/'+id,
-        // updateSpecificationKey: (id) => '/spec/'+id
+        updateSpecificationKey: (id) => '/spec/specification-keys/'+id
     }
 }
