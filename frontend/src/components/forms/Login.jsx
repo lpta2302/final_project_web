@@ -15,15 +15,16 @@ import PropTypes from "prop-types";
 import { useLogin } from "../../api/queries";
 import { enqueueSnackbar as toaster } from 'notistack';
 import { useAuthContext } from "../../context/AuthContext";
+import { setBearerToken } from "../../api/myAxios";
 
-const init_error_message = {username: '', password: ''}
+const init_error_message = { username: '', password: '' }
 
 const Login = ({ setModalType, setModalOpen, isAdmin }) => {
   const [inputs, setInputs] = useState({ username: "", password: "" });
   const [errorMessage, setErrorMessage] = useState(init_error_message);
   const { checkAuthUser } = useAuthContext();
 
-  const { mutateAsync: login  } = useLogin();
+  const { mutateAsync: login } = useLogin();
 
   const handleChange = (event) => {
     const name = event.target.name;
@@ -37,18 +38,18 @@ const Login = ({ setModalType, setModalOpen, isAdmin }) => {
 
     // Kiểm tra tên tài khoản
     console.log(!inputs.password);
-    
-    setErrorMessage(()=>({
+
+    setErrorMessage(() => ({
       username: !inputs.username ? "Username không được để trống" : "",
       password: !inputs.password ? "Password không được để trống" : ""
     }))
 
     console.log(errorMessage.password);
-    
+
 
     if (errorMessage.username !== "" || errorMessage.password !== "") {
       console.log("ue");
-      
+
       return;
     }
 
@@ -60,9 +61,9 @@ const Login = ({ setModalType, setModalOpen, isAdmin }) => {
       setErrorMessage(init_error_message);
       return;
     }
-    else{
+    else {
       toaster('Đăng nhập thành công.', { variant: 'success' });
-      localStorage.setItem('cookieFallback',JSON.stringify(token));
+      localStorage.setItem('cookieFallback', JSON.stringify(token));
       await checkAuthUser();
       setModalOpen(false);
     }

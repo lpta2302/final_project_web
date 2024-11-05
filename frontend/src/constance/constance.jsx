@@ -1,8 +1,28 @@
-import { AccountBoxOutlined, CategoryOutlined, Dashboard, WarehouseOutlined } from "@mui/icons-material";
-import { BoxIcon, CartIcon, OrderIcon, OrderTextIcon, VoucherIcon } from "../icons/CustomIcons";
-import { ManageAccount, ManageInventory, ManageOrder, ManageProduct, ManageVoucher, Voucher, Dashboard as DashboardPage, ManageCriteria } from "../_root/pages";
+import {
+  AccountBoxOutlined,
+  CategoryOutlined,
+  Dashboard,
+  WarehouseOutlined,
+} from "@mui/icons-material";
+import {
+  BoxIcon,
+  CartIcon,
+  OrderIcon,
+  OrderTextIcon,
+  VoucherIcon,
+} from "../icons/CustomIcons";
+import {
+  ManageAccount,
+  ManageInventory,
+  ManageOrder,
+  ManageProduct,
+  ManageVoucher,
+  Voucher,
+  Dashboard as DashboardPage,
+  ManageCriteria,
+} from "../_root/pages";
 import Orders from "../_root/pages/customer/Orders";
-import CartPage from "../pages/ShoppingCart";
+import Cart from "../_root/pages/customer/Cart";
 
 export const adminNav = [
   {
@@ -10,20 +30,20 @@ export const adminNav = [
     title: "Quản lý hàng hóa",
   },
   {
-    title: 'Sản phẩm',
-    segment: 'manage-product',
-    icon: <BoxIcon/>,
-    element: <ManageProduct/>
+    title: "Sản phẩm",
+    segment: "manage-product",
+    icon: <BoxIcon />,
+    element: <ManageProduct />,
   },
   {
-    segment: 'manage-criteria',
-    title: 'Phân loại',
+    segment: "manage-criteria",
+    title: "Phân loại",
     icon: <CategoryOutlined />,
-    element: <ManageCriteria/>
+    element: <ManageCriteria />,
   },
   {
-    segment: 'manage-inventory',
-    title: 'Kho hàng',
+    segment: "manage-inventory",
+    title: "Kho hàng",
     icon: <WarehouseOutlined />,
     element: <ManageInventory />,
   },
@@ -51,11 +71,11 @@ export const adminNav = [
     segment: "manage-account",
     title: "Tài khoản",
     icon: <AccountBoxOutlined />,
-    element: <ManageAccount/>
+    element: <ManageAccount />,
   },
   {
-    kind: 'header',
-    title: 'Báo cáo'
+    kind: "header",
+    title: "Báo cáo",
   },
   {
     segment: "dashboard",
@@ -82,6 +102,6 @@ export const customerNav = [
     title: "Giỏ hàng",
     icon: <CartIcon />,
     segment: "/shopingcart",
-    element: <CartPage />,
+    element: <Cart />,
   },
 ];

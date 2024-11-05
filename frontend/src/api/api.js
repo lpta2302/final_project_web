@@ -81,6 +81,21 @@ export async function login(loginInfo) {
   }
 }
 
+export async function getCurrentUser() {
+  try {
+    const user = (await axios.get(AUTH_URL.getCurrentUser)).data;
+
+    if (!user)
+      throw Error;
+
+    return user
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+
+
 // export async function readAll(readType, id) {
 //   try {
 //     console.log(READ_ALL_URL(id)[readType]);

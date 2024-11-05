@@ -40,6 +40,12 @@ export const useLogin = () => {
   });
 };
 
+export const useGetCurrentUser = () => {
+  return useQuery({
+      queryKey: [CURRENT_USER],
+      queryFn: () => getCurrentUser(),
+  });
+};
 //----------------------------- Account -----------------------------
 //client
 export const useCreateAccount = () => {

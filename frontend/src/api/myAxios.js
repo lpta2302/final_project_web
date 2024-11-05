@@ -1,6 +1,20 @@
 import axios from 'axios'
 
-axios.defaults.baseURL = 'http://localhost:4000';
-axios.defaults.headers.common['Authorization'] = 'Bearer token';
+const axiosInstance = (function () {
+    let token = "";
+    axios.defaults.baseURL = 'http://localhost:4000';
 
-export default axios
+    const setBearerToken = (newToken) => {
+        token = newToken;
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;        
+    };
+
+    return {
+        setBearerToken,
+        axios
+    };
+})();
+
+export default axiosInstance.axios
+
+export const setBearerToken = axiosInstance.setBearerToken;
