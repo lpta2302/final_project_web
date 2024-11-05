@@ -24,7 +24,7 @@ import GridProduct from "./pages/GridProduct.jsx";
 // import CheckoutPage from "./_root/pages/customer/Checkoutpage.jsx";
 import CustomerProfile from "./_root/pages/customer/CustomProfile.jsx";
 
-const muiTheme = createTheme({
+const theme = createTheme({
   colorSchemes:{
     dark: true
   },
@@ -79,7 +79,6 @@ const muiTheme = createTheme({
   },
 });
 
-const joyTheme = extendTheme();
 
 const queryClient = new QueryClient();
 
