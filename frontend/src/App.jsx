@@ -99,7 +99,7 @@ function App() {
                   <Route path="/manage-profile" element={<ManagePersonalProfile />} />
                   <Route path="/manage-order" element={<ManagePersonalOrder />} />
                   <Route path="/favorite" element={<Favorite />} />
-                  <Route path="/product/productId" element={<Product />} />
+                  <Route path="/product/:productId" element={<Product />} />
                   {customerNav.map(navItem =>
                     <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
                   )}
