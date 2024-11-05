@@ -105,9 +105,11 @@ export const edit = async (req, res) => {
   try {
     const orderId = req.params.orderId;
 
+    const { processStatus } = req.body;
+
     const result = await Order.findOneAndUpdate(
       { _id: orderId },
-      { processStatus: "completed" },
+      { processStatus: processStatus },
       { new: true }
     );
 
