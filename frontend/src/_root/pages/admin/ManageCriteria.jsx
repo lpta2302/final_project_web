@@ -3,11 +3,11 @@ import { DataGrid, GridActionsCellItem, GridEditInputCell, GridRowModes } from '
 import { PageContainer } from '@toolpad/core';
 import { useEffect, useState } from 'react';
 import DataGridConfirmDialog from '../../../components/dialogs/DataGridConfirmDialog.jsx';
-import { CustomGridToolbar, ManagePageSearch, SplitButton } from "../../../components";
+import { CustomEditCell, CustomGridToolbar, CustomPageContainer, ManagePageSearch, SplitButton } from "../../../components";
 import { enqueueSnackbar as toaster } from 'notistack';
-import { Box, styled, Tooltip, tooltipClasses } from '@mui/material';
+import { Badge, Box, styled, Tooltip, tooltipClasses } from '@mui/material';
 import { Cancel, Delete, Edit, Save } from '@mui/icons-material';
-import { useCreateBrand, useCreateCategory, useCreateTag, useDeleteBrand, useDeleteCategory, useDeleteTag, useReadAllBrand, useReadAllCategory, useReadAllTag, useUpdateBrand, useUpdateCategory, useUpdateTag } from '../../../api/queries.js';
+import { useCreateBrand, useCreateCategory, useCreateSpecificationKey, useCreateTag, useDeleteBrand, useDeleteCategory, useDeleteSpecificationKey, useDeleteTag, useReadAllBrand, useReadAllCategory, useReadAllSpecificationKeyAdmin, useReadAllTagAdmin, useSearchBrand, useSearchCategoryAdmin, useSearchSpecificationKey, useSearchTagAdmin, useUpdateBrand, useUpdateCategory, useUpdateSpecificationKey, useUpdateTag } from '../../../api/queries.js';
 
 const StyledBox = styled('div')(({ theme }) => ({
   '& .Mui-error': {
@@ -19,88 +19,79 @@ const StyledBox = styled('div')(({ theme }) => ({
 }));
 
 const criteria = {
-  brand: {
-    create: useCreateBrand,
-    read: useReadAllBrand,
-    delete: useDeleteBrand,
-    update: useUpdateBrand,
-    columns: [
-      { field: 'brandCode', headerName: 'Id', width: 150, editable: true, renderEditCell: (params) => (<CustomCell {...params} />), isRequired: true },
-      { field: 'brandName', headerName: 'Hãng sản xuất', width: 200, editable: true, renderEditCell: (params) => (<CustomCell {...params} />), isRequired: true }
-    ],
-    savedFields: ['brandName', 'brandCode']
-  },
-  category: {
+  'Loại sản phẩm': {
+    buttonTitle: 'Loại sản phẩm',
     create: useCreateCategory,
     read: useReadAllCategory,
     delete: useDeleteCategory,
     update: useUpdateCategory,
+    search: useSearchCategoryAdmin,
     columns: [
-      { field: 'categoryCode', headerName: 'Id', width: 150, editable: true, renderEditCell: (params) => (<CustomCell {...params} />), isRequired: true },
-      { field: 'categoryName', headerName: 'Loại sản phẩm', width: 200, editable: true, renderEditCell: (params) => (<CustomCell {...params} />), isRequired: true }
+      { field: 'categoryCode', headerName: 'Id', width: 150, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true },
+      { field: 'categoryName', headerName: 'Loại sản phẩm', flex: 1, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true }
     ],
     savedFields: ['categoryName', 'categoryCode']
   },
-  tag: {
+  'Nhà sản xuất': {
+    buttonTitle: 'Nhà sản xuất',
+    create: useCreateBrand,
+    read: useReadAllBrand,
+    delete: useDeleteBrand,
+    update: useUpdateBrand,
+    search: useSearchBrand,
+    columns: [
+      { field: 'brandCode', headerName: 'Id', width: 150, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} isRequired />), isRequired: true },
+      { field: 'brandName', headerName: 'Hãng sản xuất', flex: 1, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} isRequired />), isRequired: true }
+    ],
+    savedFields: ['brandName', 'brandCode']
+  },
+  'Thẻ': {
+    buttonTitle: 'Thẻ',
     create: useCreateTag,
-    read: useReadAllTag,
+    read: useReadAllTagAdmin,
     delete: useDeleteTag,
     update: useUpdateTag,
+    search: useSearchTagAdmin,
     columns: [
-      { field: 'tagCode', headerName: 'Id', width: 150, editable: true, renderEditCell: (params) => (<CustomCell {...params} />), isRequired: true },
-      { field: 'tagName', headerName: 'Tên thẻ', width: 200, editable: true, renderEditCell: (params) => (<CustomCell {...params} />), isRequired: true }
+      { field: 'tagCode', headerName: 'Id', width: 150, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true },
+      { field: 'tagName', headerName: 'Tên thẻ', flex: 1, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true }
     ],
     savedFields: ['tagName', 'tagCode']
   },
-  // specification:{
-  //   read: useReadAllSpecification,
-  //   delete: useDeleteSpecification,
-  //   columns: [
-  //     { field: 'specCode', headerName: 'Id', width: 150, editable: true },
-  //   { field: 'specName', headerName: 'Loại ', width: 200 }
-  //   ]
-  // }
-}
-
-const criteriaKeys = Object.keys(criteria);
-
-const StyledTooltip = styled(({ className, ...props }) => (
-  <Tooltip {...props} classes={{ popper: className }} />
-))(({ theme }) => ({
-  [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: theme.palette.error.main,
-    color: theme.palette.error.contrastText,
-  },
-}));
-
-function CustomCell(props) {
-  const { error } = props;
-
-  return (
-    <StyledTooltip open={!!error} title={error} {...props}>
-      <GridEditInputCell {...props} />
-    </StyledTooltip>
-  )
+  'Thông số': {
+    buttonTitle: 'Thông số',
+    create: useCreateSpecificationKey,
+    read: useReadAllSpecificationKeyAdmin,
+    delete: useDeleteSpecificationKey,
+    update: useUpdateSpecificationKey,
+    search: useSearchSpecificationKey,
+    columns: [
+      { field: 'key', headerName: 'Tên thẻ', flex: 1, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true }
+    ]
+  }
 }
 
 function ManageCriteria() {
-  const [criterion, setCriterion] = useState('category')
-  const [searchValue, setSearchValue] = useState('')
+  const [criterion, setCriterion] = useState('Loại sản phẩm')
   const [updateCellError, setUpdateCellError] = useState({})
   const [rows, setRows] = useState()
   const [rowModesModel, setRowModesModel] = useState({})
   const [rowChanges, setRowChanges] = useState(null)
-
+  const [searchValue, setSearchValue] = useState("")
+  const [searchParam, setSearchParam] = useState("")
+  
+  const [deleteDialogPayload, setDeleteDialogPayload] = useState({ state: false, id: null });
+  const [updateDialogPayload, setUpdateDialogPayload] = useState({ state: false, id: null });
+  
   const currentCriterion = criteria[criterion]
 
 
   const { mutateAsync: createRecord } = currentCriterion.create();
-  const { data } = currentCriterion.read();
+  const { data, isLoading } = currentCriterion.read();
   const { mutateAsync: updateCriterion } = currentCriterion.update();
   const { mutateAsync: deleteRecord } = currentCriterion.delete();
+  const { data: searchResult} = currentCriterion.search(searchParam);
 
-  const [deleteDialogPayload, setDeleteDialogPayload] = useState({ state: false, id: null });
-  const [updateDialogPayload, setUpdateDialogPayload] = useState({ state: false, id: null });
 
 
   const breadcrumbs = [
@@ -110,16 +101,14 @@ function ManageCriteria() {
 
   useEffect(() => setRows(data), [data, criterion])
 
-  const handleEditCellProps = ({field, row, isRequired, props}) => {
-    const {value} = props;
-    setRowChanges(prev=>({...prev, [field]: value !== row[field]}));
-    console.log(value, row[field], value !== row[field]);
-    
+  const handleEditCellProps = ({ field, row, isRequired, props }) => {
+    const { value } = props;
+    setRowChanges(prev => ({ ...prev, [field]: value !== row[field] }));
 
     if (isRequired) {
-      const errorMessage = (!props.value || props.value.trim() === "") ? "Require" : ""
-      setUpdateCellError(prev=>({...prev, [field]: errorMessage}))
-      return { ...props, error: errorMessage };
+      const errorMessage = (!value || value.trim() === "") ? "Require" : ""
+      setUpdateCellError(prev => ({ ...prev, [field]: errorMessage }))
+      return { ...props, error: value !== row[field] && errorMessage };
     }
     return { ...props };
   }
@@ -149,7 +138,7 @@ function ManageCriteria() {
               }}
               onClick={() => setUpdateDialogPayload({ state: true, id: id, row })}
               key="save"
-              disabled={ 
+              disabled={
                 !rowChanges || !Object.values(rowChanges).some((changed) => changed) ||
                 Object.values(updateCellError).some((error) => error)
               }
@@ -210,6 +199,7 @@ function ManageCriteria() {
   };
 
   const handleDeleteClick = async (isAccept) => {
+    console.log("delete");
 
     const { id } = deleteDialogPayload
 
@@ -219,12 +209,18 @@ function ManageCriteria() {
     }
 
 
-    await deleteRecord(id)
-    setRows(rows.filter((row) => row.accountCode !== id));
+    const isDeleted = await deleteRecord(id);
     setDeleteDialogPayload({ state: false, id: null });
+
+    if (!isDeleted) {
+      toaster("Xóa thất bại", { variant: 'error' })
+      throw new Error(isDeleted);
+
+    }
+    setRows(rows.filter((row) => row.accountCode !== id));
   }
 
-  const handleUpdate = async (newRow) => {
+  const handleUpdate = async (newRow, oldRow) => {
     let newData;
 
     if (newRow.isNew) {
@@ -235,10 +231,16 @@ function ManageCriteria() {
       }
 
       newData = await createRecord(data);
-      toaster("Tạo thành công", { variant: 'success' })
+      toaster("Tạo thành công.", { variant: 'success' })
     } else {
-      newData = { ...newRow, ...(await updateCriterion(newRow)) };
-      toaster("Cập nhật thành công", { variant: 'success' })
+      const updatedData = await updateCriterion(newRow);
+
+      if (!updatedData) {
+        toaster("Cập nhật thất bại.", { variant: 'error' })
+        return oldRow;
+      }
+      newData = { ...newRow, ...updatedData };
+      toaster("Cập nhật thành công.", { variant: 'success' })
     }
 
     return newData
@@ -262,7 +264,34 @@ function ManageCriteria() {
   }
 
   const handleSearch = () => {
+    if (!searchValue) {
+      return;
+    }
+    const param = {};
+    if(searchValue.startsWith('#')){
+      param[currentCriterion.columns[0].field] = searchValue.substring(1)
+    } else {
+      param[currentCriterion.columns[1].field] = searchValue
+    }
+    setSearchParam(param)
   }
+
+  useEffect(() => {
+      if (criterion === "Thông số") {
+        return;
+      }
+      setTimeout(() => {
+        const param = {};
+        if(searchValue.startsWith('#')){
+          param[currentCriterion.columns[0].field] = searchValue.substring(1)
+        } else {
+          param[currentCriterion.columns[1].field] = searchValue
+        }
+        console.log(param);
+        
+        setSearchParam(param)
+      }, 1500);
+  }, [searchValue]);
 
   const handleRowModesModelChange = (newRowModesModel) => {
     setRowModesModel(newRowModesModel);
@@ -272,7 +301,7 @@ function ManageCriteria() {
 
 
   return (
-    <PageContainer
+    <CustomPageContainer
       title='Quản lý tiêu chí phân loại'
       breadCrumbs={breadcrumbs}
       sx={{ maxWidth: { xl: 'unset', lg: '94vw', sm: '92vw', xs: '100vw' } }}
@@ -281,12 +310,13 @@ function ManageCriteria() {
         display='flex'
         width='100%'
         justifyContent='space-between'
+        mb={3}
       >
         <Box
           maxHeight='50%'
         >
           <SplitButton
-            options={criteriaKeys}
+            options={Object.keys(criteria)}
             selecting={criterion}
             setSelecting={setCriterion}
           />
@@ -309,8 +339,9 @@ function ManageCriteria() {
       />
       <StyledBox>
         <DataGrid
+          loading = {isLoading}
           getRowId={(row) => row._id ? row._id : row.id}
-          rows={rows}
+          rows={searchResult && searchValue ? searchResult : rows}
           columns={columns}
           editMode='row'
           rowModesModel={rowModesModel}
@@ -320,10 +351,18 @@ function ManageCriteria() {
           onRowEditStop={handleRowEditStop}
           onProcessRowUpdateError={handleUpdateError}
           onRowModesModelChange={handleRowModesModelChange}
+          initialState={{
+            pagination: {
+              paginationModel: {
+                pageSize: 5,
+              },
+            },
+          }}
+          pageSizeOptions={[5,10]}
         />
       </StyledBox>
 
-    </PageContainer>
+    </CustomPageContainer>
   )
 }
 

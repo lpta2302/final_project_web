@@ -69,6 +69,6 @@ const accountSchema = new mongoose.Schema(
 
 // Tạo model từ schema
 const AccountModel =
-  mongoose.model.account || mongoose.model("account", accountSchema);
+  mongoose.model.account || mongoose.model("Account", accountSchema);
 
 export default AccountModel;
