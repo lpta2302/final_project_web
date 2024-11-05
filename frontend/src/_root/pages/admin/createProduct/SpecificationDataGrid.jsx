@@ -7,7 +7,7 @@ import DataGridConfirmDialog from "../../../../components/dialogs/DataGridConfir
 
 const columnFields = [
     { field: 'key', headerName: 'Thông số', width: 300, editable: true },
-    { field: 'specificationValue', headerName: 'Giá trị', width: 300, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} isRequired />), isRequired: true },
+    { field: 'value', headerName: 'Giá trị', width: 300, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} isRequired />), isRequired: true },
 ];
 
 

@@ -9,7 +9,32 @@ import { Delete, Filter, FilterAlt, FilterAltOff } from '@mui/icons-material';
 import { useDeleteProduct, useReadAllProduct, useReadAllProductAdmin, useSearchProductAdmin } from '../../../api/queries.js';
 import { useNavigate } from 'react-router-dom';
 import renderImageSamples from './customRenderer/renderImageSamples.jsx';
-
+// {
+//   productCode: 'a',
+//   productName: 'a',
+//   description: 'a',
+//   category: '671ced01a2f9a35912d5e171',
+//   tag: '
+//   [
+//     {"_id":"671fa8524cc950540ce0ad4a","tagCode":"TAG_02","tagName":"POPULAR","products":["6724c92686e59c0a88311712"],"createdAt":"2024-10-28T15:05:54.755Z","updatedAt":"2024-11-01T12:27:18.762Z","__v":0},
+//     {"_id":"671fa8464cc950540ce0ad46","tagCode":"TAG_01","tagName":"NEW","products":["6724c92686e59c0a88311712"],"createdAt":"2024-10-28T15:05:42.247Z","updatedAt":"2024-11-01T12:27:18.865Z","__v":0}]',
+//     brand: '6724bc861221527143ef19e8',
+//     specs: '[
+//               {
+//                 "price":0,
+//                 "specifications":[
+//                   {
+//                     "0":"key",
+//                     "1":"value",
+//                     "id":"2024-11-05T03:21:36.317Z",
+//                     "isNew":true,
+//                     "key":"Ổ cứng",
+//                     "value":"â"}
+//                   ],
+//                   "specCode":""}  
+//               ]',
+//   productStatus: 'active'
+// }
 const columnFields = [
   {
     field: 'imageUrls',
@@ -159,7 +184,7 @@ function ManageAccount() {
         content="Sản phẩm, bao gồm cả thông tin sẽ bị xóa vĩnh viễn và không thể khôi phục."
       />
       <DataGrid
-        getRowId={(row) => row.productCode}
+        getRowId={(row) => row._id ? row._id : row.id}
         rows={searchResult ? searchResult : rows}
         columns={columns}
         slots={{ toolbar: CustomGridToolbar }}

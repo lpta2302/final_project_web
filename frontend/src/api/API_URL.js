@@ -143,5 +143,13 @@ export const admin_url = {
         addSpecificationKey: () => '/spec/specification-keys',
         deleteSpecificationKey: (id) => '/spec/specification-keys/'+id,
         updateSpecificationKey: (id) => '/spec/specification-keys/'+id
+    },
+    specification: {
+        getAllSpecification: () => '/spec/',
+        addSpecification: () => '/spec/specification/',
+        deleteSpecification: (id) => '/spec/'+id,
+        updateSpecification: (id) => '/spec/'+id,
+        searchSpecification: () => '/spec/search/',
     }
 }
+

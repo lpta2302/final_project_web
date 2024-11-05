@@ -11,6 +11,7 @@ import { ArrowDropDown, Block, Delete, DeleteOutlined, Image } from "@mui/icons-
 import { FileUploader } from 'react-drag-drop-files'
 import { AddImage } from "../../../assets"
 import { enqueueSnackbar as toaster } from "notistack"
+import SKUField from "./createProduct/SKUField"
 
 const breadcrumbs = [
   { path: '/', title: 'Home' },
@@ -47,7 +48,7 @@ const initErrorState = {
 const fileTypes = ["JPG", "PNG", "JEPG", "WEBP", "MP4"];
 
 function CreateProduct() {
-  const [variants, setVariants] = useState([{ price: 0, specifications: [] }])
+  const [variants, setVariants] = useState([{ price: 0, specifications: [], specCode: '' }])
   const [productCode, setProductCode] = useState('')
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('')
@@ -63,7 +64,7 @@ function CreateProduct() {
   const { data: tags, isLoading: isLoadingTag } = useReadAllTagAdmin();
   const { data: brands, isLoading: isLoadingBrand } = useReadAllBrandAdmin();
   const { data: specificatinKeys, } = useReadAllSpecificationKeyAdmin();
-  const {mutateAsync: createProduct} = useCreateProduct();
+  const { mutateAsync: createProduct } = useCreateProduct();
 
 
   const setSpecifications = (index, newSpecs) => {
@@ -81,9 +82,16 @@ function CreateProduct() {
       return updatedVariants;
     });
   };
+  const setSpecCode = (index, newspecCode) => {
+    setVariants(prevVariants => {
+      const updatedVariants = [...prevVariants];
+      updatedVariants[index] = { ...updatedVariants[index], specCode: newspecCode };
+      return updatedVariants;
+    });
+  };
 
   const validateForm = () => {
-    return !!productCode && !!productName && !!description && variants.filter(variant=>variant.specifications.length > 0).length >= 1;
+    return !!productCode && !!productName && !!description && variants.filter(variant => variant.specifications.length > 0).length >= 1;
   }
 
   const handleSave = () => {
@@ -96,18 +104,19 @@ function CreateProduct() {
     })
 
     setFormErrors(errors);
+    console.log(savedVariants);
 
-    if(!validateForm())
-      toaster({variant: 'error',message: 'Lưu sản phẩm thất bại'})
-    else{
+    if (!validateForm())
+      toaster({ variant: 'error', message: 'Lưu sản phẩm thất bại' })
+    else {
       createProduct({
         productCode,
         productName,
         description,
-        category,
-        tag,
-        brand,
-        specs: savedVariants,
+        category: category._id,
+        tag: JSON.stringify(tag),
+        brand: brand._id,
+        specs: JSON.stringify(savedVariants),
         productStatus: 'active'
       })
     }
@@ -119,7 +128,8 @@ function CreateProduct() {
       category,
       tag,
       brand,
-      savedVariants
+      specs: savedVariants,
+      productStatus: 'active'
     });
 
 
@@ -152,7 +162,7 @@ function CreateProduct() {
           <Box p={3} borderRadius={4} sx={{ boxShadow: 3 }}>
             <CustomTypography component="div" fontSize="1.2rem" variant="caption">Mô tả sản phẩm</CustomTypography>
             <TextField
-              sx={{display: 'flex',width: '30%'}}
+              sx={{ display: 'flex', width: '30%' }}
               error={!!formErrors.productCode}
               helperText={formErrors.productCode}
               name="product-code"
@@ -167,7 +177,7 @@ function CreateProduct() {
               }}
               label="Mã sản phẩm" fullWidth margin="normal" placeholder="PC001" />
             <TextField
-              sx={{display: 'flex',width: '80%'}}
+              sx={{ display: 'flex', width: '80%' }}
               error={!!formErrors.productName}
               helperText={formErrors.productName}
               name="product-name"
@@ -220,7 +230,13 @@ function CreateProduct() {
                 >
                   <Box width="100%">
                     <Box display='flex' m={0} p={0} alignItems='center' justifyContent='space-between' width='100%'>
-                      <CustomTypography fontSize="1rem" sx={{ fontFamily: 'inter' }}>{`Loại ${index + 1}`}</CustomTypography>
+                      {/* <TextField 
+                        variant="standard"
+                        label="SKU"
+                        value={variant.specCode === '' ? productCode+`_${(index+1+'').padStart(3,'0')}` : variant.specCode}
+                        onChange={(e)=>setSpecCode(index, e.target.value === '' ? productCode+`_${(index+1+'').padStart(3,'0')}` : e.target.value)}
+                      /> */}
+                      <SKUField productCode={productCode} variant={variant} index={index} setSpecCode={setSpecCode} />
                       <IconButton
                         onClick={() => { setVariants(prev => prev.filter((_, i) => i !== index)) }}
                         color="error" sx={{ width: '32px', height: '32px' }}>
@@ -231,36 +247,24 @@ function CreateProduct() {
                   </Box>
                 </AccordionSummary>
                 <Box sx={{ p: 2 }}>
-                  <TextField
-                    label="Giá tiền"
-                    type="number"
-                    variant="outlined"
+                  <NumberInput
                     value={variant.price}
-                    onChange={(event) => {
-                      const newValue = event.target.value
-                      if (newValue < 0)
-                        return;
-                      setPrice(index, newValue)
-                    }}
+                    min={0}
+                    onChange={
+                      (event) => {
+                        const newValue = event.target.value
+                        if (newValue < 0)
+                          return;
+                        setPrice(index, newValue)
+                      }
+                    }
                     slotProps={{
                       inputLabel: {
                         shrink: true,
                       },
                     }}
-                    onKeyDown={(event) => {
-                      if (
-                        !/[0-9]/.test(event.key) &&
-                        event.key !== 'Backspace' &&
-                        event.key !== 'Delete' &&
-                        event.key !== 'ArrowLeft' &&
-                        event.key !== 'ArrowRight' &&
-                        event.key !== 'Tab' &&
-                        event.key !== '.'
-                      ) {
-                        event.preventDefault();
-                      }
-                    }}
                     margin="normal"
+
                   />
                   <SpecificationDataGrid
                     specificatinKeys={specificatinKeys}

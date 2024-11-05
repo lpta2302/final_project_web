@@ -32,7 +32,8 @@ import {
   ORDER_DETAIL,
   READ_ALL_SPECIFICATION_KEY,
   USE_READ_OWN_CART,
-  CURRENT_USER
+  CURRENT_USER,
+  READ_ALL_SPECIFICATION
 } from "./queryKeys";
 import { admin_url, customer_url } from "./API_URL";
 
@@ -129,7 +130,7 @@ export const useSearchAccount = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_ACCOUNT, searchParam],
     queryFn: () => search(admin_account_url.search(), searchParam),
-    enabled: !!searchParam
+    enabled: !!searchParam && searchParam != {} && searchParam != []
   });
 };
 //----------------------------- Product -----------------------------
@@ -146,7 +147,7 @@ export const useSearchProduct = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_PRODUCT, searchParam],
     queryFn: () => search(customer_product_url.search(), searchParam),
-    enabled: !!searchParam
+    enabled: !!searchParam && searchParam != {} && searchParam != []
   });
 };
 
@@ -230,7 +231,7 @@ export const useSearchProductAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_PRODUCT, searchParam],
     queryFn: () => search(admin_product_url.search(), searchParam),
-    enabled: !!searchParam
+    enabled: !!searchParam && searchParam != {} && searchParam != []
   });
 };
 
@@ -271,7 +272,7 @@ export const useSearchVoucher = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(customer_voucher_url.search(), searchParam),
-    enabled: !!searchParam
+    enabled: !!searchParam && searchParam != {} && searchParam != []
   });
 };
 
@@ -320,7 +321,7 @@ export const useSearchVoucherAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(admin_voucher_url.search(), searchParam),
-    enabled: !!searchParam
+    enabled: !!searchParam && searchParam != {} && searchParam != []
   });
 };
 //----------------------------- Brand -----------------------------
@@ -336,7 +337,7 @@ export const useSearchBrand = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(customer_brand_url.search(), searchParam),
-    enabled: !!searchParam
+    enabled: !!searchParam && searchParam != {} && searchParam != []
   });
 };
 //admin
@@ -379,7 +380,7 @@ export const useSearchBrandAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(admin_brand_url.search(), searchParam),
-    enabled: !!searchParam
+    enabled: !!searchParam && searchParam != {} && searchParam != []
   });
 };
 //----------------------------- Tag -----------------------------
@@ -422,7 +423,7 @@ export const useSearchTagAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(admin_tag_url.search(), searchParam),
-    enabled: !!searchParam
+    enabled: !!searchParam && searchParam != {} && searchParam != []
   });
 };
 //----------------------------- Category -----------------------------
@@ -438,7 +439,7 @@ export const useSearchCategory = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(customer_category_url.search(), searchParam),
-    enabled: !!searchParam
+    enabled: !!searchParam && searchParam != {} && searchParam != []
   });
 };
 //admin
@@ -486,7 +487,7 @@ export const useSearchCategoryAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(admin_category_url.search(), searchParam),
-    enabled: !!searchParam
+    enabled: !!searchParam && searchParam != {} && searchParam != []
   });
 };
 //----------------------------- Carousel -----------------------------
@@ -593,7 +594,7 @@ export const useSearchOrderAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(admin_order_url.search(), searchParam),
-    enabled: !!searchParam
+    enabled: !!searchParam && searchParam != {} && searchParam != []
   });
 };
 //----------------------------- Reviews -----------------------------
@@ -633,10 +634,63 @@ export const useSearchReviewAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(admin_review_url.search(), searchParam),
-    enabled: !!searchParam
+    enabled: !!searchParam && searchParam != {} && searchParam != []
   });
 };
 
+//----------------------------- SPECIFICATION -----------------------------
+//admin
+const admin_specification_url = admin_url.specification;
+export const useReadAllSpecificationAdmin = () => {
+  return useQuery({
+    queryKey: [READ_ALL_SPECIFICATION],
+    queryFn: () => readAll(admin_specification_url.getAllSpecification()),
+  });
+};
+export const useCreateSpecification = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (Specification) =>
+      createRecord(admin_specification_url.addSpecification(), Specification),
+    onSuccess: () => {
+      queryClient.invalidateQueries([READ_ALL_SPECIFICATION]);
+    },
+  });
+};
+
+export const useUpdateSpecification = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (Specification) => 
+    updateRecord(
+      admin_specification_url.updateSpecification(Specification._id),
+      Specification
+    ),
+    onSuccess: () => {
+      queryClient.invalidateQueries([READ_ALL_SPECIFICATION]);
+    },
+  });
+};
+
+export const useDeleteSpecification = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (SpecificationId) =>
+      deleteRecord(admin_specification_url.deleteSpecification(SpecificationId)),
+    onSuccess: () => {
+      queryClient.invalidateQueries([READ_ALL_SPECIFICATION]);
+    },
+  });
+};
+
+export const useSearchSpecification = (searchParam) => {
+  return useQuery({
+    queryKey: [SEARCH_VOUCHER, searchParam],
+    queryFn: () => 
+      search(admin_specification_url.search(), searchParam),
+    enabled: !!searchParam && searchParam != {} && searchParam != []
+  });
+};
 //----------------------------- SPECIFICATION KEYS -----------------------------
 //admin
 const admin_specificationKey_url = admin_url.specificationKey;
@@ -688,7 +742,7 @@ export const useSearchSpecificationKey = (searchParam) => {
     queryFn: () => 
       // search(admin_specificationKey_url.search(), searchParam),
       console.log("searching"),
-    enabled: !!searchParam
+    enabled: !!searchParam && searchParam != {} && searchParam != []
   });
 };
 

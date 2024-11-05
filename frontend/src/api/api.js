@@ -16,6 +16,49 @@ export async function createRecord(url, data) {
   }
 }
 
+export async function createProduct(url, data) {
+  const formData = new FormData();
+
+  // Basic fields
+  formData.append("productCode", data.productCode);
+  formData.append("productName", data.productName);
+  formData.append("description", data.description || "Default description");
+  formData.append("price", data.price);
+  formData.append("discountPercentage", data.discountPercentage || 0);
+  formData.append("stockQuantity", data.stockQuantity);
+  formData.append("productStatus", data.productStatus || "active");
+  formData.append("slug", data.slug);
+
+  // JSON fields (tag, relativeProduct, specs, category, and brand)
+  formData.append("tag", JSON.stringify(data.tag || []));
+  formData.append("relativeProduct", JSON.stringify(data.relativeProduct || []));
+  formData.append("specs", JSON.stringify(data.specs));
+  
+  // Convert category and brand objects to JSON strings
+  if (data.category) {
+    formData.append("category", JSON.stringify(data.category));
+  }
+  
+  if (data.brand) {
+    formData.append("brand", JSON.stringify(data.brand));
+  }
+
+  // Image or file handling
+  if (data.files) {
+    for (let i = 0; i < data.files.length; i++) {
+      formData.append("files", data.files[i]);
+    }
+  }
+
+  try {
+    const response = await axios.post(url, formData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating product:", error);
+    throw error;
+  }
+}
+
 export async function readAll(url) {
   try {
     const data = (await axios.get(url)).data;

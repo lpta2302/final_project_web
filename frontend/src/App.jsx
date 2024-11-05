@@ -37,6 +37,9 @@ const muiTheme = createTheme({
       main: "#000",
       light: "#505050",
     },
+    blackLight: {
+      main: "#757575"
+    },
     secondary: {
       main: "#09083d",
     },

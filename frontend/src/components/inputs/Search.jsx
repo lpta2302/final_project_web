@@ -23,7 +23,6 @@ function Search({ searchValue, setSearchValue, handleSearch }) {
         id="search"
         placeholder="Search…"
         value={searchValue}
-        color='#fff'
         onKeyDown={handleKeydown}
         onChange={handleOnChange}
         sx={{

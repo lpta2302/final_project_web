@@ -66,7 +66,7 @@ const criteria = {
     update: useUpdateSpecificationKey,
     search: useSearchSpecificationKey,
     columns: [
-      { field: 'key', headerName: 'Tên thẻ', flex: 1, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true }
+      { field: 'key', headerName: 'Loại thông số', flex: 1, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true }
     ]
   }
 }

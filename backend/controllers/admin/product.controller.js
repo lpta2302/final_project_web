@@ -21,6 +21,8 @@ export const postProduct = async (req, res) => {
   try {
     const productCode = req.body.productCode; // Lấy productCode
     const existingProductCode = await Product.findOne({ productCode });
+    
+console.log(req.body);
 
     if (existingProductCode) {
       return res.status(400).json(false);
@@ -35,15 +37,20 @@ export const postProduct = async (req, res) => {
         message: "Tên sản phẩm đã tồn tại",
       });
     }
-
+    console.log("39");
+    
     // Kiểm tra và phân tích các trường JSON
     const tag = req.body.tag ? JSON.parse(req.body.tag) : []; // Phân tích tag, mặc định là mảng rỗng nếu không có
+    
+    const specs = req.body.specs ? JSON.parse(req.body.specs) : []; // Phân tích specification, mặc định là mảng rỗng nếu không có
+console.log(specs);
 
     // Kiểm tra sự tồn tại của relativeProduct trước khi phân tích
     const relativeProduct = req.body.relativeProduct
       ? JSON.parse(req.body.relativeProduct)
       : []; // Phân tích relativeProduct, mặc định là mảng rỗng
-
+    console.log("48");
+    
     // Tạo sản phẩm mới
     const record = new Product({
       productCode,
@@ -56,17 +63,27 @@ export const postProduct = async (req, res) => {
       imageURLs: req.imageUrls ? req.imageUrls : [],
       category: req.body.category, // Kiểm tra nếu có category
       tag, // Gán tag
+      specs,
       brand: req.body.brand, // Gán brand
       relativeProduct, // Gán relativeProduct
       slug: req.body.slug, // Gán slug
     });
-
+    
+    console.log(67);
+    console.log(record);
+    
+    
     const savedProduct = await record.save();
+console.log(70);
 
     // Cập nhật thương hiệu
     const brand = await Brand.findById(req.body.brand);
     await brand.updateOne({ $push: { products: savedProduct._id } });
-
+    console.log(75);
+    const category = await Category.findById(req.body.category);
+    await category.updateOne({ $push: { products: savedProduct._id } });
+    console.log(85);
+    
     // Cập nhật tag
     if (Array.isArray(tag) && tag.length > 0) {
       for (const tagId of tag) {
@@ -80,6 +97,7 @@ export const postProduct = async (req, res) => {
     res.status(200).json(savedProduct);
   } catch (error) {
     console.log(error);
+    
     return res.status(400).json(error);
   }
 };
@@ -97,7 +115,6 @@ export const editProduct = async (req, res) => {
 
     const newImgUrl = req.imageUrls || [];
 
-    console.log(newImgUrl);
 
     if (newImgUrl.length > 0) {
       const oldImgUrl = existingProduct.imageURLs;
@@ -113,7 +130,6 @@ export const editProduct = async (req, res) => {
 
       existingProduct.imageURLs = newImgUrl;
     }
-    console.log("Thao huynh");
 
     const result = await Product.findByIdAndUpdate(
       id,
@@ -198,7 +214,6 @@ export const deleteProduct = async (req, res) => {
 export const detail = async (req, res) => {
   try {
     const id = req.params.id;
-    console.log(id);
 
     const record = await Product.findOne({ _id: id });
 
@@ -338,7 +353,6 @@ export const statisticBrand = async (req, res) => {
     const brand = await Brand.findOne({ _id: brandId }).populate("products");
     res.status(200).json(brand.products);
   } catch (error) {
-    console.log(error);
     res.status(500).json(false);
   }
 };
