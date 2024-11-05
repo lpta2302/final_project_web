@@ -23,25 +23,13 @@ export async function createProduct(url, data) {
   formData.append("productCode", data.productCode);
   formData.append("productName", data.productName);
   formData.append("description", data.description || "Default description");
-  formData.append("price", data.price);
-  formData.append("discountPercentage", data.discountPercentage || 0);
-  formData.append("stockQuantity", data.stockQuantity);
-  formData.append("productStatus", data.productStatus || "active");
-  formData.append("slug", data.slug);
+  formData.append("productStatus", data.productStatus || "Available");
+  formData.append("category", data.category);
+  formData.append("brand", data.brand);
 
   // JSON fields (tag, relativeProduct, specs, category, and brand)
   formData.append("tag", JSON.stringify(data.tag || []));
-  formData.append("relativeProduct", JSON.stringify(data.relativeProduct || []));
   formData.append("specs", JSON.stringify(data.specs));
-  
-  // Convert category and brand objects to JSON strings
-  if (data.category) {
-    formData.append("category", JSON.stringify(data.category));
-  }
-  
-  if (data.brand) {
-    formData.append("brand", JSON.stringify(data.brand));
-  }
 
   // Image or file handling
   if (data.files) {

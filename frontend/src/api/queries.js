@@ -8,7 +8,8 @@ import {
   readAll,
   search,
   updateRecord,
-  getCurrentUser
+  getCurrentUser,
+  createProduct
 } from "./api";
 import {
   READ_ALL_ACCOUNTS,
@@ -195,7 +196,7 @@ export const useCreateProduct = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (product) =>
-      createRecord(admin_product_url.createProduct(), product),
+      createProduct(admin_product_url.createProduct(),product),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_PRODUCTS]);
     },

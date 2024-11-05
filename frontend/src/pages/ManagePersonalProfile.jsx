@@ -18,7 +18,6 @@ const ManagePersonalProfile = () => {
     dateOfBirth: "",
     avatar: "",
   });
-  console.log(inputs.dateOfBirth);
 
   const [error, setError] = useState({
     firstName: "",
@@ -39,12 +38,12 @@ const ManagePersonalProfile = () => {
         lastName: user.lastName || "",
         email: user.email || "",
         phoneNumber: user.phoneNumber || "",
-        dateOfBirth: user.dateOfBirth || "",
+        dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split("T")[0] : "", // Chuyển đổi định dạng
         avatar: user.avatar || "",
       });
     }
   }, [user]);
-
+  
   // Xử lý thay đổi dữ liệu
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -80,7 +79,7 @@ const ManagePersonalProfile = () => {
 
     setError({ firstName: "", lastName: "", phoneNumber: "" });
     try {
-      await updateAccount(inputs);
+      await updateAccount({ ...inputs, _id: user._id });
       console.log("Thay đổi thông tin thành công:", inputs);
     } catch (error) {
       console.error("Lỗi khi cập nhật thông tin:", error);

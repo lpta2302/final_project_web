@@ -48,11 +48,11 @@ const initErrorState = {
 const fileTypes = ["JPG", "PNG", "JEPG", "WEBP", "MP4"];
 
 function CreateProduct() {
-  const [variants, setVariants] = useState([{ price: 0, specifications: [], specCode: '' }])
+  const [variants, setVariants] = useState([{ price: 0, stockQuantity:0, specifications: [], specCode: '' }])
   const [productCode, setProductCode] = useState('')
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('')
-  const [tag, setTag] = useState()
+  const [tags, setTags] = useState()
   const [brand, setBrand] = useState()
   const [category, setCategory] = useState()
   const [formErrors, setFormErrors] = useState(initErrorState)
@@ -61,31 +61,15 @@ function CreateProduct() {
   const [showingFile, setShowingFile] = useState(0)
 
   const { data: categories, isLoading: isLoadingCategories } = useReadAllCategory();
-  const { data: tags, isLoading: isLoadingTag } = useReadAllTagAdmin();
+  const { data: tagsData, isLoading: isLoadingTag } = useReadAllTagAdmin();
   const { data: brands, isLoading: isLoadingBrand } = useReadAllBrandAdmin();
-  const { data: specificatinKeys, } = useReadAllSpecificationKeyAdmin();
+  const { data: specificationKeys, } = useReadAllSpecificationKeyAdmin();
   const { mutateAsync: createProduct } = useCreateProduct();
 
-
-  const setSpecifications = (index, newSpecs) => {
+  const setVariantInfo = (index, type, newValue) => {
     setVariants(prevVariants => {
       const updatedVariants = [...prevVariants];
-      updatedVariants[index] = { ...updatedVariants[index], specifications: newSpecs };
-      return updatedVariants;
-    });
-  };
-
-  const setPrice = (index, newPrice) => {
-    setVariants(prevVariants => {
-      const updatedVariants = [...prevVariants];
-      updatedVariants[index] = { ...updatedVariants[index], price: newPrice };
-      return updatedVariants;
-    });
-  };
-  const setSpecCode = (index, newspecCode) => {
-    setVariants(prevVariants => {
-      const updatedVariants = [...prevVariants];
-      updatedVariants[index] = { ...updatedVariants[index], specCode: newspecCode };
+      updatedVariants[index] = { ...updatedVariants[index], [type]: newValue };
       return updatedVariants;
     });
   };
@@ -93,19 +77,39 @@ function CreateProduct() {
   const validateForm = () => {
     return !!productCode && !!productName && !!description && variants.filter(variant => variant.specifications.length > 0).length >= 1;
   }
-
   const handleSave = () => {
     const errors = { ...JSON.parse(JSON.stringify(initErrorState)) };
-    const savedVariants = variants.filter((variant, index) => {
-      const enoughData = variant.specifications.length > 0
-      if (!enoughData)
-        errors.variants[index] = "Phải có ít nhất 1 thông số sản phẩm"
-      return enoughData
+    const savedVariants = 
+      JSON.parse(JSON.stringify(
+        variants.filter((variant, index) => {
+          const enoughData = variant.specifications.length > 0
+          if (!enoughData)
+            errors.variants[index] = "Phải có ít nhất 1 thông số sản phẩm"
+          return enoughData
+        })
+      ))
+
+    savedVariants.forEach(variant=>{
+      variant.specifications = variant.specifications.map(spec=>({value: spec.value,key:specificationKeys.find(specKey=>specKey.key === spec.key)._id}))
     })
 
     setFormErrors(errors);
-    console.log(savedVariants);
 
+    console.log(
+      {
+        productCode,
+        productName,
+        description,
+        category: category?._id,
+        tag: JSON.stringify(tags.map(t=>t._id)),
+        brand: brand?._id,
+        specs: JSON.stringify(savedVariants),
+        productStatus: 'active',
+        files
+      }
+    );
+    
+    // return;
     if (!validateForm())
       toaster({ variant: 'error', message: 'Lưu sản phẩm thất bại' })
     else {
@@ -113,26 +117,14 @@ function CreateProduct() {
         productCode,
         productName,
         description,
-        category: category._id,
-        tag: JSON.stringify(tag),
-        brand: brand._id,
+        category: category?._id,
+        tag: JSON.stringify(tags),
+        brand: brand?._id,
         specs: JSON.stringify(savedVariants),
-        productStatus: 'active'
+        productStatus: 'active',
+        files
       })
     }
-
-    console.log({
-      productCode,
-      productName,
-      description,
-      category,
-      tag,
-      brand,
-      specs: savedVariants,
-      productStatus: 'active'
-    });
-
-
 
   }
 
@@ -230,13 +222,7 @@ function CreateProduct() {
                 >
                   <Box width="100%">
                     <Box display='flex' m={0} p={0} alignItems='center' justifyContent='space-between' width='100%'>
-                      {/* <TextField 
-                        variant="standard"
-                        label="SKU"
-                        value={variant.specCode === '' ? productCode+`_${(index+1+'').padStart(3,'0')}` : variant.specCode}
-                        onChange={(e)=>setSpecCode(index, e.target.value === '' ? productCode+`_${(index+1+'').padStart(3,'0')}` : e.target.value)}
-                      /> */}
-                      <SKUField productCode={productCode} variant={variant} index={index} setSpecCode={setSpecCode} />
+                      <SKUField productCode={productCode} variant={variant} index={index} setSpecCode={(i, newValue)=>(setVariantInfo(i,'specCode', newValue))} />
                       <IconButton
                         onClick={() => { setVariants(prev => prev.filter((_, i) => i !== index)) }}
                         color="error" sx={{ width: '32px', height: '32px' }}>
@@ -247,30 +233,51 @@ function CreateProduct() {
                   </Box>
                 </AccordionSummary>
                 <Box sx={{ p: 2 }}>
-                  <NumberInput
-                    value={variant.price}
-                    min={0}
-                    onChange={
-                      (event) => {
-                        const newValue = event.target.value
-                        if (newValue < 0)
-                          return;
-                        setPrice(index, newValue)
+                  <Box display='flex' justifyContent='space-between' mb={2}>
+                    <NumberInput
+                      label="Giá tiền"
+                      value={variant.price}
+                      min={0}
+                      onChange={
+                        (event) => {
+                          const newValue = event.target.value
+                          if (newValue < 0)
+                            return;
+                          setVariantInfo(index, 'price', newValue)
+                        }
                       }
-                    }
-                    slotProps={{
-                      inputLabel: {
-                        shrink: true,
-                      },
-                    }}
-                    margin="normal"
-
-                  />
+                      slotProps={{
+                        inputLabel: {
+                          shrink: true,
+                        },
+                      }}
+                      margin="normal"
+                    />
+                    <NumberInput
+                      label="Số lượng"
+                      value={variant.stockQuantity}
+                      min={0}
+                      onChange={
+                        (event) => {
+                          const newValue = event.target.value
+                          if (newValue < 0)
+                            return;
+                          setVariantInfo(index, 'stockQuantity', newValue)
+                        }
+                      }
+                      slotProps={{
+                        inputLabel: {
+                          shrink: true,
+                        },
+                      }}
+                      margin="normal"
+                    />
+                  </Box>
                   <SpecificationDataGrid
-                    specificatinKeys={specificatinKeys}
+                    specificatinKeys={specificationKeys}
                     specifications={variant.specifications}
                     setSpecifications={newSpecs => {
-                      setSpecifications(index, newSpecs)
+                      setVariantInfo(index,'specifications', newSpecs)
                     }} key={index} />
                 </Box>
               </Accordion>
@@ -280,7 +287,7 @@ function CreateProduct() {
         <Grid2 item size={{ xs: 12, md: 4 }}>
           <Box p={3} borderRadius={2} display="flex" flexDirection="column" alignItems="center" sx={{ boxShadow: 3 }}>
             <Box display='flex' justifyContent="space-between" width="100%" mb={1}>
-              <CustomTypography fontSize="1.2rem" variant="caption">Ảnh sản phẩm</CustomTypography>
+              <CustomTypography fontSize="1.2rem" variant="caption">Ảnh sản phẩm</CustomTypography>              
               <Button
                 startIcon={<DeleteOutlined />}
                 variant="outlined"
@@ -328,13 +335,15 @@ function CreateProduct() {
                   handleChange={handleChangeFile}
                   type={fileTypes}
                   fileOrFiles={showingFile && files.length > 0 ? files[showingFile] : files[0]}
+                  disabled={files.length === 6}
                 >
                   <></>
                 </FileUploader>
               </AspectRatio>
             </CssVarsProvider>
             {/* Thumbnails */}
-            <Box display="flex" gap={2} mt={1} maxWidth="100%" sx={{ overflowX: "auto", cursor: 'pointer', '&:hover': { filter: 'brightness(0.8) ' } }}>
+            <Box display="flex" alignItems='center' gap={2} mt={1} maxWidth="100%" sx={{ overflowX: "auto", cursor: 'pointer', '&:hover': { filter: 'brightness(0.8) ' } }}>
+              <CustomTypography fontSize="0.8rem" variant="caption">{`${files.length}/6`}</CustomTypography>              
               {
                 files.map((file, index) => {
                   return (
@@ -404,11 +413,11 @@ function CreateProduct() {
               <Box width="100%" p={2}>
                 <CustomTypography fontSize="1rem" variant="caption">Gắn thẻ</CustomTypography>
                 <Autocomplete
-                  value={tag}
-                  onChange={(e, newValue) => setTag(newValue)}
+                  value={tags}
+                  onChange={(e, newValue) => setTags(newValue)}
                   variant="plain"
                   placeholder="Tag"
-                  options={isLoadingTag ? [] : tags}
+                  options={isLoadingTag ? [] : tagsData}
                   getOptionLabel={(option) => option.tagName}
                   loading={isLoadingTag}
                   filterOptions={filterTagOptions}

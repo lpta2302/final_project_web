@@ -44,7 +44,7 @@ const muiTheme = createTheme({
       main: "#09083d",
     },
     primary: {
-      main: "#1463f3",
+      main: "#0672cb",
     },
     error: {
       main: "#f53935"
@@ -102,7 +102,7 @@ function App() {
                   <Route path="/manage-profile" element={<ManagePersonalProfile />} />
                   <Route path="/manage-order" element={<ManagePersonalOrder />} />
                   <Route path="/favorite" element={<Favorite />} />
-                  <Route path="/product/productId" element={<Product />} />
+                  <Route path="/product/:productId" element={<Product />} />
                   {customerNav.map(navItem =>
                     <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
                   )}

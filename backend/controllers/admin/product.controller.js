@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Product from "../../models/product.model.js";
 import Brand from "../../models/brand.model.js";
 import Category from "../../models/category.model.js";
@@ -5,6 +6,7 @@ import SeenProd from "../../models/seen.model.js";
 import Specs from "../../models/specification.model.js";
 import Tag from "../../models/tag.model.js";
 import wishList from "../../models/wishlist.model.js";
+import specsKey from "../../models/specsKey.model.js";
 
 // Middleware
 import deleteFromDrive from "../../middleware/delToDrive.js";
@@ -19,77 +21,110 @@ export const index = async (req, res) => {
 // [POST] /products/postProduct
 export const postProduct = async (req, res) => {
   try {
-    const productCode = req.body.productCode; // Lấy productCode
-    const existingProductCode = await Product.findOne({ productCode });
-    
-console.log(req.body);
+    // Kiểm tra mã và tên sản phẩm
+    const {
+      productCode,
+      productName,
+      price,
+      discountPercentage,
+      stockQuantity,
+      tags,
+      brand,
+      specCode,
+      specifications,
+    } = req.body;
 
+    // Kiểm tra nếu mã sản phẩm đã tồn tại
+    const existingProductCode = await Product.findOne({ productCode });
     if (existingProductCode) {
       return res.status(400).json(false);
     }
 
-    const productName = req.body.productName; // Lấy productName
+    // Kiểm tra nếu tên sản phẩm đã tồn tại
     const existingProductName = await Product.findOne({ productName });
-
     if (existingProductName) {
-      return res.status(400).json({
-        code: 400,
-        message: "Tên sản phẩm đã tồn tại",
-      });
+      return res.status(400).json(false);
     }
-    console.log("39");
-    
-    // Kiểm tra và phân tích các trường JSON
-    const tag = req.body.tag ? JSON.parse(req.body.tag) : []; // Phân tích tag, mặc định là mảng rỗng nếu không có
-    
-    const specs = req.body.specs ? JSON.parse(req.body.specs) : []; // Phân tích specification, mặc định là mảng rỗng nếu không có
-console.log(specs);
 
-    // Kiểm tra sự tồn tại của relativeProduct trước khi phân tích
-    const relativeProduct = req.body.relativeProduct
-      ? JSON.parse(req.body.relativeProduct)
-      : []; // Phân tích relativeProduct, mặc định là mảng rỗng
-    console.log("48");
-    
+    // Trong hàm postProduct
+    const parsedTags = tags ? JSON.parse(tags) : []; // Nếu tags là chuỗi JSON
+    const objectIdTags = parsedTags.map(
+      (tag) => new mongoose.Types.ObjectId(tag)
+    );
+
     // Tạo sản phẩm mới
-    const record = new Product({
+    const newProduct = new Product({
       productCode,
       productName,
       description: req.body.description,
-      price: req.body.price,
-      discountPercentage: req.body.discountPercentage,
-      stockQuantity: req.body.stockQuantity,
       productStatus: req.body.productStatus,
       imageURLs: req.imageUrls ? req.imageUrls : [],
       category: req.body.category, // Kiểm tra nếu có category
-      tag, // Gán tag
-      specs,
+      tag: objectIdTags, // Gán tag
       brand: req.body.brand, // Gán brand
-      relativeProduct, // Gán relativeProduct
       slug: req.body.slug, // Gán slug
     });
-    
-    console.log(67);
-    console.log(record);
-    
-    
-    const savedProduct = await record.save();
-console.log(70);
 
-    // Cập nhật thương hiệu
-    const brand = await Brand.findById(req.body.brand);
-    await brand.updateOne({ $push: { products: savedProduct._id } });
-    console.log(75);
-    const category = await Category.findById(req.body.category);
-    await category.updateOne({ $push: { products: savedProduct._id } });
-    console.log(85);
-    
-    // Cập nhật tag
-    if (Array.isArray(tag) && tag.length > 0) {
-      for (const tagId of tag) {
-        const tag = await Tag.findById(tagId);
-        if (tag) {
-          await tag.updateOne({ $push: { products: savedProduct._id } });
+    const savedProduct = await newProduct.save();
+
+    let parsedSpecifications = [];
+    if (typeof specifications === "string") {
+      parsedSpecifications = JSON.parse(specifications); // Chuyển đổi từ JSON nếu là chuỗi
+    } else if (Array.isArray(specifications)) {
+      parsedSpecifications = specifications; // Nếu đã là mảng
+    }
+
+    // Tích hợp tạo Specification
+    if (
+      specCode &&
+      Array.isArray(parsedSpecifications) &&
+      parsedSpecifications.length > 0
+    ) {
+      // Kiểm tra tính hợp lệ của từng specification
+      const validSpecs = await Promise.all(
+        parsedSpecifications.map(async (spec) => {
+          const isValidKey = await specsKey.findById(spec.key);
+          return isValidKey ? { key: spec.key, value: spec.value } : null;
+        })
+      );
+
+      const filteredSpecs = validSpecs.filter((spec) => spec !== null);
+
+      console.log("Tao Thao fil: " + filteredSpecs);
+
+      // Nếu có ít nhất một specification hợp lệ, tạo mới Specification
+      if (filteredSpecs.length > 0) {
+        const newSpec = new Specs({
+          specCode,
+          specifications: filteredSpecs,
+          stockQuantity,
+          price,
+          products: savedProduct._id,
+          discountPercentage,
+        });
+
+        await newSpec.save();
+
+        // Gán Specification mới tạo vào sản phẩm
+        await savedProduct.updateOne({ $push: { specs: newSpec._id } });
+        savedProduct.specs = newSpec._id;
+      }
+    }
+
+    // Cập nhật brand với sản phẩm mới tạo
+    if (brand) {
+      const brandDoc = await Brand.findById(brand);
+      if (brandDoc) {
+        await brandDoc.updateOne({ $push: { products: savedProduct._id } });
+      }
+    }
+
+    // Cập nhật tag với sản phẩm mới tạo
+    if (Array.isArray(parsedTags) && parsedTags.length > 0) {
+      for (const tagId of parsedTags) {
+        const tagDoc = await Tag.findById(tagId);
+        if (tagDoc) {
+          await tagDoc.updateOne({ $push: { products: savedProduct._id } });
         }
       }
     }
@@ -97,7 +132,7 @@ console.log(70);
     res.status(200).json(savedProduct);
   } catch (error) {
     console.log(error);
-    
+
     return res.status(400).json(error);
   }
 };
@@ -110,7 +145,7 @@ export const editProduct = async (req, res) => {
     // Tìm sản phẩm hiện tại
     const existingProduct = await Product.findById(id);
     if (!existingProduct) {
-      return res.status(404).json({ message: "Product not found" });
+      return res.status(404).json(false);
     }
 
     const newImgUrl = req.imageUrls || [];
@@ -124,7 +159,7 @@ export const editProduct = async (req, res) => {
         const fileId = urlParams.searchParams.get("id");
         if (fileId) {
           // Gọi middleware xóa hình ảnh
-          await deleteFromDrive({ params: { fileId: fileId } }, res, () => {});
+          await deleteFromDrive({ params: { fileId: fileId } }, res, () => { });
         }
       }
 
@@ -196,7 +231,7 @@ export const deleteProduct = async (req, res) => {
       const fileId = urlParams.searchParams.get("id");
       if (fileId) {
         // Gọi middleware xóa hình ảnh
-        await deleteFromDrive({ params: { fileId: fileId } }, res, () => {});
+        await deleteFromDrive({ params: { fileId: fileId } }, res, () => { });
       }
     }
 

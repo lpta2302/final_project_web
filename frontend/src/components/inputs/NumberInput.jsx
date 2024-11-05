@@ -1,10 +1,10 @@
 import { TextField } from '@mui/material';
 import { validateNumberForTextField } from '../../util/validateNumber';
 
-function NumberInput({ onChange, value, min, max, ...param }) {
+function NumberInput({ label, onChange, value, min, max, ...param }) {
   return (
     <TextField
-      label="Giá tiền"
+      label={label}
       type="number"
       variant="outlined"
       value={value}

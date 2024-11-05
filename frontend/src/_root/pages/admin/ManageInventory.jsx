@@ -18,9 +18,10 @@ const StyledBox = styled('div')(({ theme }) => ({
   },
 }));
 
-const columnFields= [
-  { field: 'specCode', headerName: 'Id', width: 150, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true },
-  { field: 'price', min: 0, headerName: 'Giá hàng hóa', width: 150, editable: true, type: 'number', renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true }
+const columnFields = [
+  { field: 'specCode', headerName: 'SKU', width: 150, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true },
+  { field: 'price', min: 0, headerName: 'Đơn giá', width: 150, editable: true, type: 'number', renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true },
+  { field: 'stockQuantity', min: 0, headerName: 'Số lượng trong kho', width: 150, editable: true, type: 'number', renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true }
 ];
 
 function ManageInventory() {
@@ -30,17 +31,18 @@ function ManageInventory() {
   const [rowChanges, setRowChanges] = useState(null)
   const [searchValue, setSearchValue] = useState("")
   const [searchParam, setSearchParam] = useState("")
-  
+
   const [deleteDialogPayload, setDeleteDialogPayload] = useState({ state: false, id: null });
   const [updateDialogPayload, setUpdateDialogPayload] = useState({ state: false, id: null });
-  
+
 
 
   const { data, isLoading } = useReadAllSpecificationAdmin();
   const { mutateAsync: updateCriterion } = useUpdateSpecification();
   const { mutateAsync: deleteRecord } = useDeleteSpecification();
-  const { data: searchResult} = useSearchSpecification(searchParam);
+  const { data: searchResult } = useSearchSpecification(searchParam);
 
+  console.log(rows);
 
 
   const breadcrumbs = [
@@ -56,7 +58,7 @@ function ManageInventory() {
     setRowChanges(prev => ({ ...prev, [field]: value !== row[field] }));
 
     let errorMessage;
-    
+
     if (type === 'number') {
       if ((isRequired && !value) || typeof value !== 'number')
         errorMessage = `Require Number`
@@ -135,7 +137,7 @@ function ManageInventory() {
   ];
 
   console.log(rows);
-  
+
 
 
   const handleRowEditStop = (params, event) => {
@@ -183,14 +185,14 @@ function ManageInventory() {
   const handleUpdate = async (newRow, oldRow) => {
     let newData;
 
-      const updatedData = await updateCriterion(newRow);
+    const updatedData = await updateCriterion(newRow);
 
-      if (!updatedData) {
-        toaster("Cập nhật thất bại.", { variant: 'error' })
-        return oldRow;
-      }
-      newData = { ...newRow, ...updatedData };
-      toaster("Cập nhật thành công.", { variant: 'success' })
+    if (!updatedData) {
+      toaster("Cập nhật thất bại.", { variant: 'error' })
+      return oldRow;
+    }
+    newData = { ...newRow, ...updatedData };
+    toaster("Cập nhật thành công.", { variant: 'success' })
 
     return newData
 
@@ -217,7 +219,7 @@ function ManageInventory() {
       return;
     }
     const param = {};
-    if(searchValue.startsWith('#')){
+    if (searchValue.startsWith('#')) {
       param[columnFields[0].field] = searchValue.substring(1)
     } else {
       param[columnFields[1].field] = searchValue
@@ -226,17 +228,17 @@ function ManageInventory() {
   }
 
   useEffect(() => {
-      setTimeout(() => {
-        const param = {};
-        if(searchValue.startsWith('#')){
-          param[columnFields[0].field] = searchValue.substring(1)
-        } else {
-          param[columnFields[1].field] = searchValue
-        }
-        console.log(param);
-        
-        setSearchParam(param)
-      }, 1500);
+    setTimeout(() => {
+      const param = {};
+      if (searchValue.startsWith('#')) {
+        param[columnFields[0].field] = searchValue.substring(1)
+      } else {
+        param[columnFields[1].field] = searchValue
+      }
+      console.log(param);
+
+      setSearchParam(param)
+    }, 1500);
   }, [searchValue]);
 
   const handleRowModesModelChange = (newRowModesModel) => {
@@ -276,7 +278,7 @@ function ManageInventory() {
       />
       <StyledBox>
         <DataGrid
-          loading = {isLoading}
+          loading={isLoading}
           getRowId={(row) => row._id ? row._id : row.id}
           rows={searchResult && searchValue ? searchResult : rows}
           columns={columns}
@@ -295,7 +297,7 @@ function ManageInventory() {
               },
             },
           }}
-          pageSizeOptions={[5,10]}
+          pageSizeOptions={[5, 10]}
         />
       </StyledBox>
 
