@@ -19,16 +19,27 @@ export const index = async (req, res) => {
 // [POST] /products/postProduct
 export const postProduct = async (req, res) => {
   try {
-    const productCode = req.body.productCode; // Lấy productCode
-    const existingProductCode = await Product.findOne({ productCode });
+    const {
+      productCode,
+      productName,
+      description,
+      productStatus,
+      category,
+      tag,
+      specs,
+      brand,
+      relativeProduct,
+      slug,
+    } = req.body;
 
+    // Kiểm tra sự tồn tại của productCode
+    const existingProductCode = await Product.findOne({ productCode });
     if (existingProductCode) {
       return res.status(400).json(false);
     }
 
-    const productName = req.body.productName; // Lấy productName
+    // Kiểm tra sự tồn tại của productName
     const existingProductName = await Product.findOne({ productName });
-
     if (existingProductName) {
       return res.status(400).json({
         code: 400,
@@ -36,51 +47,48 @@ export const postProduct = async (req, res) => {
       });
     }
 
-    // Kiểm tra và phân tích các trường JSON
-    const tag = req.body.tag ? JSON.parse(req.body.tag) : []; // Phân tích tag, mặc định là mảng rỗng nếu không có
-
-    // Kiểm tra sự tồn tại của relativeProduct trước khi phân tích
-    const relativeProduct = req.body.relativeProduct
-      ? JSON.parse(req.body.relativeProduct)
-      : []; // Phân tích relativeProduct, mặc định là mảng rỗng
-
     // Tạo sản phẩm mới
     const record = new Product({
       productCode,
       productName,
-      description: req.body.description,
-      price: req.body.price,
-      discountPercentage: req.body.discountPercentage,
-      stockQuantity: req.body.stockQuantity,
-      productStatus: req.body.productStatus,
-      imageURLs: req.imageUrls ? req.imageUrls : [],
-      category: req.body.category, // Kiểm tra nếu có category
-      tag, // Gán tag
-      brand: req.body.brand, // Gán brand
-      relativeProduct, // Gán relativeProduct
-      slug: req.body.slug, // Gán slug
+      description,
+      productStatus,
+      imageURLs: req.imageUrls || [],
+      category, // Lưu category nếu có
+      tag, // Lưu tag nếu có
+      specs, // Lưu specs nếu có
+      brand, // Lưu brand nếu có
+      relativeProduct, // Lưu relativeProduct nếu có
+      slug,
     });
 
+    // Lưu sản phẩm vào cơ sở dữ liệu
     const savedProduct = await record.save();
 
     // Cập nhật thương hiệu
-    const brand = await Brand.findById(req.body.brand);
-    await brand.updateOne({ $push: { products: savedProduct._id } });
+    if (brand) {
+      const brandRecord = await Brand.findById(brand);
+      if (brandRecord) {
+        await brandRecord.updateOne({ $push: { products: savedProduct._id } });
+      }
+    }
 
     // Cập nhật tag
     if (Array.isArray(tag) && tag.length > 0) {
       for (const tagId of tag) {
-        const tag = await Tag.findById(tagId);
-        if (tag) {
-          await tag.updateOne({ $push: { products: savedProduct._id } });
+        const tagRecord = await Tag.findById(tagId);
+        if (tagRecord) {
+          await tagRecord.updateOne({ $push: { products: savedProduct._id } });
         }
       }
     }
 
     res.status(200).json(savedProduct);
   } catch (error) {
-    console.log(error);
-    return res.status(400).json(error);
+    console.error("Lỗi khi tạo sản phẩm:", error);
+    return res
+      .status(400)
+      .json({ message: "Có lỗi xảy ra trong quá trình tạo sản phẩm", error });
   }
 };
 
