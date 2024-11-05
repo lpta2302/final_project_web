@@ -37,13 +37,13 @@ export const postProduct = async (req, res) => {
     // Kiểm tra nếu mã sản phẩm đã tồn tại
     const existingProductCode = await Product.findOne({ productCode });
     if (existingProductCode) {
-      return res.status(400).json({ message: "Mã sản phẩm đã tồn tại" });
+      return res.status(400).json(false);
     }
 
     // Kiểm tra nếu tên sản phẩm đã tồn tại
     const existingProductName = await Product.findOne({ productName });
     if (existingProductName) {
-      return res.status(400).json({ message: "Tên sản phẩm đã tồn tại" });
+      return res.status(400).json(false);
     }
 
     // Trong hàm postProduct
