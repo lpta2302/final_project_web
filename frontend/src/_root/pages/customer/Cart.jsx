@@ -27,7 +27,6 @@ import { Link, useNavigate } from "react-router-dom";
 import DiscountSection from "../../../components/Cart/usevoucher";
 import { useReadOwnCart } from "../../../api/queries";
 import {useAuthContext} from "../../../context/AuthContext"
-
 const Cart = () => {
   const navigate = useNavigate();
   const {user} = useAuthContext();
@@ -60,7 +59,6 @@ const Cart = () => {
 
   const [shippingFee, setShippingFee] = useState(0);
   const [discountValue, setDiscountValue] = useState(0);
-
   const {data} = useReadOwnCart(user.id);
   const isMobile = useMediaQuery("(max-width:600px)");
 
