@@ -778,3 +778,13 @@ export const useDeleteCartItem = () => {
     },
   });
 };
+export const useUpdateCart = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (cart) =>
+      updateRecord(customerCart.updateOwnCart(cart._id),cart),
+    onSuccess: () => {
+      queryClient.invalidateQueries([USE_READ_OWN_CART]);
+    },
+  });
+};

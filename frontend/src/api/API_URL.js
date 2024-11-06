@@ -17,7 +17,8 @@ export const customer_url = {
     cart: {
         addItem: () => '/cart/add',
         deleteItem: () => '/cart/delete',
-        getOwnCart: (id) => '/cart/showCart/' + id
+        getOwnCart: (id) => '/cart/showCart/' + id,
+        updateOwnCart: (id) => '/cart/my-cart/' + id
     },
     brand: {
         getAllBrand: () => '/client/brand/',
