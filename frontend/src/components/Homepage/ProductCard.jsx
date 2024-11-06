@@ -24,7 +24,7 @@ const ProductCard = ({ product, handleToggleFavorite, isFavorite }) => {
       }}
     >
       <Link
-        to={`/product/${product.slug}`}
+        to={`/product/${product._id}`}
         style={{ textDecoration: "none", color: "inherit" }}
       >
         <CardMedia
