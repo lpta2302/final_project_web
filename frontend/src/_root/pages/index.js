@@ -14,6 +14,7 @@ import ManageOrder from './admin/ManageOrder'
 import ManageVoucher from './admin/ManageVoucher'
 import ManageCriteria from './admin/ManageCriteria'
 import CreateProduct from './admin/CreateProduct'
+import UpdateItem from './admin/UpdateItem'
 
 export {
     HomePage,
@@ -30,5 +31,6 @@ export {
     ManageOrder,
     ManageVoucher,
     ManageCriteria,
-    CreateProduct
+    CreateProduct,
+    UpdateItem
 };

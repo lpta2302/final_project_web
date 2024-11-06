@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import AuthProvider from "./context/AuthContext";
 import RootLayout from './_root/RootLayout';
-import { CreateProduct, HomePage, Profile } from './_root/pages';
+import { CreateProduct, HomePage, Profile, UpdateItem } from './_root/pages';
 import './globalStyle.css'
 import AdminLayout from './_root/AdminLayout';
 import AdminHomePage from './_root/pages/admin/AdminHomePage';
@@ -116,6 +116,7 @@ function App() {
                   <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
                 )}
                 <Route path="manage-product/create-product" element={<CreateProduct />} />
+                <Route path="manage-inventory/manage-item/" element={<UpdateItem/>} />
               </Route>
               <Route path="admin/login" element={<Login />} />
             </Routes>

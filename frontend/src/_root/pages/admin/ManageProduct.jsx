@@ -46,7 +46,7 @@ function ManageAccount() {
   const { data, isPending: isLoading } = useReadAllProductAdmin();
   const [dialogPayload, setDialogPayload] = useState({ state: false, id: null });
   
-  const { mutateAsync: deleteAccount } = useDeleteProduct();
+  const { mutateAsync: deleteProduct } = useDeleteProduct();
   // const { mutateAsync: updateAccountStatus } = useUpdateAccountStatus();
   const { data: searchResult } = useSearchProductAdmin(searchParam);
 
@@ -91,7 +91,7 @@ function ManageAccount() {
     }
 
 
-    await deleteAccount(id)
+    await deleteProduct(id)
     setRows(rows.filter((row) => row.accountCode !== id));
     setDialogPayload({ state: false, id: null });
   }

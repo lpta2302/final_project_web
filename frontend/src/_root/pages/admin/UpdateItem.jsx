@@ -3,12 +3,12 @@ import { DataGrid, GridActionsCellItem, GridEditInputCell, GridRowModes, GridToo
 import { PageContainer } from '@toolpad/core';
 import { useEffect, useState } from 'react';
 import DataGridConfirmDialog from '../../../components/dialogs/DataGridConfirmDialog.jsx';
-import { CustomEditCell, CustomGridToolbar, CustomPageContainer, ManagePageSearch, NumberInput, SplitButton } from "../../../components";
+import { CustomEditCell, CustomEditDropdownCell, CustomGridToolbar, CustomPageContainer, ManagePageSearch, NumberInput, SplitButton } from "../../../components";
 import { enqueueSnackbar as toaster } from 'notistack';
 import { Badge, Box, styled, Tooltip, tooltipClasses } from '@mui/material';
 import { Cancel, Delete, Edit, Save } from '@mui/icons-material';
 import { useCreateBrand, useCreateCategory, useCreateSpecification, useCreateSpecificationKey, useCreateTag, useDeleteBrand, useDeleteCategory, useDeleteSpecification, useDeleteSpecificationKey, useDeleteTag, useReadAllBrand, useReadAllCategory, useReadAllSpecificationAdmin, useReadAllSpecificationKeyAdmin, useReadAllTagAdmin, useSearchBrand, useSearchCategoryAdmin, useSearchSpecification, useSearchSpecificationKey, useSearchTagAdmin, useUpdateBrand, useUpdateCategory, useUpdateSpecification, useUpdateSpecificationKey, useUpdateTag } from '../../../api/queries.js';
-import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 const StyledBox = styled('div')(({ theme }) => ({
   '& .Mui-error': {
@@ -19,26 +19,13 @@ const StyledBox = styled('div')(({ theme }) => ({
 }));
 
 const columnFields = [
-  { field: 'specCode', headerName: 'SKU', flex:1, minWidth: 150, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true },
-  { field: 'price', min: 0, headerName: 'Đơn giá', flex:1, minWidth: 150, editable: true, type: 'number', renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true },
-  { field: 'discountPercentage', min: 0, headerName: 'Giảm giá (%)', flex:1, minWidth: 150, editable: true, 
-    type: 'number',
-    valueFormatter: (value) => {
-      if (value == null) {
-        return '';
-      }
-      return `${(value * 100).toLocaleString()} %`;
-    },
-    renderEditCell: (params) => (<CustomEditCell {...params} />)},
-  { field: 'stockQuantity', min: 0, headerName: 'Tồn kho', flex:1, minWidth: 150, editable: true, type: 'number', renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true },
-  { field: 'specifications', headerName: 'Thông số', flex:1, minWidth: 150, valueFormatter: (value) => {
-    if(value == null) return '';
-    return `${value?.length} Thông số`;
-  }}
-];
+  { field: 'key', flex:1, minWidth: 150, editable: true, valueFormatter: (value) => value ? value?.key : '', renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true },
+  { field: 'value', flex:1, minWidth: 150, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true },
+]
 
-function ManageInventory() {
-  const navigate = useNavigate();
+function UpdateItem() {
+  const location = useLocation();
+  const variant = location.state;
   const [updateCellError, setUpdateCellError] = useState({})
   const [rows, setRows] = useState()
   const [rowModesModel, setRowModesModel] = useState({})
@@ -48,23 +35,28 @@ function ManageInventory() {
 
   const [deleteDialogPayload, setDeleteDialogPayload] = useState({ state: false, id: null });
   const [updateDialogPayload, setUpdateDialogPayload] = useState({ state: false, id: null });
+  
+console.log(rows);
 
-
-
-  const { data, isLoading } = useReadAllSpecificationAdmin();
+  // const { data, isLoading } = useReadAllSpecificationAdmin();
   const { mutateAsync: updateCriterion } = useUpdateSpecification();
   const { mutateAsync: deleteRecord } = useDeleteSpecification();
   const { data: searchResult } = useSearchSpecification(searchParam);
-
-  console.log(rows);
-
+  const { data: specificationKeys, } = useReadAllSpecificationKeyAdmin();
 
   const breadcrumbs = [
     { path: '/', title: 'Home' },
     { path: '/manage-inventory', title: 'Quản lý kho hàng' },
+    { path: '/manage-item', title: 'Quản lý hàng hóa' },
   ]
 
-  useEffect(() => setRows(data), [data])
+  useEffect(() => {
+    columnFields[0].renderEditCell = (params) => (
+      <CustomEditDropdownCell {...params} options={specificationKeys.map(specKey => specKey.key)} />
+  );
+  }, [specificationKeys]);
+
+  useEffect(() => setRows(variant?.specifications), [variant])
 
   const handleEditCellProps = (arg) => {
     const { field, row, isRequired, props, type, min, max } = arg;
@@ -150,16 +142,12 @@ function ManageInventory() {
     }
   ];
 
-  console.log(rows);
-
-
-
   const handleRowEditStop = (params, event) => {
     event.defaultMuiPrevented = true;
   };
 
   const handleEditClick = (id) => () => {
-    navigate('manage-item', { state: rows?.find(row => row._id === id || row.id === id) })
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
   };
 
   const handleCancelClick = (id) => () => {
@@ -291,8 +279,7 @@ function ManageInventory() {
       />
       <StyledBox>
         <DataGrid
-          loading={isLoading}
-          getRowId={(row) => row._id ? row._id : row.id}
+          getRowId={(row) => row.key._id}
           rows={searchResult && searchValue ? searchResult : rows}
           columns={columns}
           editMode='row'
@@ -318,4 +305,4 @@ function ManageInventory() {
   )
 }
 
-export default ManageInventory
+export default UpdateItem

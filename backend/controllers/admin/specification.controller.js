@@ -7,7 +7,24 @@ const specController = {
   showSpec: async (req, res) => {
     try {
       const specsList = await Spec.find();
-      res.status(200).json(specsList);
+
+      const populatedSpecsList = await Promise.all(
+        specsList.map(async (spec) => {
+          const populatedSpecifications = await Promise.all(
+            spec.specifications.map(async (item) => {
+              // Fetch the SpecificationKey by ID in 'key'
+              const specificationKey = await specsKey.findById(item.key);
+              return {
+                key: specificationKey,  // replace key ID with full specificationKey document
+                value: item.value,
+              };
+            })
+          );
+          return { ...spec.toObject(), specifications: populatedSpecifications };
+        })
+      );
+
+      res.status(200).json(populatedSpecsList);
     } catch (err) {
       // Xử lý lỗi
       res.status(500).json(false);
