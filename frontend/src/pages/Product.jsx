@@ -22,14 +22,14 @@ import { Add, Remove, Favorite, FavoriteBorder } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
 import {
   useAddNewReview,
-  useReadProductDetail,
   useReadAllReviewsAdmin,
   useReadAllSpecificationKeyAdmin,
+  useReadProductDetailBySlug,
 } from "../api/queries";
 import moment from "moment";
 
 const Product = () => {
-  const { productId } = useParams();
+  const { slug } = useParams();
 
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -38,7 +38,7 @@ const Product = () => {
   const [reviewText, setReviewText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { data: productData, isLoading } = useReadProductDetail(productId);
+  const { data: productData, isLoading } = useReadProductDetailBySlug(slug);
   const { data: productReview, refetch } = useReadAllReviewsAdmin();
   const { mutateAsync: addReview } = useAddNewReview();
   const { data: specificationKeys } = useReadAllSpecificationKeyAdmin();
@@ -137,7 +137,7 @@ const Product = () => {
         <Link underline="hover" color="inherit" href="/">
           Trang chủ
         </Link>
-        <Link underline="hover" color="inherit" href="/products">
+        <Link underline="hover" color="inherit" href="/product">
           Sản phẩm
         </Link>
         <Typography color="text.primary">{product.productName}</Typography>

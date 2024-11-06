@@ -43,6 +43,7 @@ export const customer_url = {
         search: () => '/client/product/search',
         getProductByTag: (id) => '/client/product/tag/search/' + id,
         getDetailProduct: (id) => '/client/product/details/' + id,
+        getDetailProductBySlug: (slug) => '/client/product/details/slug/' + slug,
         getRelativeProducts: (id) => '/relative/' + id
     },
     wishList: {

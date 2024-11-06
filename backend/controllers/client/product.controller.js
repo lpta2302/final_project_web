@@ -96,6 +96,25 @@ const productController = {
       res.status(500).json(false);
     }
   },
+
+  getProductBySlug: async (req, res) => {
+    try {
+      const slug = req.params.slug;
+      console.log(slug);
+
+      const product = await Product.findOne({ slug: slug }).populate([
+        { path: "relativeProduct" },
+        { path: "tag" },
+        { path: "specs" },
+        { path: "category" },
+        { path: "brand", select: "brandCode brandName" }, // Replace with actual fields in the "Brand" schema
+      ]);
+
+      res.json(product);
+    } catch (error) {
+      res.json(false);
+    }
+  },
 };
 
 export default productController;

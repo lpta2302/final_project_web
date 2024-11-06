@@ -166,6 +166,14 @@ export const useReadProductDetail = (productId) => {
   });
 };
 
+export const useReadProductDetailBySlug = (slug) => {
+  return useQuery({
+    queryKey: [READ_PRODUCT_DETAIL, slug],
+    queryFn: () => readAll(customer_product_url.getDetailProductBySlug(slug)),
+    enabled: !!slug
+  });
+};
+
 export const useReadRelativeProducts = (productId) => {
   return useQuery({
     queryKey: [RELATIVE_PRODUCTS, productId],
