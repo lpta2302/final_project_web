@@ -21,18 +21,12 @@ export const index = async (req, res) => {
 // [POST] /products/postProduct
 export const postProduct = async (req, res) => {
   try {
+    console.log(req.body);
+
     // Kiểm tra mã và tên sản phẩm
-    const {
-      productCode,
-      productName,
-      price,
-      discountPercentage,
-      stockQuantity,
-      tags,
-      brand,
-      specCode,
-      specifications,
-    } = req.body;
+    const { productCode, productName, tag, brand, variations } = req.body;
+
+    console.log(variations);
 
     // Kiểm tra nếu mã sản phẩm đã tồn tại
     const existingProductCode = await Product.findOne({ productCode });
@@ -47,7 +41,8 @@ export const postProduct = async (req, res) => {
     }
 
     // Trong hàm postProduct
-    const parsedTags = tags ? JSON.parse(tags) : []; // Nếu tags là chuỗi JSON
+    const parsedTags = tag ? JSON.parse(tag) : []; // Nếu tags là chuỗi JSON
+
     const objectIdTags = parsedTags.map(
       (tag) => new mongoose.Types.ObjectId(tag)
     );
@@ -67,47 +62,49 @@ export const postProduct = async (req, res) => {
 
     const savedProduct = await newProduct.save();
 
-    let parsedSpecifications = [];
-    if (typeof specifications === "string") {
-      parsedSpecifications = JSON.parse(specifications); // Chuyển đổi từ JSON nếu là chuỗi
-    } else if (Array.isArray(specifications)) {
-      parsedSpecifications = specifications; // Nếu đã là mảng
-    }
+    console.log("Variations: " + variations);
+
+    const parsedVariations = Array.isArray(variations)
+      ? variations
+      : JSON.parse(variations || "[]") || [];
 
     // Tích hợp tạo Specification
-    if (
-      specCode &&
-      Array.isArray(parsedSpecifications) &&
-      parsedSpecifications.length > 0
-    ) {
-      // Kiểm tra tính hợp lệ của từng specification
-      const validSpecs = await Promise.all(
-        parsedSpecifications.map(async (spec) => {
-          const isValidKey = await specsKey.findById(spec.key);
-          return isValidKey ? { key: spec.key, value: spec.value } : null;
-        })
-      );
+    if (Array.isArray(parsedVariations) && parsedVariations.length > 0) {
+      // Kiểm tra tính hợp lệ của từng specification và tạo Specification riêng lẻ
+      for (let variation of parsedVariations) {
+        // Duyệt qua từng specification trong variation
+        const validSpecifications = await Promise.all(
+          variation.specifications.map(async (spec) => {
+            const isValidKey = await specsKey.findById(spec.key);
 
-      const filteredSpecs = validSpecs.filter((spec) => spec !== null);
+            // Trả về { key, value } nếu hợp lệ, ngược lại là null
+            return isValidKey ? { key: spec.key, value: spec.value } : null;
+          })
+        );
 
-      console.log("Tao Thao fil: " + filteredSpecs);
+        // Lọc ra các specification hợp lệ
+        const filteredSpecifications = validSpecifications.filter(
+          (spec) => spec !== null
+        );
 
-      // Nếu có ít nhất một specification hợp lệ, tạo mới Specification
-      if (filteredSpecs.length > 0) {
-        const newSpec = new Specs({
-          specCode,
-          specifications: filteredSpecs,
-          stockQuantity,
-          price,
-          products: savedProduct._id,
-          discountPercentage,
-        });
+        // Nếu có ít nhất một specification hợp lệ, tạo Specification mới
+        if (filteredSpecifications.length > 0) {
+          const newSpec = new Specs({
+            specCode: variation.specCode,
+            specifications: filteredSpecifications,
+            stockQuantity: variation.stockQuantity,
+            price: variation.price,
+            products: savedProduct._id,
+            discountPercentage: req.body.discountPercentage,
+          });
 
-        await newSpec.save();
+          await newSpec.save();
 
-        // Gán Specification mới tạo vào sản phẩm
-        await savedProduct.updateOne({ $push: { specs: newSpec._id } });
-        savedProduct.specs = newSpec._id;
+          savedProduct.specs.push(newSpec._id);
+
+          // Gán Specification mới tạo vào sản phẩm
+          await savedProduct.updateOne({ $push: { specs: newSpec._id } });
+        }
       }
     }
 
@@ -150,7 +147,6 @@ export const editProduct = async (req, res) => {
 
     const newImgUrl = req.imageUrls || [];
 
-
     if (newImgUrl.length > 0) {
       const oldImgUrl = existingProduct.imageURLs;
 
@@ -159,7 +155,7 @@ export const editProduct = async (req, res) => {
         const fileId = urlParams.searchParams.get("id");
         if (fileId) {
           // Gọi middleware xóa hình ảnh
-          await deleteFromDrive({ params: { fileId: fileId } }, res, () => { });
+          await deleteFromDrive({ params: { fileId: fileId } }, res, () => {});
         }
       }
 
@@ -231,7 +227,7 @@ export const deleteProduct = async (req, res) => {
       const fileId = urlParams.searchParams.get("id");
       if (fileId) {
         // Gọi middleware xóa hình ảnh
-        await deleteFromDrive({ params: { fileId: fileId } }, res, () => { });
+        await deleteFromDrive({ params: { fileId: fileId } }, res, () => {});
       }
     }
 
