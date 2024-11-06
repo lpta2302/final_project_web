@@ -60,8 +60,6 @@ export async function updateRecord(url, data) {
   try {
     const newData = (await axios.patch(url, data)).data;
 
-    console.log(newData);
-
     if (!newData) throw Error(newData);
 
     return newData;
