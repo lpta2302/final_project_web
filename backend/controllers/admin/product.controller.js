@@ -21,17 +21,12 @@ export const index = async (req, res) => {
 // [POST] /products/postProduct
 export const postProduct = async (req, res) => {
   try {
+    console.log(req.body);
+
     // Kiểm tra mã và tên sản phẩm
-    const {
-      productCode,
-      productName,
-      price,
-      discountPercentage,
-      stockQuantity,
-      tags,
-      brand,
-      variations,
-    } = req.body;
+    const { productCode, productName, tag, brand, variations } = req.body;
+
+    console.log(variations);
 
     // Kiểm tra nếu mã sản phẩm đã tồn tại
     const existingProductCode = await Product.findOne({ productCode });
@@ -46,7 +41,8 @@ export const postProduct = async (req, res) => {
     }
 
     // Trong hàm postProduct
-    const parsedTags = tags ? JSON.parse(tags) : []; // Nếu tags là chuỗi JSON
+    const parsedTags = tag ? JSON.parse(tag) : []; // Nếu tags là chuỗi JSON
+
     const objectIdTags = parsedTags.map(
       (tag) => new mongoose.Types.ObjectId(tag)
     );
@@ -65,6 +61,8 @@ export const postProduct = async (req, res) => {
     });
 
     const savedProduct = await newProduct.save();
+
+    console.log("Variations: " + variations);
 
     const parsedVariations = Array.isArray(variations)
       ? variations
@@ -149,7 +147,6 @@ export const editProduct = async (req, res) => {
 
     const newImgUrl = req.imageUrls || [];
 
-
     if (newImgUrl.length > 0) {
       const oldImgUrl = existingProduct.imageURLs;
 
@@ -158,7 +155,7 @@ export const editProduct = async (req, res) => {
         const fileId = urlParams.searchParams.get("id");
         if (fileId) {
           // Gọi middleware xóa hình ảnh
-          await deleteFromDrive({ params: { fileId: fileId } }, res, () => { });
+          await deleteFromDrive({ params: { fileId: fileId } }, res, () => {});
         }
       }
 
@@ -230,7 +227,7 @@ export const deleteProduct = async (req, res) => {
       const fileId = urlParams.searchParams.get("id");
       if (fileId) {
         // Gọi middleware xóa hình ảnh
-        await deleteFromDrive({ params: { fileId: fileId } }, res, () => { });
+        await deleteFromDrive({ params: { fileId: fileId } }, res, () => {});
       }
     }
 

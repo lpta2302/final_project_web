@@ -101,9 +101,9 @@ function CreateProduct() {
         productName,
         description,
         category: category?._id,
-        tag: JSON.stringify(tags.map(t=>t._id)),
+        tag: tags.map(t => t._id),
         brand: brand?._id,
-        specs: JSON.stringify(savedVariants),
+        variations: savedVariants,
         productStatus: 'active',
         files
       }
@@ -118,9 +118,9 @@ function CreateProduct() {
         productName,
         description,
         category: category?._id,
-        tag: JSON.stringify(tags),
+        tag: tags.map(t => t._id),
         brand: brand?._id,
-        specs: JSON.stringify(savedVariants),
+        variations: savedVariants,
         productStatus: 'active',
         files
       })
