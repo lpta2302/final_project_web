@@ -17,7 +17,8 @@ export const customer_url = {
     cart: {
         addItem: () => '/cart/add',
         deleteItem: () => '/cart/delete',
-        getOwnCart: (id) => '/cart/showCart/' + id
+        getOwnCart: (id) => '/cart/showCart/' + id,
+        updateOwnCart: (id) => '/cart/my-cart/' + id,
     },
     brand: {
         getAllBrand: () => '/client/brand/',
@@ -142,7 +143,7 @@ export const admin_url = {
     specificationKey: {
         getAllSpecificationKey: () => '/spec/specification-keys',
         addSpecificationKey: () => '/spec/specification-keys',
-        deleteSpecificationKey: (id) => '/spec/specification-keys/'+id,
-        updateSpecificationKey: (id) => '/spec/specification-keys/'+id
+        deleteSpecificationKey: (id) => '/spec/specification-keys/' + id,
+        updateSpecificationKey: (id) => '/spec/specification-keys/' + id
     }
 }

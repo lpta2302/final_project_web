@@ -12,16 +12,16 @@ import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied
 import { Link } from "react-router-dom";
 import DiscountSection from "../../../components/Cart/usevoucher";
 import {
-  useCreateCartItem,
-  useReadAllCart,
+  useAddCartItem,
+  useReadOwnCart,
   useUpdateCart,
 } from "../../../api/queries";
 import CartItem from "../../../components/Cart/CartItem";
 
 const Cart = () => {
   // Sử dụng hook để đọc dữ liệu giỏ hàng
-  const { data: fetchedCartItems, error, isLoading } = useReadAllCart();
-  const createCartItem = useCreateCartItem();
+  const { data: fetchedCartItems, error, isLoading } = useReadOwnCart();
+  const createCartItem = useAddCartItem();
   const updateCart = useUpdateCart();
 
   const [cartItems, setCartItems] = useState([]);

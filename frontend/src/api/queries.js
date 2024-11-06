@@ -731,3 +731,14 @@ export const useDeleteCartItem = () => {
     },
   });
 };
+
+export const useUpdateCart = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () =>
+      updateRecord(customerCart.updateOwnCart()),
+    onSuccess: () => {
+      queryClient.invalidateQueries([USE_READ_OWN_CART]);
+    },
+  });
+};
