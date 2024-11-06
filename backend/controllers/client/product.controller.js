@@ -4,7 +4,7 @@ const productController = {
   // [GET] /client/product
   showProduct: async (req, res) => {
     try {
-      const products = await Product.find();
+      const products = await Product.find().populate("tag category specs");
 
       res.status(200).json(products);
     } catch (err) {
@@ -94,6 +94,25 @@ const productController = {
       res.status(200).json(products);
     } catch (err) {
       res.status(500).json(false);
+    }
+  },
+
+  getProductBySlug: async (req, res) => {
+    try {
+      const slug = req.params.slug;
+      console.log(slug);
+
+      const product = await Product.findOne({ slug: slug }).populate([
+        { path: "relativeProduct" },
+        { path: "tag" },
+        { path: "specs" },
+        { path: "category" },
+        { path: "brand", select: "brandCode brandName" }, // Replace with actual fields in the "Brand" schema
+      ]);
+
+      res.json(product);
+    } catch (error) {
+      res.json(false);
     }
   },
 };

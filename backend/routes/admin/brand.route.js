@@ -1,5 +1,6 @@
 import { Router } from "express";
 import brandController from "../../controllers/admin/brand.controller.js";
+import { isAdmin } from "../../middleware/authMiddleware.js";
 
 const brandRoutes = Router();
 // Tìm kiếm brand

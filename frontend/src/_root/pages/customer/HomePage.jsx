@@ -53,8 +53,12 @@ const HomePage = ({ handleAddToCart }) => {
     isError,
     error,
   } = useReadAllProduct();
+  // const products
 
-  const theme = useTheme();
+  // useEffect(() => {
+  //   set
+  // }, []);
+
 
   const handleToggleFavorite = (product) => {
     if (!isLoggedIn) {

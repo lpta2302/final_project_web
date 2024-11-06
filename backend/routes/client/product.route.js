@@ -13,6 +13,8 @@ productRouter.get("/search", productController.searchProduct);
 // Xem chi tiết sản phẩm
 productRouter.get("/details/:id", productController.showDetailsProduct);
 
+productRouter.get("/details/slug/:slug", productController.getProductBySlug);
+
 // Xem sản phẩm
 productRouter.get("/", productController.showProduct);
 

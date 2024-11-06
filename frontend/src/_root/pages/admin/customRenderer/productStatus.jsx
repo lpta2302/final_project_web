@@ -16,7 +16,7 @@ import {
 import PropTypes from 'prop-types';
 import { ErrorOutlined, HourglassTopOutlined, WarningOutlined } from '@mui/icons-material';
 
-export const STATUS_OPTIONS = ['available', 'sold out', 'unavailable', 'incoming'];
+export const STATUS_OPTIONS = ['available', 'out of stock', 'unavailable', 'incoming'];
 
 const StyledChip = styled(Chip)(({ theme }) => ({
   justifyContent: 'left',
@@ -24,19 +24,19 @@ const StyledChip = styled(Chip)(({ theme }) => ({
     color: 'inherit',
   },
   '&.incoming': {
-    color: (theme.vars || theme).palette.secondary.dark,
+    color: (theme.vars || theme).palette.secondary.main,
     border: `1px solid ${(theme.vars || theme).palette.secondary.main}`,
   },
   '&.available': {
-    color: (theme.vars || theme).palette.success.dark,
+    color: (theme.vars || theme).palette.success.main,
     border: `1px solid ${(theme.vars || theme).palette.success.main}`,
   },
   '&.unavailable': {
-    color: (theme.vars || theme).palette.warning.dark,
+    color: (theme.vars || theme).palette.warning.main,
     border: `1px solid ${(theme.vars || theme).palette.warning.main}`,
   },
-  '&.sold-out': {
-    color: (theme.vars || theme).palette.error.dark,
+  '&.out-of-stock': {
+    color: (theme.vars || theme).palette.error.main,
     border: `1px solid ${(theme.vars || theme).palette.error.main}`,
   },
 }));
@@ -45,7 +45,7 @@ const Status = (props) => {
   const { status } = props;
 
   let icon = null;
-  if (status === 'sold out') {
+  if (status === 'out of stock') {
     icon = <ErrorOutlined className="icon" />;
   } else if (status === 'available') {
     icon = <DoneIcon className="icon" />;
@@ -57,7 +57,7 @@ const Status = (props) => {
 
   return (
     <StyledChip
-      className={status.replace(' ','-')}
+      className={status.replace(/\s/g,'-')}
       icon={icon}
       size="small"
       label={status}
@@ -117,7 +117,7 @@ function EditStatus(props) {
         let IconComponent = null;
         if (option === 'available') {
           IconComponent = DoneIcon;
-        } else if (option === 'sold out') {
+        } else if (option === 'out of stock') {
           IconComponent = ErrorOutlined;
         } else if (option === 'unavailable') {
           IconComponent = WarningOutlined;

@@ -1,5 +1,8 @@
 import Carousel from "../../models/carousel.model.js";
 
+// Middleware
+import deleteFromDrive from "../../middleware/delToDrive.js";
+
 const carouselController = {
   // [POST] /carousel/
   addCarousel: async (req, res) => {
@@ -12,7 +15,11 @@ const carouselController = {
         return false;
       }
 
-      const carousel = await Carousel(req.body);
+      const carousel = await Carousel({
+        title: req.body.title,
+        imgUrl: req.imageUrls[0],
+        slug: req.body.slug,
+      });
       await carousel.save();
 
       return res.status(200).json(carousel);
@@ -35,7 +42,18 @@ const carouselController = {
   // [DELETE] /carousel/:id
   delCarousel: async (req, res) => {
     try {
-      const carousel = await Carousel.findByIdAndDelete(req.params.id);
+      // Tìm sản phẩm theo ID
+      const carosel = await Carousel.findById(req.params.id);
+
+      // Lấy danh sách hình ảnh để xóa
+      const urlParams = new URL(carosel.imgUrl);
+      const fileId = urlParams.searchParams.get("id");
+      if (fileId) {
+        // Gọi middleware xóa hình ảnh
+        await deleteFromDrive({ params: { fileId: fileId } }, res, () => {});
+      }
+
+      await Carousel.findByIdAndDelete(req.params.id);
 
       return res.status(200).json(true);
     } catch (err) {
@@ -46,13 +64,44 @@ const carouselController = {
   // [PATCH] /carousel/:id
   updateCarousel: async (req, res) => {
     try {
-      const carousel = await Carousel.findOneAndUpdate(
-        { _id: req.params.id }, // Điều kiện tìm kiếm
-        req.body,
-        { new: true } // Trả về document đã được cập nhật
+      const carosel = await Carousel.findById(req.params.id);
+
+      const newImgUrl = req.imageUrls[0];
+
+      if (newImgUrl) {
+        // Kiểm tra nếu `carousel.imgUrl` không phải là `null` trước khi xử lý
+
+        console.log("BOdoi: " + carosel.imgUrl);
+        if (carosel.imgUrl) {
+          const urlParams = new URL(carosel.imgUrl);
+          const fileId = urlParams.searchParams.get("id");
+
+          if (fileId) {
+            // Gọi middleware xóa hình ảnh từ Google Drive
+            await deleteFromDrive(
+              { params: { fileId: fileId } },
+              res,
+              () => {}
+            );
+          }
+        }
+
+        // Gán hình ảnh mới cho `carousel.imgUrl`
+        carosel.imgUrl = newImgUrl;
+      }
+
+      const result = await Carousel.findByIdAndUpdate(
+        req.params.id,
+        {
+          ...req.body,
+          imgUrl: carosel.imgUrl, // Cập nhật hình ảnh
+        },
+        {
+          new: true, // Trả về sản phẩm đã cập nhật
+        }
       );
 
-      return res.status(200).json(carousel);
+      return res.status(200).json(result);
     } catch (err) {
       return res.status(500).json(false);
     }
