@@ -1,12 +1,12 @@
 import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
-import { renderEditProductStatus, renderProductStatus, STATUS_OPTIONS } from './customRenderer/productStatus.jsx';
+import { renderProductStatus } from './customRenderer/productStatus.jsx';
 import { useEffect, useState } from 'react';
 import DataGridConfirmDialog from '../../../components/dialogs/DataGridConfirmDialog.jsx';
-import { CustomGridToolbar, CustomPageContainer, FilterDrawer, ManagePageSearch } from "../../../components";
+import { CustomGridToolbar, CustomPageContainer, ManagePageSearch } from "../../../components";
 import { enqueueSnackbar as toaster } from 'notistack';
-import { Box, Button, ButtonGroup, Drawer, IconButton, useTheme } from '@mui/material';
-import { Delete, Filter, FilterAlt, FilterAltOff } from '@mui/icons-material';
-import { useDeleteProduct, useReadAllProduct, useReadAllProductAdmin, useSearchProductAdmin } from '../../../api/queries.js';
+import { Box } from '@mui/material';
+import { Delete } from '@mui/icons-material';
+import { useDeleteProduct, useReadAllProductAdmin, useReadAllReviewsAdmin, useSearchProductAdmin } from '../../../api/queries.js';
 import { useNavigate } from 'react-router-dom';
 import renderImageSamples from './customRenderer/renderImageSamples.jsx';
 
@@ -20,35 +20,42 @@ const columnFields = [
     sortable: false,
     filterable: false,
    },
-  { field: 'productCode', headerName: 'Id', width: 150 },
-  { field: 'productName', headerName: 'Tên sản phẩm', flex: 1 },
-  { field: 'description', headerName: 'Mô tả', width: 300 },
+  { field: 'productCode', headerName: 'Id', width: 100 },
+  { field: 'productName', headerName: 'Tên sản phẩm', flex: 1, minWidth: 150 },
+  { field: 'description', headerName: 'Mô tả', width: 150 },
   {
     field: 'productStatus',
     headerName: 'Trạng thái',
     width: 150,
     renderCell: renderProductStatus,
-    renderEditCell: renderEditProductStatus,
     type: 'singleSelect',
-    valueOptions: STATUS_OPTIONS,
-    editable: true,
     align: 'center'
   },
 ]
 
-function ManageAccount() {
+function ManageProduct() {
   const navigate = useNavigate()
   const [rows, setRows] = useState()
   const [searchValue, setSearchValue] = useState('')
   const [searchParam, setSearchParam] = useState({})
+  const [detailId, setDetailId] = useState()
 
   
   const { data, isPending: isLoading } = useReadAllProductAdmin();
   const [dialogPayload, setDialogPayload] = useState({ state: false, id: null });
   
-  const { mutateAsync: deleteProduct } = useDeleteProduct();
-  // const { mutateAsync: updateAccountStatus } = useUpdateAccountStatus();
+  const { mutateAsync: deleteProduct, isPending: isDeleting } = useDeleteProduct();
   const { data: searchResult } = useSearchProductAdmin(searchParam);
+  
+  const { data: reviews } = useReadAllReviewsAdmin(detailId);
+  console.log(data);
+  useEffect(() => {
+    if(data){
+      setDetailId(data[0].specs[2])
+    }
+  }, [data]);
+  console.log(reviews);
+  
 
   const breadcrumbs = [
     { path: '/', title: 'Home' },
@@ -56,7 +63,7 @@ function ManageAccount() {
   ]
 
   useEffect(() => setRows(data?.map(item=>({...item, category:item?.category?.categoryName}))), [data])
-
+  
   const columns = [
     ...columnFields,
     {
@@ -115,9 +122,13 @@ function ManageAccount() {
 
     const param = {};
     if (searchValue.startsWith('#')) {
-      param[columnFields[0].field] = searchValue.substring(1)
-    } else {
-      param[columnFields[1].field] = searchValue
+      param[columnFields[1].field] = searchValue.substring(1)
+    }
+    else if(searchValue.startsWith('&')){
+      param[columnFields[4].field] = searchValue.substring(1)
+    } 
+    else {
+      param[columnFields[2].field] = searchValue
     }
     setSearchParam(param)
   }
@@ -126,9 +137,13 @@ function ManageAccount() {
     setTimeout(() => {
       const param = {};
       if (searchValue.startsWith('#')) {
-        param[columnFields[0].field] = searchValue.substring(1)
-      } else {
-        param[columnFields[1].field] = searchValue
+        param[columnFields[1].field] = searchValue.substring(1)
+      }
+      else if(searchValue.startsWith('&')){
+        param[columnFields[4].field] = searchValue.substring(1)
+      } 
+      else {
+        param[columnFields[2].field] = searchValue
       }
       setSearchParam(param)
     }, 1500);
@@ -153,6 +168,7 @@ function ManageAccount() {
         />
       </Box>
       <DataGridConfirmDialog
+        isPending={isDeleting}
         onClick={handleDeleteClick}
         state={dialogPayload.state}
         title="Xác nhận xóa?"
@@ -181,4 +197,4 @@ function ManageAccount() {
   )
 }
 
-export default ManageAccount
+export default ManageProduct

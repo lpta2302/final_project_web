@@ -113,7 +113,7 @@ function EditStatus({ id, value, field, options = STATUS_TYPES }) {
             <ListItemIcon sx={{ minWidth: 36 }}>
               {IconComponent && <IconComponent fontSize="small" />}
             </ListItemIcon>
-            <ListItemText primary={option.label} sx={{ overflow: 'hidden', textTransform: 'capitalize' }} />
+            <ListItemText primary={option.label} sx={{overflow: 'hidden', textTransform: 'capitalize' }} />
           </MenuItem>
         );
       })}

@@ -1,17 +1,18 @@
 
-import { Accordion, AccordionSummary, Box, Button, Divider, FormControl, FormHelperText, Grid2, IconButton, TextField, Typography } from "@mui/material"
+import { Accordion, AccordionSummary, Box, Button, Divider, FormHelperText, Grid2, IconButton, TextField, Typography } from "@mui/material"
 import { CustomTypography, NumberInput } from "../../../components"
 import PageToolbar from "../../../components/pageContainer/PageToolbar"
 import CustomPageContainer from "../../../components/pageContainer/CustomPageContainer"
 import { AspectRatio, Autocomplete, createFilterOptions, CssVarsProvider, extendTheme } from '@mui/joy'
 import { useCreateProduct, useReadAllBrandAdmin, useReadAllCategory, useReadAllSpecificationKeyAdmin, useReadAllTagAdmin } from "../../../api/queries"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import SpecificationDataGrid from "./createProduct/SpecificationDataGrid"
-import { ArrowDropDown, Block, Delete, DeleteOutlined, Image } from "@mui/icons-material"
+import { ArrowDropDown, Delete, DeleteOutlined } from "@mui/icons-material"
 import { FileUploader } from 'react-drag-drop-files'
 import { AddImage } from "../../../assets"
 import { enqueueSnackbar as toaster } from "notistack"
 import SKUField from "./createProduct/SKUField"
+import { useNavigate } from "react-router-dom"
 
 const breadcrumbs = [
   { path: '/', title: 'Home' },
@@ -48,6 +49,7 @@ const initErrorState = {
 const fileTypes = ["JPG", "PNG", "JEPG", "WEBP", "MP4"];
 
 function CreateProduct() {
+  const navigate = useNavigate();
   const [variants, setVariants] = useState([{ price: 0, stockQuantity:0, specifications: [], specCode: '' }])
   const [productCode, setProductCode] = useState('')
   const [productName, setProductName] = useState('');
@@ -126,6 +128,7 @@ function CreateProduct() {
       })
     }
 
+    navigate(-1);
   }
 
   const handleChangeFile = (file) => {
@@ -137,10 +140,6 @@ function CreateProduct() {
     setFiles(prev => prev.filter((e, i) => i != showingFile));
     setShowingFile(prev => Math.max(0, --prev));
   }
-
-  useEffect(() => {
-    console.log(files)
-  }, [files]);
 
   return (
     <CustomPageContainer
