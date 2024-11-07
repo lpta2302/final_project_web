@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Spec from "../../models/specification.model.js";
 import Product from "../../models/product.model.js";
 import specsKey from "../../models/specsKey.model.js";
@@ -95,75 +96,69 @@ const specController = {
   // [GET] /spec/search
   searchSpec: async (req, res) => {
     try {
-      // Lấy từ khóa tìm kiếm (nếu không có thì mặc định là chuỗi rỗng)
-      const search = req.query.search || "";
+      let filter = {};
 
-      // Điều kiện lọc và sắp xếp
-      let sort = req.query.sort || "specCode"; // Mặc định sắp xếp theo mã thông số kỹ thuật (specCode)
-      let stockRange = req.query.stockRange || "All"; // Phạm vi số lượng tồn kho
-      let priceRange = req.query.priceRange || "All"; // Phạm vi giá
+      // Lấy giá trị từ query params
+      const { search, stockRange, priceRange } = req.query;
 
-      // Cấu trúc dữ liệu sắp xếp (tăng dần hoặc giảm dần)
-      req.query.sort ? (sort = req.query.sort.split(",")) : (sort = [sort]);
+      // Điều kiện tìm kiếm trong specCode hoặc specifications nếu có từ khóa search
+      if (search) {
+        const specKeyIds = await mongoose
+          .model("SpecificationKey")
+          .find({
+            key: { $regex: search, $options: "i" },
+          })
+          .select("_id");
 
-      let sortBy = {};
-      if (sort[1]) {
-        sortBy[sort[0]] = sort[1];
-      } else {
-        sortBy[sort[0]] = "asc"; // Mặc định sắp xếp tăng dần
+        filter.$or = [
+          { specCode: { $regex: search, $options: "i" } },
+          {
+            "specifications.key": { $in: specKeyIds.map((doc) => doc._id) },
+          },
+          {
+            "specifications.value": { $regex: search, $options: "i" },
+          },
+        ];
       }
 
       // Điều kiện lọc cho số lượng tồn kho (nếu có phạm vi cụ thể)
-      let stockQuery = {};
-      if (stockRange !== "All") {
-        const [minStock, maxStock] = stockRange.split("-");
-        stockQuery = {
-          stockQuantity: { $gte: parseInt(minStock), $lte: parseInt(maxStock) },
-        };
+      if (stockRange && stockRange !== "All") {
+        const [minStock, maxStock] = stockRange.split("-").map(Number);
+        filter.stockQuantity = {};
+        if (!isNaN(minStock)) {
+          filter.stockQuantity.$gte = minStock;
+        }
+        if (!isNaN(maxStock)) {
+          filter.stockQuantity.$lte = maxStock;
+        }
       }
 
       // Điều kiện lọc cho giá (nếu có phạm vi cụ thể)
-      let priceQuery = {};
-      if (priceRange !== "All") {
+      if (priceRange && priceRange !== "All") {
         const [minPrice, maxPrice] = priceRange.split("-").map(Number);
-        priceQuery = {
-          price: {
-            $gte: minPrice,
-            $lte: maxPrice,
-          },
-        };
+        filter.price = {};
+        if (!isNaN(minPrice)) {
+          filter.price.$gte = minPrice;
+        }
+        if (!isNaN(maxPrice)) {
+          filter.price.$lte = maxPrice;
+        }
       }
 
-      // Tìm kiếm trong specCode hoặc kiểm tra specifications tồn tại
-      const _specifications = await Spec.find({
-        $or: [
-          { specCode: { $regex: search, $options: "i" } },
-          {
-            specifications: {
-              $exists: true,
-              $ne: null,
-            },
-          },
-        ],
-        ...stockQuery,
-        ...priceQuery,
-      }).sort(sortBy);
+      // Sắp xếp theo query param hoặc mặc định là specCode tăng dần
+      let sortBy = {};
+      const sort = req.query.sort ? req.query.sort.split(",") : ["specCode"];
+      sortBy[sort[0]] = sort[1] === "desc" ? -1 : 1;
 
-      // Lọc kết quả sau khi tìm kiếm
-      const filteredSpecifications = _specifications.filter((spec) => {
-        const specsMap = spec.specifications; // Trường Map
-        return Array.from(specsMap).some(([key, value]) => {
-          return (
-            key.toLowerCase().includes(search.toLowerCase()) ||
-            value.toLowerCase().includes(search.toLowerCase())
-          );
-        });
-      });
+      console.log("Sort By:", sortBy);
 
-      // Trả về kết quả tìm kiếm
-      res.status(200).json(filteredSpecifications);
+      // Tìm kiếm và sắp xếp với bộ lọc
+      const specifications = await Spec.find(filter).sort(sortBy);
+
+      // Trả về kết quả
+      res.status(200).json(specifications);
     } catch (err) {
-      // Xử lý lỗi
+      console.error(err); // Log lỗi để kiểm tra chi tiết
       res.status(500).json(false);
     }
   },

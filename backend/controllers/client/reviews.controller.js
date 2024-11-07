@@ -8,7 +8,6 @@ const reviewController = {
     try {
       const order = await Order.findOne({
         userId: req.body.clientId,
-        processStatus: "pending",
       });
 
       console.log("Order: " + order);
