@@ -5,7 +5,7 @@ const joyTheme = extendTheme();
 
 const CustomEditDropdownCell = (props) => {
 
-  const { id, value, field, options } = props;
+  const { id, value, field, options,labelField } = props;
   const apiRef = useGridApiContext();
 
   const handleChange = (event, newValue) => {
@@ -20,7 +20,7 @@ const CustomEditDropdownCell = (props) => {
 
   return (
     <CssVarsProvider theme={joyTheme}>
-      <Autocomplete options={options} value={value} onChange={handleChange} />
+      <Autocomplete options={options} value={value} getOptionLabel={(value)=>typeof value === 'string' ? value : value[labelField]} onChange={handleChange} />
     </CssVarsProvider>
   );
 };

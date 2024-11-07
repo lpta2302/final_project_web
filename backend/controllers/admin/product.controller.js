@@ -21,6 +21,8 @@ export const index = async (req, res) => {
 // [POST] /products/postProduct
 export const postProduct = async (req, res) => {
   try {
+    console.log(req.body);
+
     // Kiểm tra mã và tên sản phẩm
     const { productCode, productName, tags, brand, variations } = req.body;
 
@@ -37,7 +39,8 @@ export const postProduct = async (req, res) => {
     }
 
     // Trong hàm postProduct
-    const parsedTags = tags ? JSON.parse(tags) : []; // Nếu tags là chuỗi JSON
+    const parsedTags = tag ? JSON.parse(tag) : []; // Nếu tags là chuỗi JSON
+
     const objectIdTags = parsedTags.map(
       (tag) => new mongoose.Types.ObjectId(tag)
     );
@@ -56,6 +59,8 @@ export const postProduct = async (req, res) => {
     });
 
     const savedProduct = await newProduct.save();
+
+    console.log("Variations: " + variations);
 
     const parsedVariations = Array.isArray(variations)
       ? variations
@@ -122,6 +127,7 @@ export const postProduct = async (req, res) => {
     res.status(200).json(savedProduct);
   } catch (error) {
     console.log(error);
+
     return res.status(400).json(error);
   }
 };
@@ -292,9 +298,15 @@ export const deleteProduct = async (req, res) => {
 export const detail = async (req, res) => {
   try {
     const id = req.params.id;
-    console.log(id);
 
-    const record = await Product.findOne({ _id: id });
+    const record = await Product.findOne({ _id: id })
+      .populate("tag category")
+      .populate({
+        path: "specs",
+        populate: {
+          path: "specifications.key",
+        },
+      });
 
     res.status(200).json(record);
   } catch (error) {
@@ -432,7 +444,6 @@ export const statisticBrand = async (req, res) => {
     const brand = await Brand.findOne({ _id: brandId }).populate("products");
     res.status(200).json(brand.products);
   } catch (error) {
-    console.log(error);
     res.status(500).json(false);
   }
 };

@@ -51,6 +51,7 @@ const elements = {
       width="100%"
       gap={1}
       justifyContent='space-between'
+      margin={1}
     >
       {Object.keys(items).map((key, index) => {
         const { label, value, onChange, placeholder } = items[key];

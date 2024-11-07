@@ -2,7 +2,12 @@ import {
   AccountBoxOutlined,
   CategoryOutlined,
   Dashboard,
+  Done,
+  DoNotDisturbAltOutlined,
+  Drafts,
+  HourglassBottomOutlined,
   WarehouseOutlined,
+  Warning,
 } from "@mui/icons-material";
 import {
   BoxIcon,
@@ -105,3 +110,31 @@ export const customerNav = [
     element: <Cart />,
   },
 ];
+
+export const productStatuses = {
+  available: {
+    label: 'available',
+    color: 'success',
+    icon: Done,
+  },
+  unavailable: {
+    label: 'unavailable',
+    color: 'error',
+    icon: DoNotDisturbAltOutlined,
+  },
+  outOfStock: {
+    label: 'out of stock',
+    color: 'warning',
+    icon: Warning,
+  },
+  incoming: {
+    label: 'incoming',
+    color: 'secondary',
+    icon: HourglassBottomOutlined,
+  },
+  draft: {
+    label: 'draft',
+    color: 'whitesmoke',
+    icon: Drafts,
+  },
+}

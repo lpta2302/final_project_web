@@ -1,12 +1,13 @@
 import { DataGrid, GridActionsCellItem, GridToolbar } from '@mui/x-data-grid';
 import { renderEditCustomerStatus, renderCustomerStatus, STATUS_OPTIONS } from './customRenderer/customerStatus.jsx';
 import { useDeleteAccount, useReadAllAccount, useReadAllOrdersAdmin, useUpdateAccountStatus } from '../../../api/queries.js';
-import { Delete } from '@mui/icons-material';
+import { CreditCard, Delete, Done, DoNotDisturbAltOutlined, HourglassTopOutlined, LocalShipping, Money, Pending } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
 import DataGridConfirmDialog from '../../../components/dialogs/DataGridConfirmDialog.jsx';
 import { CustomPageContainer, ManagePageSearch } from "../../../components";
 import { enqueueSnackbar as toaster } from 'notistack';
 import { Box } from '@mui/material';
+import { renderCustomStatus } from './customRenderer/customStatusRender.jsx';
 
 // {"_id":"6718dc7a3010027ae58c30d1",
 //   "userId":"670dd3f0602cc40efb3bc78c",
@@ -21,6 +22,58 @@ import { Box } from '@mui/material';
 //   "updatedAt":"2024-10-23T11:22:34.357Z",
 //   "__v":0}
 
+const paymentStatus = {
+  paid: {
+    label: 'paid',
+    color: 'success',
+    icon: Done,
+  },
+  unpaid: {
+    label: 'unpaid',
+    color: 'error',
+    icon: DoNotDisturbAltOutlined,
+  },
+};
+const paymentMethod = {
+  credit_card: {
+    label: 'credit_card',
+    color: 'secondary',
+    icon: CreditCard,
+  },
+  cash: {
+    label: 'cash',
+    color: 'warning',
+    icon: Money,
+  },
+};
+const processStatus = {
+  completed: {
+    label: 'completed',
+    color: 'success',
+    icon: Done,
+  },
+  canceled: {
+    label: 'cancel',
+    color: 'error',
+    icon: DoNotDisturbAltOutlined,
+  },
+  pending: {
+    label: 'pending',
+    color: 'secondary',
+    icon: Pending,
+  },
+  shipping: {
+    label: 'shipping',
+    color: 'warning',
+    icon: LocalShipping,
+  },
+  processing: {
+    label: 'processing',
+    color: 'info',
+    icon: HourglassTopOutlined,
+  },
+};
+
 function ManageOrder() {
   const [searchValue,setSearchValue] = useState('')
   const [rows, setRows] = useState()
@@ -29,6 +82,7 @@ function ManageOrder() {
   const { mutateAsync: deleteAccount } = useDeleteAccount();
   const { mutateAsync: updateAccountStatus } = useUpdateAccountStatus();
   
+console.log(rows);
 
   const breadcrumbs = [
     { path: '/', title: 'Home' },
@@ -57,25 +111,18 @@ function ManageOrder() {
       width: 150, valueFormatter:(value)=> new Date(value).toLocaleString() 
     },
     {
-      field: 'paymentMethod', headerName: 'Phương thức TT', width: 150, renderCell: renderCustomerStatus,
+      field: 'paymentMethod', headerName: 'Phương thức TT', width: 150, renderCell: (params)=>renderCustomStatus(params,paymentMethod),
       renderEditCell: renderEditCustomerStatus,
       type: 'singleSelect',
-      valueOptions: STATUS_OPTIONS,
-      editable: true,
     },
     {
-      field: 'paymentStatus', headerName: 'Trạng thái TT', width: 150, renderCell: renderCustomerStatus,
-      renderEditCell: renderEditCustomerStatus,
+      field: 'paymentStatus', headerName: 'Trạng thái TT', width: 150, renderCell: (params)=>renderCustomStatus(params,paymentStatus),
       type: 'singleSelect',
-      valueOptions: STATUS_OPTIONS,
-      editable: true,
     },
     {
-      field: 'processStatus', headerName: 'Trạng thái đơn', width: 150, renderCell: renderCustomerStatus,
+      field: 'processStatus', headerName: 'Trạng thái đơn', width: 150, renderCell: (params)=>renderCustomStatus(params,processStatus),
       renderEditCell: renderEditCustomerStatus,
       type: 'singleSelect',
-      valueOptions: STATUS_OPTIONS,
-      editable: true,
     },
     {
       field: 'actions',

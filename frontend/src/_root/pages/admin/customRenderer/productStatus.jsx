@@ -57,7 +57,7 @@ const Status = (props) => {
 
   return (
     <StyledChip
-      className={status.replace(/\s/g,'-')}
+      className={status.replace(/\s/g, '-')}
       icon={icon}
       size="small"
       label={status}
@@ -121,7 +121,7 @@ function EditStatus(props) {
           IconComponent = ErrorOutlined;
         } else if (option === 'unavailable') {
           IconComponent = WarningOutlined;
-        } else if(option === 'incoming'){
+        } else if (option === 'incoming') {
           IconComponent = HourglassTopOutlined;
         }
 

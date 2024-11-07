@@ -1,8 +1,9 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
+import LoadingButton from '@mui/lab/LoadingButton'
 
-function DataGridConfirmDialog({ state, onClick, title, content }) {
+function DataGridConfirmDialog({ state, onClick, title, content, isPending }) {
     useEffect(() => {
         const handleKeyDown = async (e) => {
           if (e.key === 'Enter') {
@@ -36,7 +37,9 @@ function DataGridConfirmDialog({ state, onClick, title, content }) {
                 <Button sx={{ mr: '0.5rem' }} variant='outlined' onClick={() => onClick(false)}>
                     No
                 </Button>
-                <Button variant='contained' onClick={() => onClick(true)} autoFocus>Yes</Button>
+                <LoadingButton loading={isPending} variant='contained' onClick={() => onClick(true)} autoFocus>
+                  Yes
+                </LoadingButton>
             </DialogActions>
         </Dialog>
     );
@@ -46,7 +49,8 @@ DataGridConfirmDialog.propTypes = {
     state: PropTypes.bool.isRequired,
     onClick: PropTypes.func.isRequired,
     title: PropTypes.string,
-    content: PropTypes.string
+    content: PropTypes.string,
+    isPending: PropTypes.bool
 }
 
 export default DataGridConfirmDialog
