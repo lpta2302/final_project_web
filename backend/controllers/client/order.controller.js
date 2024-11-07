@@ -1,5 +1,10 @@
 import Order from "../../models/order.model.js";
 import Cart from "../../models/cart.model.js";
+import {
+  calculateDiscountAmount,
+  calculateItemsTotal,
+  createOrUpdateCart,
+} from "../../helpers/order.helper.js";
 
 // [GET] /client/order/user/:id
 export const index = async (req, res) => {
@@ -35,51 +40,56 @@ export const index = async (req, res) => {
 // [POST] /client/order/add
 export const add = async (req, res) => {
   try {
-    // Lấy `userId` và dữ liệu giỏ hàng từ yêu cầu gửi lên
-    const { userId, cart, ...orderData } = req.body;
+    const {
+      userId,
+      cart,
+      voucher = [],
+      shippingCost = 0,
+      ...orderData
+    } = req.body;
 
-    // Tìm `oldCart` dựa trên `userId`
-    const oldCart = await Cart.findOne({ client: userId });
+    // Create or update the cart and get the new cart
+    const newCart = await createOrUpdateCart(userId, cart);
+    orderData.cart = newCart._id;
 
-    if (oldCart) {
-      // Kiểm tra và loại bỏ sản phẩm có `spec` trùng lặp trong `oldCart`
-      cart.cartItems.forEach((newCartItem) => {
-        oldCart.cartItems = oldCart.cartItems.filter(
-          (oldCartItem) => oldCartItem.spec.toString() !== newCartItem.spec
-        );
-      });
+    // Populate spec in cart items to retrieve price and discountPercentage
+    await Cart.populate(cart, {
+      path: "cartItems.spec",
+      select: "price discountPercentage",
+    });
 
-      // Lưu lại `oldCart` sau khi đã loại bỏ các sản phẩm trùng lặp
-      await oldCart.save();
+    // Calculate items total
+    const itemsTotal = calculateItemsTotal(cart);
 
-      // Tạo giỏ hàng mới không chứa `userId`
-      const newCart = new Cart({
-        cartItems: cart.cartItems, // Chỉ bao gồm các `cartItems` mới
-      });
-      await newCart.save();
+    // Calculate discount amount from vouchers
+    const discountAmount = await calculateDiscountAmount(voucher, itemsTotal);
 
-      // Gán `_id` của `newCart` vào `orderData`
-      orderData.cart = newCart._id;
-    } else {
-      // Nếu không có `oldCart`, tạo giỏ hàng mới và lưu `userId`
-      const newCart = new Cart({
-        client: userId,
-        cartItems: cart.cartItems,
-      });
-      await newCart.save();
+    // Calculate total amount
+    const totalAmount = itemsTotal - discountAmount + shippingCost;
 
-      // Gán `_id` của `newCart` vào `orderData`
-      orderData.cart = newCart._id;
-    }
-
-    // Gán `userId` vào `orderData` để lưu trong đơn hàng
+    // Assign calculated values to orderData
+    orderData.totalAmount = totalAmount;
+    orderData.discountAmount = discountAmount;
+    orderData.shippingCost = shippingCost;
     orderData.userId = userId;
+    orderData.voucher = voucher;
 
-    // Tạo mới `Order` với `orderData` và lưu vào cơ sở dữ liệu
+    // Create new order and save to database
     const newOrder = new Order(orderData);
     await newOrder.save();
 
-    res.json(newOrder);
+    // Populate `spec`, `voucher`, and other fields in response
+    const populatedOrder = await Order.findById(newOrder._id)
+      .populate({
+        path: "cart",
+        populate: {
+          path: "cartItems.spec",
+          select: "price discountPercentage",
+        },
+      })
+      .populate("voucher");
+
+    res.json(populatedOrder);
   } catch (error) {
     console.error(error);
     res.status(400).json({ success: false, message: "Lỗi khi tạo đơn hàng" });
