@@ -87,7 +87,7 @@ export const add = async (req, res) => {
           select: "price discountPercentage",
         },
       })
-      .populate("voucher");
+      .populate("voucher address");
 
     res.json(populatedOrder);
   } catch (error) {
