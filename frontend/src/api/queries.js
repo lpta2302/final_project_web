@@ -625,6 +625,7 @@ export const useReadAllReviewsAdmin = (productId) => {
   return useQuery({
     queryKey: [READ_ALL_ORDERS],
     queryFn: () => readAll(admin_review_url.getAllReview(productId)),
+    enabled: !!productId
   });
 };
 export const useDeleteReview = () => {
