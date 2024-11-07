@@ -1,13 +1,12 @@
 /* eslint-disable react/prop-types */
-import { DataGrid, GridActionsCellItem, GridEditInputCell, GridRowModes, GridToolbar } from '@mui/x-data-grid';
-import { PageContainer } from '@toolpad/core';
+import { DataGrid, GridActionsCellItem, GridRowModes, GridToolbar } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import DataGridConfirmDialog from '../../../components/dialogs/DataGridConfirmDialog.jsx';
-import { CustomEditCell, CustomEditDropdownCell, CustomGridToolbar, CustomPageContainer, ManagePageSearch, NumberInput, SplitButton } from "../../../components";
+import { CustomEditCell, CustomEditDropdownCell, CustomPageContainer } from "../../../components";
 import { enqueueSnackbar as toaster } from 'notistack';
-import { Badge, Box, styled, Tooltip, tooltipClasses } from '@mui/material';
+import { Box, styled } from '@mui/material';
 import { Cancel, Delete, Edit, Save } from '@mui/icons-material';
-import { useCreateBrand, useCreateCategory, useCreateSpecification, useCreateSpecificationKey, useCreateTag, useDeleteBrand, useDeleteCategory, useDeleteSpecification, useDeleteSpecificationKey, useDeleteTag, useReadAllBrand, useReadAllCategory, useReadAllSpecificationAdmin, useReadAllSpecificationKeyAdmin, useReadAllTagAdmin, useSearchBrand, useSearchCategoryAdmin, useSearchSpecification, useSearchSpecificationKey, useSearchTagAdmin, useUpdateBrand, useUpdateCategory, useUpdateSpecification, useUpdateSpecificationKey, useUpdateTag } from '../../../api/queries.js';
+import { useDeleteSpecificationKeyValue, useReadAllSpecificationKeyAdmin, useUpdateSpecificationKeyValue } from '../../../api/queries.js';
 import { useLocation } from 'react-router-dom';
 
 const StyledBox = styled('div')(({ theme }) => ({
@@ -30,8 +29,6 @@ function UpdateItem() {
   const [rows, setRows] = useState()
   const [rowModesModel, setRowModesModel] = useState({})
   const [rowChanges, setRowChanges] = useState(null)
-  const [searchValue, setSearchValue] = useState("")
-  const [searchParam, setSearchParam] = useState("")
 
   const [deleteDialogPayload, setDeleteDialogPayload] = useState({ state: false, id: null });
   const [updateDialogPayload, setUpdateDialogPayload] = useState({ state: false, id: null });
@@ -39,9 +36,8 @@ function UpdateItem() {
 console.log(rows);
 
   // const { data, isLoading } = useReadAllSpecificationAdmin();
-  const { mutateAsync: updateCriterion } = useUpdateSpecification();
-  const { mutateAsync: deleteRecord } = useDeleteSpecification();
-  const { data: searchResult } = useSearchSpecification(searchParam);
+  const { mutateAsync: updateSpecification } = useUpdateSpecificationKeyValue();
+  const { mutateAsync: deleteSpecification } = useDeleteSpecificationKeyValue();
   const { data: specificationKeys, } = useReadAllSpecificationKeyAdmin();
 
   const breadcrumbs = [
@@ -52,7 +48,7 @@ console.log(rows);
 
   useEffect(() => {
     columnFields[0].renderEditCell = (params) => (
-      <CustomEditDropdownCell {...params} options={specificationKeys.map(specKey => specKey.key)} />
+      <CustomEditDropdownCell {...params} labelField="key" options={specificationKeys.map(specKey => specKey.key)} />
   );
   }, [specificationKeys]);
 
@@ -92,7 +88,7 @@ console.log(rows);
       align: 'center',
       cellClassName: 'actions',
       getActions: ({ row }) => {
-        const id = row._id ? row._id : row.id;
+        const id = row.key?._id;
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
         if (isInEditMode) {
@@ -173,7 +169,7 @@ console.log(rows);
     }
 
 
-    const isDeleted = await deleteRecord(id);
+    const isDeleted = await deleteSpecification(`${variant._id}/${id}`);
     setDeleteDialogPayload({ state: false, id: null });
 
     if (!isDeleted) {
@@ -181,19 +177,21 @@ console.log(rows);
       throw new Error(isDeleted);
 
     }
-    setRows(rows.filter((row) => row.accountCode !== id));
+    setRows(rows.filter((row) => row.key._id !== id));
   }
 
   const handleUpdate = async (newRow, oldRow) => {
     let newData;
-
-    const updatedData = await updateCriterion(newRow);
+    
+    const updatedData = await updateSpecification({specificationId:`${variant._id}/${oldRow.key._id}`,specification:newRow});
 
     if (!updatedData) {
       toaster("Cập nhật thất bại.", { variant: 'error' })
       return oldRow;
     }
     newData = { ...newRow, ...updatedData };
+    
+    setRows(prev=> prev.map(row=>row.key.key === oldRow.key.key || row.value === oldRow.value ? newRow : row))
     toaster("Cập nhật thành công.", { variant: 'success' })
 
     return newData
@@ -216,32 +214,6 @@ console.log(rows);
     console.error(error);
   }
 
-  const handleSearch = () => {
-    if (!searchValue) {
-      return;
-    }
-    const param = {};
-    if (searchValue.startsWith('#')) {
-      param[columnFields[0].field] = searchValue.substring(1)
-    } else {
-      param[columnFields[1].field] = searchValue
-    }
-    setSearchParam(param)
-  }
-
-  useEffect(() => {
-    setTimeout(() => {
-      const param = {};
-      if (searchValue.startsWith('#')) {
-        param[columnFields[0].field] = searchValue.substring(1)
-      } else {
-        param[columnFields[1].field] = searchValue
-      }
-
-      setSearchParam(param)
-    }, 1500);
-  }, [searchValue]);
-
   const handleRowModesModelChange = (newRowModesModel) => {
     setRowModesModel(newRowModesModel);
   };
@@ -261,9 +233,6 @@ console.log(rows);
         justifyContent='flex-end'
         mb={3}
       >
-        <ManagePageSearch
-          {...{ searchValue, setSearchValue, handleSearch }}
-        />
       </Box>
       <DataGridConfirmDialog
         onClick={handleDeleteClick}
@@ -279,8 +248,8 @@ console.log(rows);
       />
       <StyledBox>
         <DataGrid
-          getRowId={(row) => row.key._id}
-          rows={searchResult && searchValue ? searchResult : rows}
+          getRowId={(row) => row.key?._id || row.value}
+          rows={rows}
           columns={columns}
           editMode='row'
           rowModesModel={rowModesModel}

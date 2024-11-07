@@ -246,7 +246,14 @@ export const detail = async (req, res) => {
   try {
     const id = req.params.id;
 
-    const record = await Product.findOne({ _id: id });
+    const record = await Product.findOne({ _id: id })
+      .populate("tag category")
+      .populate({
+        path: "specs",
+        populate: {
+          path: "specifications.key"
+        }
+      });
 
     res.status(200).json(record);
   } catch (error) {

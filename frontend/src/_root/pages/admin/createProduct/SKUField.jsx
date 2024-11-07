@@ -14,9 +14,6 @@ const SKUField = ({ productCode, variant, index, setSpecCode }) => {
     }
   }, [productCode]);
 
-  console.log(variant.specCode);
-
-
   return (
     <TextField
       variant="standard"

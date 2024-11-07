@@ -5,7 +5,7 @@ import DataGridConfirmDialog from '../../../components/dialogs/DataGridConfirmDi
 import { CustomGridToolbar, CustomPageContainer, ManagePageSearch } from "../../../components";
 import { enqueueSnackbar as toaster } from 'notistack';
 import { Box } from '@mui/material';
-import { Delete } from '@mui/icons-material';
+import { Delete, Edit } from '@mui/icons-material';
 import { useDeleteProduct, useReadAllProductAdmin, useReadAllReviewsAdmin, useSearchProductAdmin } from '../../../api/queries.js';
 import { useNavigate } from 'react-router-dom';
 import renderImageSamples from './customRenderer/renderImageSamples.jsx';
@@ -73,8 +73,17 @@ function ManageProduct() {
       width: 100,
       align: 'center',
       cellClassName: 'actions',
-      getActions: ({ row: { _id: id } }) => {
+      getActions: ({ row, id}) => {
+        const { productCode } = row
+        
         return [
+          <GridActionsCellItem
+            icon={<Edit/>}
+            label="Edit"
+            onClick={() => navigate('product-detail/'+productCode.toLowerCase(),{state:{productId: id}})}
+            color="inherit"
+            key="edit"
+          />,
           <GridActionsCellItem
             icon={<Delete color='error' />}
             label="Delete"

@@ -1,6 +1,7 @@
 import Spec from "../../models/specification.model.js";
 import Product from "../../models/product.model.js";
 import specsKey from "../../models/specsKey.model.js";
+import mongoose from "mongoose";
 
 const specController = {
   // [GET] /spec
@@ -90,6 +91,71 @@ const specController = {
 
       res.status(200).json(true);
     } catch (err) {
+      res.status(500).json(false);
+    }
+  },
+
+  delSpecification: async (req, res) => {
+    try {
+      // const updatedProduct = await Product.updateOne(
+      //   { "specs._id": req.params.specId },
+      //   { $pull: { "specs.$.specifications": { key: req.params.keyId } } }
+      // );
+
+      // console.log(updatedProduct);
+
+
+      await Product.updateOne(
+        { "specs._id": req.params.specId, "specs.specifications": { $size: 0 } },
+        { $pull: { specs: { _id: req.params.specId } } }
+      );
+
+      await Spec.updateOne(
+        { _id: req.params.specId },
+        { $pull: { specifications: { key: req.params.keyId } } }
+      );
+
+      res.status(200).json(true);
+    } catch (err) {
+      res.status(500).json(false);
+    }
+  },
+
+  // [PATCH] /specification/:specId/:keyId
+  updateSpecification: async (req, res) => {
+    try {
+      const { specId, keyId } = req.params;
+      console.log(req.body);
+      
+    const { key, value } = req.body;
+
+    // Find the Specification document by its specId
+    const spec = await Spec.findById(specId);
+
+    if (!spec) {
+      return res.status(404).json({ error: "Specification not found" });
+    }
+
+    // Find the index of the specification item to update based on keyId
+    const specIndex = spec.specifications.findIndex(
+      (item) => item.key.toString() === keyId.toString()
+    );
+
+    if (specIndex === -1) {
+      return res.status(404).json({ error: "Specification item with the given key not found" });
+    }
+
+    // Update the value of the specified key in the specification
+    spec.specifications[specIndex].value = value;
+
+    // Save the updated specification
+    await spec.save();
+
+    // Return success response
+    return res.status(200).json({ message: "Specification updated successfully", spec });
+    } catch (err) {
+      console.log(err);
+      
       res.status(500).json(false);
     }
   },

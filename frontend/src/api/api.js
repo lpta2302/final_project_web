@@ -45,6 +45,39 @@ export async function createProduct(url, data) {
     throw error;
   }
 }
+export async function updateProduct(url, data) {
+  const formData = new FormData();
+  console.log(data);
+  
+
+  // Basic fields
+  formData.append("productCode", data.productCode);
+  formData.append("productName", data.productName);
+  formData.append("description", data.description || "Default description");
+  formData.append("productStatus", data.productStatus || "Draft");
+  formData.append("category", data.category);
+  formData.append("brand", data.brand);
+
+  // JSON fields (tag, relativeProduct, specs, category, and brand)
+  formData.append("imageUrls", JSON.stringify(data.imageUrls || []));
+  formData.append("tag", JSON.stringify(data.tag || []));
+  formData.append("specs", JSON.stringify(data.variations));
+
+  // Image or file handling
+  if (data.files) {
+    for (let i = 0; i < data.files.length; i++) {
+      formData.append("files", data.files[i]);
+    }
+  }
+
+
+  try {
+    const response = await axios.patch(url, formData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating product:", error);
+  }
+}
 
 export async function readAll(url) {
   try {

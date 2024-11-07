@@ -31,10 +31,12 @@ const columnFields = [
     },
     renderEditCell: (params) => (<CustomEditCell {...params} />)},
   { field: 'stockQuantity', min: 0, headerName: 'Tồn kho', flex:1, minWidth: 150, editable: true, type: 'number', renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true },
-  { field: 'specifications', headerName: 'Thông số', flex:1, minWidth: 150, valueFormatter: (value) => {
-    if(value == null) return '';
-    return `${value?.length} Thông số`;
-  }}
+  { 
+    field: 'specifications', headerName: 'Thông số', flex:1, minWidth: 150, valueFormatter: (value) => {
+      if(value == null) return '';
+      return `${value?.length} Thông số`;
+    },editable: true
+  }
 ];
 
 function ManageInventory() {
@@ -52,19 +54,21 @@ function ManageInventory() {
 
 
   const { data, isLoading } = useReadAllSpecificationAdmin();
-  const { mutateAsync: updateCriterion } = useUpdateSpecification();
+  const { mutateAsync: updateSpecification } = useUpdateSpecification();
   const { mutateAsync: deleteRecord } = useDeleteSpecification();
   const { data: searchResult } = useSearchSpecification(searchParam);
-
-  console.log(rows);
-
 
   const breadcrumbs = [
     { path: '/', title: 'Home' },
     { path: '/manage-inventory', title: 'Quản lý kho hàng' },
   ]
 
-  useEffect(() => setRows(data), [data])
+  useEffect(() => {
+    setRows(data);
+    columnFields[4].renderEditCell = (params)=>{
+      const {row} = params
+    navigate('manage-item', { state: row})}
+  }, [data])
 
   const handleEditCellProps = (arg) => {
     const { field, row, isRequired, props, type, min, max } = arg;
@@ -159,7 +163,8 @@ function ManageInventory() {
   };
 
   const handleEditClick = (id) => () => {
-    navigate('manage-item', { state: rows?.find(row => row._id === id || row.id === id) })
+    // navigate('manage-item', { state: rows?.find(row => row._id === id || row.id === id) })
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });  
   };
 
   const handleCancelClick = (id) => () => {
@@ -199,7 +204,7 @@ function ManageInventory() {
   const handleUpdate = async (newRow, oldRow) => {
     let newData;
 
-    const updatedData = await updateCriterion(newRow);
+    const updatedData = await updateSpecification(newRow);
 
     if (!updatedData) {
       toaster("Cập nhật thất bại.", { variant: 'error' })

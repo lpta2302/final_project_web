@@ -1,18 +1,19 @@
 
-import { Accordion, AccordionSummary, Box, Button, Divider, FormHelperText, Grid2, IconButton, TextField, Typography } from "@mui/material"
+import { Accordion, AccordionSummary, Box, Button, Divider, FormControl, FormHelperText, Grid2, IconButton, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material"
 import { CustomTypography, NumberInput } from "../../../components"
 import PageToolbar from "../../../components/pageContainer/PageToolbar"
 import CustomPageContainer from "../../../components/pageContainer/CustomPageContainer"
 import { AspectRatio, Autocomplete, createFilterOptions, CssVarsProvider, extendTheme } from '@mui/joy'
-import { useCreateProduct, useReadAllBrandAdmin, useReadAllCategory, useReadAllSpecificationKeyAdmin, useReadAllTagAdmin } from "../../../api/queries"
-import { useState } from "react"
+import { useCreateProduct, useReadAllBrandAdmin, useReadAllCategory, useReadAllSpecificationKeyAdmin, useReadAllTagAdmin, useReadProductDetailAdmin, useUpdateProduct } from "../../../api/queries"
+import { useEffect, useState } from "react"
 import SpecificationDataGrid from "./createProduct/SpecificationDataGrid"
 import { ArrowDropDown, Delete, DeleteOutlined } from "@mui/icons-material"
 import { FileUploader } from 'react-drag-drop-files'
 import { AddImage } from "../../../assets"
 import { enqueueSnackbar as toaster } from "notistack"
 import SKUField from "./createProduct/SKUField"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
+import { productStatuses } from "../../../constance/constance.jsx"
 
 const breadcrumbs = [
   { path: '/', title: 'Home' },
@@ -48,25 +49,69 @@ const initErrorState = {
 
 const fileTypes = ["JPG", "PNG", "JEPG", "WEBP", "MP4"];
 
+const initProduct = {
+  specs: [{ price: 0, stockQuantity: 0, specifications: [], specCode: '' }],
+  productCode: '',
+  productName: '',
+  description: '',
+  tag: [],
+  brand: undefined,
+  category: undefined,
+}
+
 function CreateProduct() {
   const navigate = useNavigate();
-  const [variants, setVariants] = useState([{ price: 0, stockQuantity:0, specifications: [], specCode: '' }])
-  const [productCode, setProductCode] = useState('')
-  const [productName, setProductName] = useState('');
-  const [description, setDescription] = useState('')
-  const [tags, setTags] = useState()
-  const [brand, setBrand] = useState()
-  const [category, setCategory] = useState()
+  const location = useLocation();
+  const initProductId = location.state?.productId;
+
+  // const initProduct = state?.productId ? state.product : 
+  // {
+  //   specs: [{ price: 0, stockQuantity:0, specifications: [], specCode: '' }],
+  //   productCode: '',
+  //   productName: '',
+  //   description: '',
+  //   tag: [],
+  //   brand: undefined,
+  //   category: undefined,
+  // };
+  //   console.log(initProduct);
+  const [variants, setVariants] = useState(initProduct.specs)
+  const [productCode, setProductCode] = useState(initProduct.productCode)
+  const [productStatus, setProductStatus] = useState(productStatuses.draft.label)
+  const [productName, setProductName] = useState(initProduct.productName)
+  const [description, setDescription] = useState(initProduct.description)
+  const [tags, setTags] = useState(initProduct.tag)
+  const [brand, setBrand] = useState(initProduct.brand)
+  const [category, setCategory] = useState(initProduct.category)
   const [formErrors, setFormErrors] = useState(initErrorState)
 
   const [files, setFiles] = useState([])
   const [showingFile, setShowingFile] = useState(0)
 
+  const { data: product } = useReadProductDetailAdmin(initProductId);
   const { data: categories, isLoading: isLoadingCategories } = useReadAllCategory();
   const { data: tagsData, isLoading: isLoadingTag } = useReadAllTagAdmin();
   const { data: brands, isLoading: isLoadingBrand } = useReadAllBrandAdmin();
   const { data: specificationKeys, } = useReadAllSpecificationKeyAdmin();
   const { mutateAsync: createProduct } = useCreateProduct();
+  const { mutateAsync: updateProduct } = useUpdateProduct();
+
+  useEffect(() => {
+    console.log(product);
+
+    if (product) {
+      setVariants(product.specs || initProduct.specs);
+      setProductCode(product.productCode || '');
+      setProductStatus(product.productStatus || productStatuses.draft.label)
+      setProductName(product.productName || '');
+      setDescription(product.description || '');
+      setTags(product.tag || []);
+      setBrand(product.brand || undefined);
+      setCategory(product.category || undefined);
+      setFiles(product.imageURLs || []);
+    }
+  }, [product]);
+
 
   const setVariantInfo = (index, type, newValue) => {
     setVariants(prevVariants => {
@@ -79,9 +124,9 @@ function CreateProduct() {
   const validateForm = () => {
     return !!productCode && !!productName && !!description && variants.filter(variant => variant.specifications.length > 0).length >= 1;
   }
-  const handleSave = () => {
+  const handleSave = (isSaveDraft) => {
     const errors = { ...JSON.parse(JSON.stringify(initErrorState)) };
-    const savedVariants = 
+    const savedVariants =
       JSON.parse(JSON.stringify(
         variants.filter((variant, index) => {
           const enoughData = variant.specifications.length > 0
@@ -90,9 +135,10 @@ function CreateProduct() {
           return enoughData
         })
       ))
+    console.log(variants[0].specifications);
 
-    savedVariants.forEach(variant=>{
-      variant.specifications = variant.specifications.map(spec=>({value: spec.value,key:specificationKeys.find(specKey=>specKey.key === spec.key)._id}))
+    savedVariants.forEach(variant => {
+      variant.specifications = variant.specifications.map(spec => ({ value: spec.value, key: spec._id }))
     })
 
     setFormErrors(errors);
@@ -105,27 +151,44 @@ function CreateProduct() {
         category: category?._id,
         tag: tags.map(t => t._id),
         brand: brand?._id,
-        variations: savedVariants,
-        productStatus: 'active',
-        files
+        specs: savedVariants,
+        productStatus: isSaveDraft ? "draft" : productStatus,
+        files: files.filter(file=> typeof file !== 'string'),
+        imageUrls: files.filter(file=>typeof file === 'string')
       }
     );
-    
+
     // return;
     if (!validateForm())
       toaster({ variant: 'error', message: 'Lưu sản phẩm thất bại' })
     else {
-      createProduct({
-        productCode,
-        productName,
-        description,
-        category: category?._id,
-        tag: tags.map(t => t._id),
-        brand: brand?._id,
-        variations: savedVariants,
-        productStatus: 'active',
-        files
-      })
+      if (initProductId)
+        updateProduct(
+          {
+            _id: product._id,
+            productCode,
+            productName,
+            description,
+            category: category?._id,
+            tag: tags.map(t => t._id),
+            brand: brand?._id,
+            variations: savedVariants,
+            productStatus: isSaveDraft ? "draft" : productStatus,
+            files: files.filter(file=> typeof file !== 'string'),
+        imageUrls: files.filter(file=>typeof file === 'string')
+          })
+      else
+        createProduct({
+          productCode,
+          productName,
+          description,
+          category: category?._id,
+          tag: tags.map(t => t._id),
+          brand: brand?._id,
+          variations: savedVariants,
+          productStatus: isSaveDraft ? "draft" : productStatus,
+          files
+        })
     }
 
     navigate(-1);
@@ -146,29 +209,40 @@ function CreateProduct() {
       breadCrumbs={breadcrumbs}
       title='Thêm sản phẩm mới'
       slots={{ toolbar: PageToolbar }}
-      slotProps={{ toolbar: { handleSave: handleSave, handleSaveDraft: () => 1, handleDelete: () => 1, disabled: !validateForm() } }}
+      slotProps={{ toolbar: { handleSaveDraft: !initProduct && (() => handleSave(true)), handleSave: () => handleSave(), handleDelete: () => 1, disabled: !validateForm() } }}
     >
       <Grid2 container spacing={2}>
         <Grid2 size={{ xs: 12, md: 8 }} sx={{}}>
           <Box p={3} borderRadius={4} sx={{ boxShadow: 3 }}>
             <CustomTypography component="div" fontSize="1.2rem" variant="caption">Mô tả sản phẩm</CustomTypography>
+            <Box display='flex' flexWrap='wrap'>
+              <TextField
+                sx={{ display: 'flex', width: { md: '30%', xs: '100%' }, mr: { md: 3, xs: 0 } }}
+                error={!!formErrors.productCode}
+                helperText={formErrors.productCode}
+                name="product-code"
+                value={productCode}
+                onChange={(e) => {
+                  if (!e.target.value || e.target.value.trim() === "")
+                    setFormErrors(prev => ({ ...prev, productCode: 'Mã không được bỏ trống' }))
+                  else
+                    setFormErrors(prev => ({ ...prev, productCode: '' }))
+                  setProductCode(e.target.value)
+                }}
+                label="Mã sản phẩm" fullWidth margin="normal" placeholder="PC001" />
+              <FormControl margin="normal">
+                <InputLabel id="product-status">Trạng thái</InputLabel>
+                <Select sx={{ height: '100%' }} labelId="product-status" label='Trạng thái' value={productStatus} onChange={(e) => setProductStatus(e.target.value)}>
+                  {
+                    Object.values(productStatuses).map(status => (
+                      <MenuItem key={status.label} value={status.label}>{status.label}</MenuItem>
+                    ))
+                  }
+                </Select>
+              </FormControl>
+            </Box>
             <TextField
-              sx={{ display: 'flex', width: '30%' }}
-              error={!!formErrors.productCode}
-              helperText={formErrors.productCode}
-              name="product-code"
-              value={productCode}
-              onChange={(e) => {
-                if (!e.target.value || e.target.value.trim() === "")
-                  setFormErrors(prev => ({ ...prev, productCode: 'Mã không được bỏ trống' }))
-                else
-                  setFormErrors(prev => ({ ...prev, productCode: '' }))
-
-                setProductCode(e.target.value)
-              }}
-              label="Mã sản phẩm" fullWidth margin="normal" placeholder="PC001" />
-            <TextField
-              sx={{ display: 'flex', width: '80%' }}
+              sx={{ display: 'flex', width: { md: '80%', xs: '100%' } }}
               error={!!formErrors.productName}
               helperText={formErrors.productName}
               name="product-name"
@@ -201,7 +275,7 @@ function CreateProduct() {
             </Box>
           </Box>
           <Box mt={1} p={3} borderRadius={4} sx={{ boxShadow: 3 }}>
-            <Box width="100%" display="flex" justifyContent="space-between" py={2}>
+            <Box width="100%" display="flex" justifyContent="space-between" py={2} flexWrap='wrap'>
               <CustomTypography fontSize="1.2rem" variant="caption">
                 Thông số sản phẩm
               </CustomTypography>
@@ -221,7 +295,7 @@ function CreateProduct() {
                 >
                   <Box width="100%">
                     <Box display='flex' m={0} p={0} alignItems='center' justifyContent='space-between' width='100%'>
-                      <SKUField productCode={productCode} variant={variant} index={index} setSpecCode={(i, newValue)=>(setVariantInfo(i,'specCode', newValue))} />
+                      <SKUField productCode={productCode} variant={variant} index={index} setSpecCode={(i, newValue) => (setVariantInfo(i, 'specCode', newValue))} />
                       <IconButton
                         onClick={() => { setVariants(prev => prev.filter((_, i) => i !== index)) }}
                         color="error" sx={{ width: '32px', height: '32px' }}>
@@ -276,7 +350,7 @@ function CreateProduct() {
                     specificatinKeys={specificationKeys}
                     specifications={variant.specifications}
                     setSpecifications={newSpecs => {
-                      setVariantInfo(index,'specifications', newSpecs)
+                      setVariantInfo(index, 'specifications', newSpecs)
                     }} key={index} />
                 </Box>
               </Accordion>
@@ -286,7 +360,7 @@ function CreateProduct() {
         <Grid2 item size={{ xs: 12, md: 4 }}>
           <Box p={3} borderRadius={2} display="flex" flexDirection="column" alignItems="center" sx={{ boxShadow: 3 }}>
             <Box display='flex' justifyContent="space-between" width="100%" mb={1}>
-              <CustomTypography fontSize="1.2rem" variant="caption">Ảnh sản phẩm</CustomTypography>              
+              <CustomTypography fontSize="1.2rem" variant="caption">Ảnh sản phẩm</CustomTypography>
               <Button
                 startIcon={<DeleteOutlined />}
                 variant="outlined"
@@ -314,7 +388,13 @@ function CreateProduct() {
                     width: '100%',
                     height: '0',
                     paddingTop: '100%',
-                    backgroundImage: `url(${files.length > 0 ? URL.createObjectURL(files[showingFile]) : AddImage})`,
+                    backgroundImage:
+                      `
+                        url(${files.length > 0 ?
+                        (
+                          typeof files[showingFile] === 'string' ?
+                            files[showingFile] : URL.createObjectURL(files[showingFile])
+                        ) : AddImage})`,
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'center', // Centers the background image
                     backgroundSize: files.length > 0 ? '100%' : '80%', // Adjusts the size to create padding effect
@@ -341,8 +421,8 @@ function CreateProduct() {
               </AspectRatio>
             </CssVarsProvider>
             {/* Thumbnails */}
-            <Box display="flex" alignItems='center' gap={2} mt={1} maxWidth="100%" sx={{ overflowX: "auto", cursor: 'pointer', '&:hover': { filter: 'brightness(0.8) ' } }}>
-              <CustomTypography fontSize="0.8rem" variant="caption">{`${files.length}/6`}</CustomTypography>              
+            <Box display="flex" alignItems='center' gap={2} mt={1} maxWidth="100%" sx={{ overflowX: "auto" }}>
+              <CustomTypography fontSize="0.8rem" variant="caption">{`${files.length}/6`}</CustomTypography>
               {
                 files.map((file, index) => {
                   return (
@@ -351,12 +431,16 @@ function CreateProduct() {
                       component="img"
                       alt="Product Image"
                       sx={{
+                        filter: `${showingFile === index && 'brightness(0.8)'}`,
+                        border: '0.5px solid rgb(75,75,75)',
                         width: '68px',
                         height: '68px',
                         objectFit: 'cover', // Makes sure the image covers the square box
                         borderRadius: 2,   // Optional: for rounded corners
+                        cursor: 'pointer',
+                        '&:hover': { filter: 'brightness(0.8) ' }
                       }}
-                      src={URL.createObjectURL(file)}
+                      src={typeof file === 'string' ? file : URL.createObjectURL(file)}
                       onClick={() => setShowingFile(index)}
                     />
                   )

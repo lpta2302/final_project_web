@@ -115,6 +115,7 @@ function App() {
                 {adminNav.map(navItem =>
                   <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
                 )}
+                <Route path="manage-product/product-detail/:productCode" element={<CreateProduct />} />
                 <Route path="manage-product/create-product" element={<CreateProduct />} />
                 <Route path="manage-inventory/manage-item/" element={<UpdateItem/>} />
               </Route>

@@ -9,7 +9,8 @@ import {
   search,
   updateRecord,
   getCurrentUser,
-  createProduct
+  createProduct,
+  updateProduct
 } from "./api";
 import {
   READ_ALL_ACCOUNTS,
@@ -212,11 +213,13 @@ export const useCreateProduct = () => {
 export const useUpdateProduct = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (product) =>
-      updateRecord(
+    mutationFn: (product) =>{
+      console.log(product);
+      
+      return updateProduct(
         admin_product_url.updateProduct(product._id),
         product
-      ),
+      )},
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_PRODUCTS]);
     },
@@ -685,6 +688,32 @@ export const useDeleteSpecification = () => {
   return useMutation({
     mutationFn: (SpecificationId) =>
       deleteRecord(admin_specification_url.deleteSpecification(SpecificationId)),
+    onSuccess: () => {
+      queryClient.invalidateQueries([READ_ALL_SPECIFICATION]);
+    },
+  });
+};
+
+export const useDeleteSpecificationKeyValue = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (SpecificationId) =>
+      deleteRecord(admin_specification_url.deleteSpecificationKeyValue(SpecificationId)),
+    onSuccess: () => {
+      queryClient.invalidateQueries([READ_ALL_SPECIFICATION]);
+    },
+  });
+};
+
+export const useUpdateSpecificationKeyValue = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({specificationId,specification}) =>{
+      console.log(specification);
+      console.log(specificationId);
+      
+      
+      return updateRecord(admin_specification_url.updateSpecificationKeyValue(specificationId),specification)},
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_SPECIFICATION]);
     },
