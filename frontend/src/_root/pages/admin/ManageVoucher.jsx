@@ -44,9 +44,7 @@ function ManageVoucher() {
   const [rowChanges, setRowChanges] = useState(null)
 
   const [searchValue, setSearchValue] = useState()
-  const [searchParam, setSearchParam] = useState("")
-
-
+  const [searchParam, setSearchParam] = useState()
 
   const { mutateAsync: createRecord } = useCreateVoucher();
   const { data, isLoading } = useReadAllVoucherAdmin();
@@ -56,7 +54,6 @@ function ManageVoucher() {
 
   const [deleteDialogPayload, setDeleteDialogPayload] = useState({ state: false, id: null });
   const [updateDialogPayload, setUpdateDialogPayload] = useState({ state: false, id: null });
-  console.log(rows);
 
   const breadcrumbs = [
     { path: '/', title: 'Home' },
@@ -65,16 +62,29 @@ function ManageVoucher() {
 
   useEffect(() => setRows(data), [data])
 
-  const handleEditCellProps = ({ field, row, isRequired, props }) => {
+  const handleEditCellProps = (arg) => {
+    const { field, row, isRequired, props, type, min, max } = arg;
     const { value } = props;
     setRowChanges(prev => ({ ...prev, [field]: value !== row[field] }));
 
-    if (isRequired) {
-      const errorMessage = (!value || value.trim() === "") ? "Require" : ""
-      setUpdateCellError(prev => ({ ...prev, [field]: errorMessage }))
-      return { ...props, error: value !== row[field] && errorMessage };
+    let errorMessage = '';
+    console.log(arg);
+
+
+    if (type === 'number') {
+      if ((isRequired && !value) || typeof value !== 'number')
+        errorMessage = `Require Number`
+      else if (value < min)
+        errorMessage = `Min is ${min}`
+      else if (value > max)
+        errorMessage = `Max is ${max}`
+
+    } else if (isRequired && !value || !value.toString().trim()) {
+      errorMessage = 'Require'
     }
-    return { ...props };
+    // const errorMessage = (!value || value.trim() === "") ? "Require" : ""
+    setUpdateCellError(prev => ({ ...prev, [field]: errorMessage }))
+    return { ...props, error: value !== row[field] && errorMessage };
   }
 
   useEffect(() => {
@@ -88,8 +98,6 @@ function ManageVoucher() {
       } else {
         param[columnFields[1].field] = searchValue
       }
-      console.log(param);
-
       setSearchParam(param)
     }, 1500);
   }, [searchValue]);
@@ -97,7 +105,7 @@ function ManageVoucher() {
 
   const columns = [
     ...columnFields.map(column => (
-      { ...column, preProcessEditCellProps: (params) => handleEditCellProps({ ...params, isRequired: column.isRequired, field: column.field }) })),
+      { ...column, preProcessEditCellProps: (params) => handleEditCellProps({ ...params, ...column }) })),
     {
       field: 'actions',
       type: 'actions',
@@ -176,7 +184,7 @@ function ManageVoucher() {
           onChange: (e) => {
             const value = e.target.value;
             const newValue = value.endsWith('%') ? value / 100 : value;
-            handleAddParam('minDiscount', newValue)
+            handleAddParam('maxDiscount', newValue)
           },
           placeholder: '0.01 ~ 10%'
         },
@@ -296,8 +304,6 @@ function ManageVoucher() {
       return;
     }
     setSearchParam(prev => ({ ...prev, voucherName: searchValue }))
-    console.log(searchParam);
-
   }
 
   const toggleDrawer = (newState) => (event) => {
@@ -332,16 +338,15 @@ function ManageVoucher() {
         width='100%'
         justifyContent='flex-end'
         mb={3}
-
       >
-        <ButtonGroup color='black.light' sx={{ mr: 1 }}>
+        <ButtonGroup color='blackLight' sx={{ mr: 1 }}>
           <Button
-            sx={{ width: '48px', height: '48px', minWidth: '48px' }}
+            sx={{ width: '44px', height: '44px', minWidth: '44px' }}
           >
             <FilterAltOff />
           </Button>
           <Button
-            sx={{ width: '48px', height: '48px', minWidth: '48px' }}
+            sx={{ width: '44px', height: '44px', minWidth: '44px' }}
             onClick={toggleDrawer(true)}
           >
             <FilterAlt />

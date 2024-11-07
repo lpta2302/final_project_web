@@ -39,7 +39,7 @@ const columnFields = [
   }
 ];
 
-function ManageInventory() {
+function ManageSliderBanner() {
   const navigate = useNavigate();
   const [updateCellError, setUpdateCellError] = useState({})
   const [rows, setRows] = useState()
@@ -60,7 +60,7 @@ function ManageInventory() {
 
   const breadcrumbs = [
     { path: '/', title: 'Home' },
-    { path: '/manage-inventory', title: 'Quản lý kho hàng' },
+    { path: '/manage-slider-banner', title: 'Quản lý slider banner' },
   ]
 
   useEffect(() => {
@@ -325,4 +325,4 @@ function ManageInventory() {
   )
 }
 
-export default ManageInventory
+export default ManageSliderBanner

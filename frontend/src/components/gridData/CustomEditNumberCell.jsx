@@ -1,7 +1,5 @@
-import { Box, colors, styled, Tooltip, tooltipClasses } from '@mui/material';
+import { Box, styled, Tooltip, tooltipClasses } from '@mui/material';
 import { GridEditInputCell } from '@mui/x-data-grid';
-import NumberInput from '../inputs/NumberInput';
-import { validateNumberForTextField } from '../../util/validateNumber';
 
 const StyledTooltip = styled(({ className, ...props }) => (
     <Tooltip arrow {...props} classes={{ popper: className }} />
@@ -16,14 +14,12 @@ const StyledTooltip = styled(({ className, ...props }) => (
 }));
 
 function CustomEditCell(props) {
-    const { error, isRequired, isNumberType, ...param } = props;
+    const { error, isRequired } = props;
 
     return (
         <StyledTooltip open={!!error} title={error} {...props}>
             <Box position='relative' p={0}>
-                {isNumberType ?
-                    <GridEditInputCell {...props} /> :
-                    <GridEditInputCell {...props} />}
+                <GridEditInputCell {...props} />
                 {isRequired && <span style={{ position: 'absolute', right: '4px', color: 'red' }}>*</span>}
             </Box>
         </StyledTooltip>
