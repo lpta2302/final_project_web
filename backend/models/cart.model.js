@@ -18,12 +18,6 @@ const cartSchema = new mongoose.Schema(
         },
       },
     ],
-    vouchers: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "voucher",
-      },
-    ],
   },
   {
     timestamps: true,

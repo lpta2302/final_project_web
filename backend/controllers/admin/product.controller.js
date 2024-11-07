@@ -250,10 +250,19 @@ export const detail = async (req, res) => {
     const id = req.params.id;
     console.log(id);
 
-    const record = await Product.findOne({ _id: id });
+    const record = await Product.findOne({ _id: id })
+      .populate("tag")
+      .populate("category")
+      .populate({
+        path: "specs",
+        populate: {
+          path: "specifications.key",
+        },
+      });
 
     res.status(200).json(record);
   } catch (error) {
+    console.log(error);
     res.status(400).json({
       message: false,
     });
