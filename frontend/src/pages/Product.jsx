@@ -27,6 +27,7 @@ import {
   useReadProductDetailBySlug,
 } from "../api/queries";
 import moment from "moment";
+import ReactImageMagnify from "@blacklab/react-image-magnify";
 
 const Product = () => {
   const { slug } = useParams();
@@ -147,10 +148,17 @@ const Product = () => {
         <Grid container spacing={4}>
           <Grid item xs={12} md={6}>
             <Box position="relative">
-              <img
-                src={selectedImage || "https://via.placeholder.com/300"}
-                alt={product.productName}
-                style={{ width: "100%", borderRadius: "8px" }}
+              <ReactImageMagnify
+                imageProps={{
+                  alt: product.productName,
+                  isFluidWidth: true,
+                  src: selectedImage,
+                }}
+                magnifiedImageProps={{
+                  src: selectedImage,
+                  width: 1200,
+                  height: 1800,
+                }}
               />
             </Box>
             <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
@@ -181,7 +189,11 @@ const Product = () => {
               <Typography variant="body1" sx={{ mr: 2 }}>
                 <strong>Mã sản phẩm:</strong> {product.productCode}
               </Typography>
-              <Rating value={calculateAverageRating(filteredReviews)} precision={0.5} readOnly />
+              <Rating
+                value={calculateAverageRating(filteredReviews)}
+                precision={0.5}
+                readOnly
+              />
               <Typography variant="body2" sx={{ ml: 1 }}>
                 ({filteredReviews?.length || 0} đánh giá)
               </Typography>
@@ -268,7 +280,9 @@ const Product = () => {
               <TableBody>
                 {specs?.specifications.map((specification, index) => (
                   <TableRow key={index}>
-                    <TableCell>{getSpecificationKey(specification.key)}</TableCell>
+                    <TableCell>
+                      {getSpecificationKey(specification.key)}
+                    </TableCell>
                     <TableCell>{specification.value}</TableCell>
                   </TableRow>
                 ))}
@@ -284,7 +298,9 @@ const Product = () => {
           Đánh giá sản phẩm
         </Typography>
         <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
-          <Typography variant="h6">Bạn đánh giá sao về sản phẩm này?</Typography>
+          <Typography variant="h6">
+            Bạn đánh giá sao về sản phẩm này?
+          </Typography>
           <Rating
             value={newRating}
             onChange={(event, newValue) => setNewRating(newValue)}
