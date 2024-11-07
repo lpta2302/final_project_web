@@ -17,6 +17,7 @@ import ProductImages from "../components/ProductDetails/ProductImages";
 import ReviewsSection from "../components/ProductDetails/ReviewsSection";
 import SpecificationTable from "../components/ProductDetails/SpecificationTable";
 import ProductGeneralInfo from "../components/ProductDetails/ProductGeneralInfo";
+import ProductDescription from "../components/ProductDetails/ProductDescription";
 
 const Product = () => {
   const { slug } = useParams();
@@ -80,6 +81,9 @@ const Product = () => {
           </Grid>
         </Grid>
       </Paper>
+
+      {/* Product Description Section */}
+      <ProductDescription />
 
       {/* Specification Table */}
       <SpecificationTable />
