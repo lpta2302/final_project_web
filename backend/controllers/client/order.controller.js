@@ -1,6 +1,10 @@
 import Order from "../../models/order.model.js";
 import Cart from "../../models/cart.model.js";
-import Voucher from "../../models/voucher.model.js";
+import {
+  calculateDiscountAmount,
+  calculateItemsTotal,
+  createOrUpdateCart,
+} from "../../helpers/order.helper.js";
 
 // [GET] /client/order/user/:id
 export const index = async (req, res) => {
@@ -36,7 +40,6 @@ export const index = async (req, res) => {
 // [POST] /client/order/add
 export const add = async (req, res) => {
   try {
-    // Lấy `userId`, `cart`, và `voucher` từ yêu cầu gửi lên
     const {
       userId,
       cart,
@@ -45,26 +48,8 @@ export const add = async (req, res) => {
       ...orderData
     } = req.body;
 
-    // Tìm `oldCart` dựa trên `userId`
-    const oldCart = await Cart.findOne({ client: userId });
-
-    let newCart;
-    if (oldCart) {
-      // Loại bỏ sản phẩm có `spec` trùng lặp trong `oldCart`
-      cart.cartItems.forEach((newCartItem) => {
-        oldCart.cartItems = oldCart.cartItems.filter(
-          (oldCartItem) => oldCartItem.spec.toString() !== newCartItem.spec
-        );
-      });
-      await oldCart.save();
-
-      // Tạo giỏ hàng mới không chứa `userId`
-      newCart = new Cart({ cartItems: cart.cartItems });
-    } else {
-      // Tạo giỏ hàng mới có chứa `userId`
-      newCart = new Cart({ client: userId, cartItems: cart.cartItems });
-    }
-    await newCart.save();
+    // Create or update the cart and get the new cart
+    const newCart = await createOrUpdateCart(userId, cart);
     orderData.cart = newCart._id;
 
     // Populate spec in cart items to retrieve price and discountPercentage
@@ -73,52 +58,27 @@ export const add = async (req, res) => {
       select: "price discountPercentage",
     });
 
-    // Tính tổng tiền các sản phẩm trong giỏ hàng với giá giảm
-    let itemsTotal = 0;
-    cart.cartItems.forEach((item) => {
-      const price = item.spec.price || 0;
-      const discountPercentage = item.spec.discountPercentage || 0;
-      const discountedPrice = price * (1 - discountPercentage);
-      itemsTotal += item.quantity * discountedPrice;
-    });
+    // Calculate items total
+    const itemsTotal = calculateItemsTotal(cart);
 
-    // Tính tổng discountAmount từ tất cả các voucher
-    let discountAmount = 0;
-    for (const voucherId of voucher) {
-      const appliedVoucher = await Voucher.findById(voucherId);
-      if (appliedVoucher) {
-        const voucherDiscountPercentage =
-          appliedVoucher.discountPercentage || 0;
-        const voucherFixedAmount = appliedVoucher.fixedAmount || 0;
+    // Calculate discount amount from vouchers
+    const discountAmount = await calculateDiscountAmount(voucher, itemsTotal);
 
-        // Tính giảm giá từ voucher, đảm bảo không vượt quá `fixedAmount`
-        const calculatedDiscount = Math.min(
-          itemsTotal * (voucherDiscountPercentage / 100),
-          voucherFixedAmount
-        );
-
-        // Cộng dồn discountAmount từ từng voucher
-        discountAmount += calculatedDiscount;
-      }
-    }
-
-    // Tính tổng tiền đơn hàng (totalAmount)
+    // Calculate total amount
     const totalAmount = itemsTotal - discountAmount + shippingCost;
 
-    // Lưu thông tin `totalAmount` và `discountAmount` vào `orderData`
+    // Assign calculated values to orderData
     orderData.totalAmount = totalAmount;
     orderData.discountAmount = discountAmount;
     orderData.shippingCost = shippingCost;
     orderData.userId = userId;
-
-    // Lưu voucher vào đơn hàng
     orderData.voucher = voucher;
 
-    // Tạo đơn hàng mới và lưu vào cơ sở dữ liệu
+    // Create new order and save to database
     const newOrder = new Order(orderData);
     await newOrder.save();
 
-    // Populate `spec`, `voucher`, và các trường khác trong response
+    // Populate `spec`, `voucher`, and other fields in response
     const populatedOrder = await Order.findById(newOrder._id)
       .populate({
         path: "cart",
@@ -127,7 +87,7 @@ export const add = async (req, res) => {
           select: "price discountPercentage",
         },
       })
-      .populate("voucher"); // Populate voucher thông tin
+      .populate("voucher");
 
     res.json(populatedOrder);
   } catch (error) {
