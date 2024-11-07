@@ -1,6 +1,6 @@
 import { Box } from '@mui/material'
 
-function renderImageSamples({ value }) {
+function renderImageSamples({ value, width, height }) {
     return (
         <Box display="flex" gap={1} maxWidth="100%" sx={{ overflowX: "auto" }}>
             {
@@ -10,8 +10,8 @@ function renderImageSamples({ value }) {
                         component="img"
                         alt="product-image"
                         sx={{
-                            width: '48px',
-                            height: '48px',
+                            width: width || '48px',
+                            height: height || '48px',
                             objectFit: 'cover',
                         }}
                         src={url}

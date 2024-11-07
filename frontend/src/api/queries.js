@@ -10,7 +10,8 @@ import {
   updateRecord,
   getCurrentUser,
   createProduct,
-  updateProduct
+  updateProduct,
+  manageCarousel
 } from "./api";
 import {
   READ_ALL_ACCOUNTS,
@@ -523,7 +524,7 @@ export const useCreateCarousel = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (carousel) =>
-      createRecord(admin_carousel_url.addCarousel(), carousel),
+      manageCarousel(admin_carousel_url.addCarousel(), carousel),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_CAROUSEL]);
     },
@@ -533,7 +534,7 @@ export const useUpdateCarousel = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (carousel) =>
-      updateRecord(
+      manageCarousel(
         admin_carousel_url.updateCarousel(carousel._id),
         carousel
       ),
@@ -646,7 +647,7 @@ export const useAddNewReview = () => {
 const admin_review_url = admin_url.review;
 export const useReadAllReviewsAdmin = (productId) => {
   return useQuery({
-    queryKey: [READ_ALL_ORDERS],
+    queryKey: [READ_ALL_REVIEWS, productId],
     queryFn: () => readAll(admin_review_url.getAllReview(productId)),
     enabled: !!productId
   });

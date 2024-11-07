@@ -15,70 +15,6 @@ export async function createRecord(url, data) {
   }
 }
 
-export async function createProduct(url, data) {
-  const formData = new FormData();
-
-  // Basic fields
-  formData.append("productCode", data.productCode);
-  formData.append("productName", data.productName);
-  formData.append("description", data.description || "Default description");
-  formData.append("productStatus", data.productStatus || "Available");
-  formData.append("category", data.category);
-  formData.append("brand", data.brand);
-
-  // JSON fields (tag, relativeProduct, specs, category, and brand)
-  formData.append("tag", JSON.stringify(data.tag || []));
-  formData.append("variations", JSON.stringify(data.variations));
-
-  // Image or file handling
-  if (data.files) {
-    for (let i = 0; i < data.files.length; i++) {
-      formData.append("files", data.files[i]);
-    }
-  }
-
-  try {
-    const response = await axios.post(url, formData);
-    return response.data;
-  } catch (error) {
-    console.error("Error creating product:", error);
-    throw error;
-  }
-}
-export async function updateProduct(url, data) {
-  const formData = new FormData();
-  console.log(data);
-  
-
-  // Basic fields
-  formData.append("productCode", data.productCode);
-  formData.append("productName", data.productName);
-  formData.append("description", data.description || "Default description");
-  formData.append("productStatus", data.productStatus || "Draft");
-  formData.append("category", data.category);
-  formData.append("brand", data.brand);
-
-  // JSON fields (tag, relativeProduct, specs, category, and brand)
-  formData.append("imageUrls", JSON.stringify(data.imageUrls || []));
-  formData.append("tag", JSON.stringify(data.tag || []));
-  formData.append("specs", JSON.stringify(data.variations));
-
-  // Image or file handling
-  if (data.files) {
-    for (let i = 0; i < data.files.length; i++) {
-      formData.append("files", data.files[i]);
-    }
-  }
-
-
-  try {
-    const response = await axios.patch(url, formData);
-    return response.data;
-  } catch (error) {
-    console.error("Error creating product:", error);
-  }
-}
-
 export async function readAll(url) {
   try {
     const data = (await axios.get(url)).data;
@@ -185,5 +121,89 @@ export async function updateAccountStatus(user) {
   } catch (error) {
     console.error(error);
     return error;
+  }
+}
+
+//----------------------------- PRODUCT -----------------------------
+
+export async function createProduct(url, data) {
+  const formData = new FormData();
+
+  // Basic fields
+  formData.append("productCode", data.productCode);
+  formData.append("productName", data.productName);
+  formData.append("description", data.description || "Default description");
+  formData.append("productStatus", data.productStatus || "Available");
+  formData.append("category", data.category);
+  formData.append("brand", data.brand);
+
+  // JSON fields (tag, relativeProduct, specs, category, and brand)
+  formData.append("tag", JSON.stringify(data.tag || []));
+  formData.append("variations", JSON.stringify(data.variations));
+
+  // Image or file handling
+  if (data.files) {
+    for (let i = 0; i < data.files.length; i++) {
+      formData.append("files", data.files[i]);
+    }
+  }
+
+  try {
+    const response = await axios.post(url, formData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating product:", error);
+    throw error;
+  }
+}
+export async function updateProduct(url, data) {
+  const formData = new FormData();
+  console.log(data);
+
+
+  // Basic fields
+  formData.append("productCode", data.productCode);
+  formData.append("productName", data.productName);
+  formData.append("description", data.description || "Default description");
+  formData.append("productStatus", data.productStatus || "Draft");
+  formData.append("category", data.category);
+  formData.append("brand", data.brand);
+
+  // JSON fields (tag, relativeProduct, specs, category, and brand)
+  formData.append("imageUrls", JSON.stringify(data.imageUrls || []));
+  formData.append("tag", JSON.stringify(data.tag || []));
+  formData.append("specs", JSON.stringify(data.variations));
+
+  // Image or file handling
+  if (data.files) {
+    for (let i = 0; i < data.files.length; i++) {
+      formData.append("files", data.files[i]);
+    }
+  }
+
+
+  try {
+    const response = await axios.patch(url, formData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating product:", error);
+  }
+}
+//----------------------------- SLIDER_BANNER -----------------------------
+
+export async function manageCarousel(url, data) {
+  const formData = new FormData();
+
+  // Basic fields
+  formData.append("title", data.title);
+  formData.append("slug", data.slug);
+  formData.append("files", data.imgUrl);
+
+  try {
+    const response = data.isNew ? await axios.post(url, formData) : await axios.patch(url, formData);
+    return response.data;
+  } catch (error) {
+    console.error("Error creating product:", error);
+    throw error;
   }
 }

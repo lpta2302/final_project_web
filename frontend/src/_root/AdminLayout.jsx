@@ -15,21 +15,7 @@ function AdminLayout() {
   const [pathname, setPathname] = useState('/admin');
   const navigate = useNavigate();
   const location = useLocation();
-  
-  const [session, setSession] = useState(initSession);
   const theme = useTheme()
-
-  const authentication = useMemo(() => {
-    return {
-      signIn: () => {
-        setSession(initSession);
-      },
-      signOut: () => {
-        setSession(null);
-      },
-    };
-  }, [])
-
 
   // useEffect(() => {
   //   if (session.user === null) {
@@ -69,18 +55,19 @@ function AdminLayout() {
             onClick={handleLogoClick}
             display='flex'
             alignItems='center'
+            height="100%"
+            justifyContent='center'
+            flexDirection={{xs:'column', md:'row'}}
           >
-            <Logo />
-            <Typography variant='subtitle2' ml={{ sm: '12px', xs: 'none' }}>Admin</Typography>
+            <Logo lineHeight={1} fontSize={{xs: '1.2rem', md:'1.5rem'}}/>
+            <Typography lineHeight='1rem' variant='subtitle2' ml={{ sm: '12px', xs: 'none' }} fontSize={{xs:'0.5rem', md:'1rem'}}>Admin</Typography>
           </Box>
       }}
-      session={session}
-      authentication={authentication}
     >
       <DashboardLayout>
         <Box>
           {
-            location.pathname !== '/admin/' &&
+            !location.pathname.startsWith('/admin') &&
             <IconButton onClick={() => navigate(-1)}>
               <ArrowBack />
             </IconButton>

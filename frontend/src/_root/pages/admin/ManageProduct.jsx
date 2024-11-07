@@ -10,6 +10,21 @@ import { useDeleteProduct, useReadAllProductAdmin, useReadAllReviewsAdmin, useSe
 import { useNavigate } from 'react-router-dom';
 import renderImageSamples from './customRenderer/renderImageSamples.jsx';
 
+// const carouselSchema = mongoose.Schema({
+//   title: {
+//     type: String,
+//     required: true, // Bắt buộc
+//   },
+//   imgUrl: {
+//     type: String,
+//     required: true, // Bắt buộc
+//   },
+//   slug: {
+//     type: String,
+//     unique: true, // Không được trùng
+//   },
+// });
+
 const columnFields = [
   {
     field: 'imageUrls',
