@@ -142,16 +142,36 @@ export const editProduct = async (req, res) => {
     if (!existingProduct) {
       return res.status(404).json(false);
     }
-
-    console.log("EP: " + existingProduct);
-
     // Xử lý hình ảnh mới nếu có
-    const newImgUrl = req.imageUrls || [];
-    if (newImgUrl.length > 0) {
-      const oldImgUrl = existingProduct.imageURLs;
+
+    let newImgUrl = [];
+
+    console.log("NC: " + req.body.variations);
+
+    // Kiểm tra req.imageUrls
+    if (req.imageUrls && req.imageUrls.length > 0) {
+      newImgUrl = req.imageUrls;
+
+      if (req.body.imageUrls) {
+        // Đảm bảo newImgUrl là một mảng đúng
+        newImgUrl = [...newImgUrl, ...JSON.parse(req.body.imageUrls)];
+      }
+    }
+    // Kiểm tra req.body.imageUrls nếu req.imageUrls không có giá trị
+    else if (req.body.imageUrls) {
+      newImgUrl = JSON.parse(req.body.imageUrls);
+    }
+    const oldImgUrl = existingProduct.imageURLs || [];
+
+    // Nếu có sự thay đổi trong danh sách hình ảnh (bao gồm cả giảm số lượng)
+    if (newImgUrl.length !== oldImgUrl.length) {
+      // Tìm những hình ảnh cũ cần xóa
+      const imgUrlsToDelete = oldImgUrl.filter(
+        (url) => !newImgUrl.includes(url)
+      );
 
       // Xóa hình ảnh cũ trên Google Drive
-      for (const url of oldImgUrl) {
+      for (const url of imgUrlsToDelete) {
         const urlParams = new URL(url);
         const fileId = urlParams.searchParams.get("id");
         if (fileId) {
@@ -159,6 +179,7 @@ export const editProduct = async (req, res) => {
         }
       }
 
+      // Cập nhật danh sách hình ảnh mới
       existingProduct.imageURLs = newImgUrl;
     }
 
@@ -170,12 +191,15 @@ export const editProduct = async (req, res) => {
       : JSON.parse(variations || "[]") || [];
 
     if (Array.isArray(parsedVariations) && parsedVariations.length > 0) {
+      const specIdsToKeep = []; // Dùng để lưu các specIds của sản phẩm cần giữ lại
+
       for (let variation of parsedVariations) {
         console.log("SI: " + variation.specId);
 
-        // Tìm spec hiện tại với specCode (thay vì specId)
+        // Tìm spec hiện tại với specCode và productId
         let existingSpec = await Specs.findOne({
           specCode: variation.specCode,
+          products: req.params.id, // Chỉ tìm các specs có chứa product hiện tại
         });
 
         if (existingSpec) {
@@ -191,7 +215,11 @@ export const editProduct = async (req, res) => {
           existingSpec.stockQuantity = variation.stockQuantity;
           existingSpec.price = variation.price;
           existingSpec.discountPercentage = variation.discountPercentage;
+
           await existingSpec.save(); // Lưu thay đổi
+
+          // Thêm specId vào danh sách giữ lại
+          specIdsToKeep.push(existingSpec._id);
         } else {
           // Tạo spec mới nếu không có specCode trùng
           const validSpecifications = await Promise.all(
@@ -207,20 +235,32 @@ export const editProduct = async (req, res) => {
               specifications: validSpecifications,
               stockQuantity: variation.stockQuantity,
               price: variation.price,
-              products: existingProduct._id,
+              products: [req.params.id], // Liên kết sản phẩm vào spec mới
               discountPercentage: variation.discountPercentage,
             });
             await newSpec.save();
 
             // Thêm spec mới vào sản phẩm
             existingProduct.specs.push(newSpec._id);
+
+            // Thêm specId vào danh sách giữ lại
+            specIdsToKeep.push(newSpec._id);
           }
         }
       }
+
+      // Xóa các specs không còn liên kết với sản phẩm
+      await Specs.deleteMany({
+        _id: { $nin: specIdsToKeep }, // Chỉ xóa những specs có id không nằm trong danh sách giữ lại
+        products: { $in: [req.params.id] }, // Đảm bảo rằng spec vẫn còn liên kết với sản phẩm
+      });
     }
 
     // Cập nhật category nếu có sự thay đổi
-    if (req.body.category) {
+    if (
+      req.body.category &&
+      mongoose.Types.ObjectId.isValid(req.body.category)
+    ) {
       existingProduct.category = req.body.category;
 
       const categoryDoc = await Category.findById(req.body.category);
@@ -234,7 +274,7 @@ export const editProduct = async (req, res) => {
     }
 
     // Cập nhật brand nếu có sự thay đổi
-    if (req.body.brand) {
+    if (req.body.brand && mongoose.Types.ObjectId.isValid(req.body.brand)) {
       existingProduct.brand = req.body.brand;
 
       const brandDoc = await Brand.findById(req.body.brand);
