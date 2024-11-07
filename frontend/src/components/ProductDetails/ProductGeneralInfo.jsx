@@ -20,13 +20,13 @@ const ProductGeneralInfo = () => {
   const [selectedSpec, setSelectedSpec] = useState(null);
 
   const { data: productData } = useReadProductDetailBySlug(slug);
-  const { data: productReview } = useReadAllReviewsAdmin();
 
-  const product = productData || null;
-  const specs = Array.isArray(product?.specs) ? product.specs : [];
-  const filteredReviews = Array.isArray(productReview)
-    ? productReview.filter((review) => review.spec === specs?._id)
-    : [];
+  // Lấy specId từ sản phẩm
+  const specs = Array.isArray(productData?.specs) ? productData.specs : [];
+  const specId = selectedSpec?._id; // specId sẽ lấy từ selectedSpec
+
+  // Fetch các reviews từ API dựa trên specId
+  const { data: productReview } = useReadAllReviewsAdmin(specId);
 
   useEffect(() => {
     if (specs && specs.length > 0) {
@@ -61,11 +61,14 @@ const ProductGeneralInfo = () => {
     setIsFavorited(!isFavorited);
   };
 
+  // Tính rating trung bình từ các reviews
+  const averageRating = calculateAverageRating(productReview);
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
       {/* Product Name and Favorite Button */}
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <Typography variant="h5">{product.productName}</Typography>
+        <Typography variant="h5">{productData.productName}</Typography>
         <IconButton onClick={toggleFavorite} sx={{ color: "red" }}>
           {isFavorited ? <Favorite /> : <FavoriteBorder />}
         </IconButton>
@@ -73,9 +76,9 @@ const ProductGeneralInfo = () => {
 
       {/* Rating */}
       <Box sx={{ display: "flex", alignItems: "center" }}>
-        <Rating value={calculateAverageRating(filteredReviews)} readOnly precision={0.5} />
+        <Rating value={averageRating} readOnly precision={0.5} />
         <Typography variant="body2" sx={{ ml: 1 }}>
-          ({filteredReviews?.length || 0} đánh giá)
+          ({productReview?.length || 0} đánh giá)
         </Typography>
       </Box>
 
@@ -90,7 +93,7 @@ const ProductGeneralInfo = () => {
           );
           const storageCapacity = storageSpec ? storageSpec.value : "N/A";
           const originalPrice = spec.price;
-          const discountPrice = originalPrice * (1 - (product.specs.discountPercentage || 0) / 100);
+          const discountPrice = originalPrice * (1 - (productData.specs.discountPercentage || 0) / 100);
 
           return (
             <Button
@@ -115,7 +118,7 @@ const ProductGeneralInfo = () => {
                 {storageCapacity}
               </Typography>
               <Box sx={{ display: "flex", flexDirection: "column", textAlign: "right" }}>
-                {product.discountPercentage > 0 && (
+                {productData.discountPercentage > 0 && (
                   <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
                     ${originalPrice}
                   </Typography>

@@ -646,7 +646,7 @@ export const useAddNewReview = () => {
 const admin_review_url = admin_url.review;
 export const useReadAllReviewsAdmin = (productId) => {
   return useQuery({
-    queryKey: [READ_ALL_ORDERS],
+    queryKey: [READ_ALL_ORDERS, productId],
     queryFn: () => readAll(admin_review_url.getAllReview(productId)),
     enabled: !!productId
   });

@@ -1,31 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Paper, Typography, Rating, Box } from '@mui/material';
 import moment from 'moment';
-import { useReadAllProduct, useReadAllReviewsAdmin } from '../../api/queries';
+import { useReadAllReviewsAdmin } from '../../api/queries';
 
-const ReviewsSection = () => {
-  const [detailId, setDetailId] = useState();
-  
-  const { data: products, isLoading: isLoading } = useReadAllProduct();
-  
-  useEffect(() => {
-    if (products && products.length > 0) {
-      const specId = products[0].specs[0]._id;
-      if (specId) {
-        setDetailId(specId);
-        console.log("Selected specId:", specId);
-      } else {
-        console.log("No valid specId found in the product.");
-      }
-    }
-  }, [products]);
+const ReviewsSection = ({ specId }) => {
+  const { data: productReview, isLoading: isLoadingReviews } = useReadAllReviewsAdmin(specId);
 
-  console.log(detailId)
-
-  const { data: productReview, isLoading: isLoadingReviews } = useReadAllReviewsAdmin(detailId);
-
-  // Nếu đang tải sản phẩm hoặc đánh giá
-  if (isLoading || isLoadingReviews) {
+  // Nếu đang tải đánh giá
+  if (isLoadingReviews) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="80vh">
         <Typography variant="body2">Đang tải dữ liệu...</Typography>
@@ -38,7 +20,7 @@ const ReviewsSection = () => {
     return (
       <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
         <Typography variant="h5" sx={{ mb: 2 }}>
-          Đánh giá sản phẩm
+          Đánh giá về sản phẩm
         </Typography>
         <Typography variant="body2" color="textSecondary">
           Chưa có đánh giá nào.
@@ -49,7 +31,7 @@ const ReviewsSection = () => {
 
   // Lọc các đánh giá chỉ cho specId hiện tại
   const filteredReviews = Array.isArray(productReview)
-    ? productReview.filter((review) => review.spec === detailId)
+    ? productReview.filter((review) => review.spec === specId)
     : [];
 
   return (

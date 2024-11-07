@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Container,
   Typography,
@@ -12,8 +12,6 @@ import {
 import { useParams } from "react-router-dom";
 import {
   useReadProductDetailBySlug,
-  useReadAllTagAdmin,
-  useReadProductByTag,
 } from "../api/queries";
 import ProductImages from "../components/ProductDetails/ProductImages";
 import ProductGeneralInfo from "../components/ProductDetails/ProductGeneralInfo";
@@ -27,6 +25,7 @@ const Product = () => {
   const { data: productData, isLoading: isLoadingProduct } = useReadProductDetailBySlug(slug);
 
   const product = productData || null;
+  const specId = product?.specs?.[0]?._id; // Lấy specId từ sản phẩm đầu tiên, hoặc thay đổi nếu cần
 
   if (isLoadingProduct) {
     return (
@@ -80,13 +79,13 @@ const Product = () => {
       </Paper>
 
       {/* Product Description Section */}
-      <ProductDescription />
+      <ProductDescription specId={specId} />
 
       {/* Specification Table */}
       <SpecificationTable />
 
-      {/* Reviews Section */}
-      <ReviewsSection />
+      {/* Reviews Section - truyền specId vào đây */}
+      <ReviewsSection specId={specId} />
 
       {/* Sử dụng component RelativeProducts */}
       <RelativeProducts />
