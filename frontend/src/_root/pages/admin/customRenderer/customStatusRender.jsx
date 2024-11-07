@@ -43,7 +43,6 @@ const StyledChip = styled(Chip)(({ theme, color }) => ({
 const Status = ({ status, options = STATUS_TYPES }) => {
   const statusConfig = options[status] || {};
   const IconComponent = statusConfig.icon;
-  console.log(options);
 
   return (
     <StyledChip
@@ -113,7 +112,7 @@ function EditStatus({ id, value, field, options = STATUS_TYPES }) {
             <ListItemIcon sx={{ minWidth: 36 }}>
               {IconComponent && <IconComponent fontSize="small" />}
             </ListItemIcon>
-            <ListItemText primary={option.label} sx={{overflow: 'hidden', textTransform: 'capitalize' }} />
+            <ListItemText primary={option.label} sx={{ overflow: 'hidden', textTransform: 'capitalize' }} />
           </MenuItem>
         );
       })}
@@ -132,8 +131,6 @@ export function renderCustomStatus(params, options) {
   if (params.value == null) {
     return '';
   }
-  console.log(options);
-  
 
   return <Status status={params.value} options={options} />;
 }

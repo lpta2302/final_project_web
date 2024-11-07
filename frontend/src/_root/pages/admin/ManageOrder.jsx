@@ -1,13 +1,14 @@
 import { DataGrid, GridActionsCellItem, GridToolbar } from '@mui/x-data-grid';
-import { renderEditCustomerStatus, renderCustomerStatus, STATUS_OPTIONS } from './customRenderer/customerStatus.jsx';
-import { useDeleteAccount, useReadAllAccount, useReadAllOrdersAdmin, useUpdateAccountStatus } from '../../../api/queries.js';
-import { CreditCard, Delete, Done, DoNotDisturbAltOutlined, HourglassTopOutlined, LocalShipping, Money, Pending } from '@mui/icons-material';
+import { renderEditCustomerStatus } from './customRenderer/customerStatus.jsx';
+import { useDeleteoOrderAmin, useReadAllOrdersAdmin, useSearchOrderAdmin, useUpdateOrderAdmin } from '../../../api/queries.js';
+import { CreditCard, Delete, Done, DoNotDisturbAltOutlined, FilterAlt, FilterAltOff, HourglassTopOutlined, LensBlurRounded, LocalShipping, Money, Pending } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
 import DataGridConfirmDialog from '../../../components/dialogs/DataGridConfirmDialog.jsx';
-import { CustomPageContainer, ManagePageSearch } from "../../../components";
+import { CustomPageContainer, FilterDrawer, ManagePageSearch } from "../../../components";
 import { enqueueSnackbar as toaster } from 'notistack';
-import { Box } from '@mui/material';
-import { renderCustomStatus } from './customRenderer/customStatusRender.jsx';
+import { Box, Button, ButtonGroup, Drawer } from '@mui/material';
+import { renderCustomStatus, renderEditCustomStatus } from './customRenderer/customStatusRender.jsx';
+import setDeepState from '../../../util/setDeepState.js';
 
 // {"_id":"6718dc7a3010027ae58c30d1",
 //   "userId":"670dd3f0602cc40efb3bc78c",
@@ -74,23 +75,40 @@ const processStatus = {
   },
 };
 
+const defaultSorting = [
+  { field: 'processStatus', sort: 'asc' }, // Default sort on 'status' column (Pending -> Processing -> Other)
+];
+
 function ManageOrder() {
-  const [searchValue,setSearchValue] = useState('')
+  const [isOpenFilter, setIsOpenFilter] = useState(false)
+  const [searchValue, setSearchValue] = useState('')
+  const [searchParam, setSearchParam] = useState()
   const [rows, setRows] = useState()
   const { data, isLoading } = useReadAllOrdersAdmin();
   const [dialogPayload, setDialogPayload] = useState({ state: false, id: null });
-  const { mutateAsync: deleteAccount } = useDeleteAccount();
-  const { mutateAsync: updateAccountStatus } = useUpdateAccountStatus();
-  
-console.log(rows);
-
+  const { mutateAsync: deleteOrder } = useDeleteoOrderAmin();
+  const { mutateAsync: updateOrderStatus } = useUpdateOrderAdmin();
+  const { data: searchResult } = useSearchOrderAdmin(searchParam);
   const breadcrumbs = [
     { path: '/', title: 'Home' },
     { path: '/manage-order', title: 'Quản lý đơn hàng' },
   ]
+  const handleAddParam = setDeepState(setSearchParam);
 
   useEffect(() => setRows(data), [data])
+  useEffect(() => {
+    setTimeout(() => {
+      if (!searchValue && Object.keys(searchParam)?.length < 1) {
+        return;
+      }
+      setSearchParam(
+        prev => ({ ...prev, orderId: searchValue })
+      )
+    }, 1500);
+  }, [searchValue]);
 
+  console.log(rows);
+  
   const columns = [
     // { field: 'accountCode', headerName: 'Id', width: 150 },
     // { field: 'username', headerName: 'Tên tài khoản', width: 150 },
@@ -98,31 +116,53 @@ console.log(rows);
     // { field: 'lastName', headerName: 'Tên', width: 200 },
     // { field: 'email', headerName: 'Email', width: 200 },
     // { field: 'phoneNumber', headerName: 'Số điện thoại', width: 150 }
-    { 
-      field: 'shippingCost', 
-      type: 'number', 
-      headerName: 'Phí Ship', 
-      width: 150 ,
+    {
+      field: '_id',
+      type: 'string',
+      headerName: 'Mã vận đơn',
+      width: 150,
+    },
+    {
+      field: 'shippingCost',
+      type: 'number',
+      headerName: 'Phí Ship',
+      width: 150,
     },
     { field: 'discountAmount', type: 'number', headerName: 'Số tiền giảm', width: 150 },
     { field: 'totalAmount', type: 'number', headerName: 'Thành tiền', width: 150 },
-    { field: 'createdAt', 
-      headerName: 'Ngày tạo đơn', 
-      width: 150, valueFormatter:(value)=> new Date(value).toLocaleString() 
+    {
+      field: 'createdAt',
+      headerName: 'Ngày tạo đơn',
+      width: 150, valueFormatter: (value) => new Date(value).toLocaleString()
     },
     {
-      field: 'paymentMethod', headerName: 'Phương thức TT', width: 150, renderCell: (params)=>renderCustomStatus(params,paymentMethod),
+      field: 'paymentMethod', headerName: 'Phương thức TT', width: 150, renderCell: (params) => renderCustomStatus(params, paymentMethod),
       renderEditCell: renderEditCustomerStatus,
       type: 'singleSelect',
     },
     {
-      field: 'paymentStatus', headerName: 'Trạng thái TT', width: 150, renderCell: (params)=>renderCustomStatus(params,paymentStatus),
+      field: 'paymentStatus', headerName: 'Trạng thái TT', width: 150, renderCell: (params) => renderCustomStatus(params, paymentStatus),
       type: 'singleSelect',
     },
     {
-      field: 'processStatus', headerName: 'Trạng thái đơn', width: 150, renderCell: (params)=>renderCustomStatus(params,processStatus),
-      renderEditCell: renderEditCustomerStatus,
-      type: 'singleSelect',
+      field: 'processStatus', headerName: 'Trạng thái đơn', width: 150, renderCell: (params) => renderCustomStatus(params, processStatus),
+      renderEditCell: (params) => renderEditCustomStatus(params, processStatus),
+      type: 'singleSelect', editable: 'true',
+      sortComparator: (v1, v2) => {
+        console.log(v1);
+
+        // Define custom order for statuses
+        const order = ['pending', 'processing']; // 'Other' will fall last
+
+        // Compare 'Pending' first, 'Processing' second, then 'Other'
+        const index1 = order.indexOf(v1);
+        const index2 = order.indexOf(v2);
+
+        // If status is in the order array, it will use the index for sorting, otherwise it will be placed last
+        if (index1 !== -1 && index2 === -1) return -1; // v1 is in the order and v2 is not
+        if (index1 === -1 && index2 !== -1) return 1;  // v2 is in the order and v1 is not
+        return index1 - index2; // Default sorting for statuses in the order array
+      },
     },
     {
       field: 'actions',
@@ -140,8 +180,58 @@ console.log(rows);
         />]
       }
     }
-  ].map(col=>({ ...col, headerAlign: 'center', align: 'center' }))
+  ].map(col => ({ ...col, headerAlign: 'center', align: 'center' }))
+  const filterList = {
+    paymentMethod: {
+      type: 'select',
+      onChange: (e) => {
+        const value = e.target.value;
+        handleAddParam('paymentMethod', value)
+      },
+      options: Object.values(paymentMethod).map(value=>value.label),
+      label: 'Phương thức TT'
+    },
+    paymentStatus: {
+      type: 'select',
+      onChange: (e) => {
+        const value = e.target.value;
+        handleAddParam('paymentStatus', value)
+      },
+      options: Object.values(paymentStatus).map(value=>value.label),
+      label: 'Trạng thái TT'
+    },
+    processStatus: {
+      type: 'select',
+      onChange: (e) => {
+        const value = e.target.value;
+        handleAddParam('processStatus', value)
+      },
+      options: Object.values(processStatus).map(value=>value.label),
+      label: 'Trạng thái đơn'
+    },
+    totalAmount: {
+      type: 'numberGroup',
+      items: {
+        minTotalAmount: {
+          label: 'Thành tiền tối thiểu',
+          onChange: (e) => {
+            const value = e.target.value;
+            handleAddParam('minTotalAmount', value)
+          },
+          placeholder: '0'
+        },
+        maxTotalAmount: {
+          label: 'Thành tiền tối đa',
+          onChange: (e) => {
+            const value = e.target.value;
+            handleAddParam('maxTotalAmount', value)
+          },
+          placeholder: '1 0000 000'
+        },
+      }
+    },
 
+  }
   const handleDeleteClick = async (isAccept) => {
     console.log(isAccept);
 
@@ -153,13 +243,13 @@ console.log(rows);
     }
 
 
-    await deleteAccount(id)
+    await deleteOrder(id)
     setRows(rows.filter((row) => row.accountCode !== id));
     setDialogPayload({ state: false, id: null });
   }
 
   const handleUpdate = async (updatedRow) => {
-    await updateAccountStatus(updatedRow)
+    await updateOrderStatus(updatedRow)
     toaster("Cập nhật trạng thái tài khoản thành công", { variant: 'success' })
     return updatedRow;
   }
@@ -167,11 +257,21 @@ console.log(rows);
   const handleUpdateError = () => {
     toaster("Cập nhật trạng thái tài khoản thất bại", { variant: 'error' })
   }
-
   const handleSearch = () => {
-    console.log(searchValue);
-
+    if (!searchValue && Object.keys(searchParam) < 1) {
+      return;
+    }
+    setSearchParam(prev => ({ ...prev, orderId: searchValue }))
   }
+
+  const toggleDrawer = (newState) => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+
+    setIsOpenFilter(newState);
+  };
+
 
 
   return (
@@ -180,12 +280,38 @@ console.log(rows);
       breadCrumbs={breadcrumbs}
       sx={{ maxWidth: { xl: 'unset', lg: '94vw', sm: '92vw', xs: '100vw' } }}
     >
+    <Drawer
+        sx={{
+          '& .MuiDrawer-paper': { backgroundImage: 'none', py: '80px' },
+        }}
+        anchor={'right'}
+        open={isOpenFilter}
+        onClose={toggleDrawer(false)}
+      >
+        <FilterDrawer
+          filterList={filterList}
+          toggleDrawer={toggleDrawer}
+        />
+      </Drawer>
       <Box
         display='flex'
         width='100%'
         justifyContent='flex-end'
         mb={3}
       >
+        <ButtonGroup color='blackLight' sx={{ mr: 1 }}>
+          <Button
+            sx={{ width: '44px', height: '44px', minWidth: '44px' }}
+          >
+            <FilterAltOff />
+          </Button>
+          <Button
+            sx={{ width: '44px', height: '44px', minWidth: '44px' }}
+            onClick={toggleDrawer(true)}
+          >
+            <FilterAlt />
+          </Button>
+        </ButtonGroup>
         <ManagePageSearch
           {...{ searchValue, setSearchValue, handleSearch }}
         />
@@ -198,20 +324,22 @@ console.log(rows);
       />
       <DataGrid
         getRowId={(row) => row._id}
-        rows={rows}
+        rows={searchResult? searchResult :rows}
         columns={columns}
         slots={{ toolbar: GridToolbar }}
         processRowUpdate={handleUpdate}
         onProcessRowUpdateError={handleUpdateError}
         loading={isLoading}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 5,
-              },
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 5,
             },
-          }}
-          pageSizeOptions={[5, 10]}
+          },
+          sorting: { sortModel: defaultSorting }
+        }}
+        pageSizeOptions={[5, 10]}
+        sortingModel={defaultSorting}
       />
 
     </CustomPageContainer>

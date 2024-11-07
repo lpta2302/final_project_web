@@ -600,6 +600,16 @@ export const useUpdateOrderAdmin = () => {
     },
   });
 };
+export const useDeleteoOrderAmin = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (orderId) =>
+      deleteRecord(admin_order_url.deleteOrder(orderId)),
+    onSuccess: () => {
+      queryClient.invalidateQueries([READ_ALL_ORDERS]);
+    },
+  });
+};
 export const useSearchOrderAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_ORDER, searchParam],

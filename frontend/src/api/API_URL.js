@@ -123,6 +123,7 @@ export const admin_url = {
         getOrderOfUser: (id) => '/order/user/' + id,
         getOrderDetail: (id) => '/order/detail/' + id,
         editOrder: (id) => '/order/edit/' + id,
+        deleteOrder: (id) => '/order/' + id,
         search: () => '/order/search/',
         generalStatistic: () => '/order/statistic/',//x
         statisticRevenue: () => '/order/statistic-revenue/'//x

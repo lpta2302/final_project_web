@@ -66,8 +66,10 @@ function ManageInventory() {
   useEffect(() => {
     setRows(data);
     columnFields[4].renderEditCell = (params)=>{
-      const {row} = params
-    navigate('manage-item', { state: row})}
+      const {row, hasFocus} = params
+      if (hasFocus) {
+        navigate('manage-item', { state: row})}
+      }
   }, [data])
 
   const handleEditCellProps = (arg) => {

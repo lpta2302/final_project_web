@@ -44,9 +44,7 @@ function ManageVoucher() {
   const [rowChanges, setRowChanges] = useState(null)
 
   const [searchValue, setSearchValue] = useState()
-  const [searchParam, setSearchParam] = useState("")
-
-
+  const [searchParam, setSearchParam] = useState()
 
   const { mutateAsync: createRecord } = useCreateVoucher();
   const { data, isLoading } = useReadAllVoucherAdmin();
@@ -71,8 +69,8 @@ function ManageVoucher() {
 
     let errorMessage = '';
     console.log(arg);
-    
-    
+
+
     if (type === 'number') {
       if ((isRequired && !value) || typeof value !== 'number')
         errorMessage = `Require Number`
@@ -186,7 +184,7 @@ function ManageVoucher() {
           onChange: (e) => {
             const value = e.target.value;
             const newValue = value.endsWith('%') ? value / 100 : value;
-            handleAddParam('minDiscount', newValue)
+            handleAddParam('maxDiscount', newValue)
           },
           placeholder: '0.01 ~ 10%'
         },

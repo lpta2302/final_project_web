@@ -393,7 +393,7 @@ function CreateProduct() {
                         url(${files.length > 0 ?
                         (
                           typeof files[showingFile] === 'string' ?
-                            files[showingFile] : URL.createObjectURL(files[showingFile])
+                            `"${files[showingFile]}"` : URL.createObjectURL(files[showingFile])
                         ) : AddImage})`,
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: 'center', // Centers the background image
