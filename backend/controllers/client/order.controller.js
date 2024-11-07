@@ -1,5 +1,6 @@
 import Order from "../../models/order.model.js";
 import Cart from "../../models/cart.model.js";
+import Voucher from "../../models/voucher.model.js";
 
 // [GET] /client/order/user/:id
 export const index = async (req, res) => {
@@ -35,51 +36,100 @@ export const index = async (req, res) => {
 // [POST] /client/order/add
 export const add = async (req, res) => {
   try {
-    // Lấy `userId` và dữ liệu giỏ hàng từ yêu cầu gửi lên
-    const { userId, cart, ...orderData } = req.body;
+    // Lấy `userId`, `cart`, và `voucher` từ yêu cầu gửi lên
+    const {
+      userId,
+      cart,
+      voucher = [],
+      shippingCost = 0,
+      ...orderData
+    } = req.body;
 
     // Tìm `oldCart` dựa trên `userId`
     const oldCart = await Cart.findOne({ client: userId });
 
+    let newCart;
     if (oldCart) {
-      // Kiểm tra và loại bỏ sản phẩm có `spec` trùng lặp trong `oldCart`
+      // Loại bỏ sản phẩm có `spec` trùng lặp trong `oldCart`
       cart.cartItems.forEach((newCartItem) => {
         oldCart.cartItems = oldCart.cartItems.filter(
           (oldCartItem) => oldCartItem.spec.toString() !== newCartItem.spec
         );
       });
-
-      // Lưu lại `oldCart` sau khi đã loại bỏ các sản phẩm trùng lặp
       await oldCart.save();
 
       // Tạo giỏ hàng mới không chứa `userId`
-      const newCart = new Cart({
-        cartItems: cart.cartItems, // Chỉ bao gồm các `cartItems` mới
-      });
-      await newCart.save();
-
-      // Gán `_id` của `newCart` vào `orderData`
-      orderData.cart = newCart._id;
+      newCart = new Cart({ cartItems: cart.cartItems });
     } else {
-      // Nếu không có `oldCart`, tạo giỏ hàng mới và lưu `userId`
-      const newCart = new Cart({
-        client: userId,
-        cartItems: cart.cartItems,
-      });
-      await newCart.save();
+      // Tạo giỏ hàng mới có chứa `userId`
+      newCart = new Cart({ client: userId, cartItems: cart.cartItems });
+    }
+    await newCart.save();
+    orderData.cart = newCart._id;
 
-      // Gán `_id` của `newCart` vào `orderData`
-      orderData.cart = newCart._id;
+    // Populate spec in cart items to retrieve price and discountPercentage
+    await Cart.populate(cart, {
+      path: "cartItems.spec",
+      select: "price discountPercentage",
+    });
+
+    // Tính tổng tiền các sản phẩm trong giỏ hàng với giá giảm
+    let itemsTotal = 0;
+    cart.cartItems.forEach((item) => {
+      const price = item.spec.price || 0;
+      const discountPercentage = item.spec.discountPercentage || 0;
+      const discountedPrice = price * (1 - discountPercentage);
+      itemsTotal += item.quantity * discountedPrice;
+    });
+
+    // Tính tổng discountAmount từ tất cả các voucher
+    let discountAmount = 0;
+    for (const voucherId of voucher) {
+      const appliedVoucher = await Voucher.findById(voucherId);
+      if (appliedVoucher) {
+        const voucherDiscountPercentage =
+          appliedVoucher.discountPercentage || 0;
+        const voucherFixedAmount = appliedVoucher.fixedAmount || 0;
+
+        // Tính giảm giá từ voucher, đảm bảo không vượt quá `fixedAmount`
+        const calculatedDiscount = Math.min(
+          itemsTotal * (voucherDiscountPercentage / 100),
+          voucherFixedAmount
+        );
+
+        // Cộng dồn discountAmount từ từng voucher
+        discountAmount += calculatedDiscount;
+      }
     }
 
-    // Gán `userId` vào `orderData` để lưu trong đơn hàng
+    // Tính tổng tiền đơn hàng (totalAmount)
+    const totalAmount = itemsTotal - discountAmount + shippingCost;
+
+    // Lưu thông tin `totalAmount` và `discountAmount` vào `orderData`
+    orderData.totalAmount = totalAmount;
+    orderData.discountAmount = discountAmount;
+    orderData.shippingCost = shippingCost;
     orderData.userId = userId;
 
-    // Tạo mới `Order` với `orderData` và lưu vào cơ sở dữ liệu
+    // Lưu voucher vào đơn hàng
+    orderData.voucher = voucher;
+
+    // Tạo đơn hàng mới và lưu vào cơ sở dữ liệu
     const newOrder = new Order(orderData);
     await newOrder.save();
 
-    res.json(newOrder);
+    // Populate `spec`, `voucher`, và các trường khác trong response
+    const populatedOrder = await Order.findById(newOrder._id)
+      .populate({
+        path: "cart",
+        populate: {
+          path: "cartItems.spec",
+          select: "price discountPercentage",
+        },
+      })
+      .populate("voucher"); // Populate voucher thông tin
+
+    res.json(populatedOrder);
   } catch (error) {
     console.error(error);
     res.status(400).json({ success: false, message: "Lỗi khi tạo đơn hàng" });
