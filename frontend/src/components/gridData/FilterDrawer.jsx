@@ -1,4 +1,4 @@
-import { Box, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, TextField } from "@mui/material";
+import { Box, Divider, FormControl, InputLabel, List, ListItem, ListItemButton, ListItemIcon, ListItemText, MenuItem, Select, TextField } from "@mui/material";
 import PropTypes, { elementType } from "prop-types"
 
 const validateNumber = (event) => {
@@ -22,6 +22,18 @@ const elements = {
       value={value}
       onChange={onChange}
       label={label} fullWidth placeholder={placeholder} />
+  ),
+  select: ({value, onChange, label, options}) => (
+    <FormControl margin="normal" sx={{minWidth: '200px', mx:'auto'}}>
+      <InputLabel id="filter-select-label">{label}</InputLabel>
+      <Select sx={{ height: '100%' }} labelId="product-status" label={label} value={value} onChange={onChange}>
+        {
+          options.map(status => (
+            <MenuItem key={status} value={status}>{status}</MenuItem>
+          ))
+        }
+      </Select>
+    </FormControl>
   ),
   number: (value, onChange, label, placeholder) => (
     <TextField
@@ -51,6 +63,7 @@ const elements = {
       width="100%"
       gap={1}
       justifyContent='space-between'
+      margin={1}
     >
       {Object.keys(items).map((key, index) => {
         const { label, value, onChange, placeholder } = items[key];
@@ -91,10 +104,16 @@ function FilterDrawer({ filterList, toggleDrawer }) {
         {Object.keys(filterList).map((key, index) => (
           (<>
 
-            <ListItem key={index} disablePadding>
+            {
+              index !== 0 && filterList[key].type !== 'select' &&
+              <Divider key={index + 0.5} />
+            }
+            <ListItem key={index} disablePadding sx={{
+              width: filterList[key].type === 'select' ? {md:'50%', xs:"100%"} : '100%',
+              display: filterList[key].type === 'select' ? {md:'inline-flex', xs:"flex"} : 'flex'
+            }}>
               {elements[filterList[key].type](filterList[key])}
             </ListItem>
-            <Divider key={index + 0.5} />
 
           </>
           )

@@ -2,9 +2,10 @@ import { AppProvider } from '@toolpad/core/AppProvider'
 import { DashboardLayout } from '@toolpad/core/DashboardLayout'
 import { useMemo, useState } from "react"
 import Logo from '../components/Logo'
-import { useNavigate, Outlet } from 'react-router-dom'
-import { Box, createTheme, Grid2, Typography, useTheme } from '@mui/material'
+import { useNavigate, Outlet, useLocation } from 'react-router-dom'
+import { Box, createTheme, Grid2, IconButton, Typography, useTheme } from '@mui/material'
 import { adminNav } from '../constance/constance.jsx'
+import { ArrowBack } from '@mui/icons-material'
 
 const initSession = {
   user: null
@@ -13,6 +14,8 @@ const initSession = {
 function AdminLayout() {
   const [pathname, setPathname] = useState('/admin');
   const navigate = useNavigate();
+  const location = useLocation();
+  
   const [session, setSession] = useState(initSession);
   const theme = useTheme()
 
@@ -75,7 +78,15 @@ function AdminLayout() {
       authentication={authentication}
     >
       <DashboardLayout>
-          <Outlet />
+        <Box>
+          {
+            location.pathname !== '/admin/' &&
+            <IconButton onClick={() => navigate(-1)}>
+              <ArrowBack />
+            </IconButton>
+          }
+        </Box>
+        <Outlet />
       </DashboardLayout>
     </AppProvider>
   )

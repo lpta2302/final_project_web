@@ -57,7 +57,7 @@ async function uploadToDrive(req, res, next) {
 
     next();
   } catch (error) {
-    res.status(500).json(false);
+    res.status(500).json(error);
   }
 }
 

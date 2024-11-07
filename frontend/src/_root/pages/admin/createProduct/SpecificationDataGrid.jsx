@@ -6,8 +6,10 @@ import DataGridConfirmDialog from "../../../../components/dialogs/DataGridConfir
 
 
 const columnFields = [
-    { field: 'key', headerName: 'Thông số', width: 300, editable: true },
-    { field: 'specificationValue', headerName: 'Giá trị', width: 300, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} isRequired />), isRequired: true },
+    { field: 'key',
+        valueFormatter:(value)=>typeof value === 'string' ? value : value?.key,
+        headerName: 'Thông số', width: 300, editable: true },
+    { field: 'value', headerName: 'Giá trị', width: 300, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} isRequired />), isRequired: true },
 ];
 
 
@@ -106,6 +108,9 @@ function SpecificationDataGrid({ specificatinKeys, specifications, setSpecificat
             return null;
         }
 
+        console.log(specifications,newRow);
+        
+
         setSpecifications(specifications.map(row => row.id === newRow.id ? newRow : row))
 
         return newRow;
@@ -122,7 +127,7 @@ function SpecificationDataGrid({ specificatinKeys, specifications, setSpecificat
                 content="Sản phẩm, bao gồm cả thông tin sẽ bị xóa vĩnh viễn và không thể khôi phục."
             />
             <DataGrid
-                getRowId={(row) => row._id || row.id}
+                getRowId={(row) => row._id ? row._id : row.id}
                 rows={specifications}
                 columns={columns}
                 editMode="row"  // Use row editing mode
