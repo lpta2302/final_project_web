@@ -11,11 +11,10 @@ const ReviewsSection= ({}) => {
     : [];
   
   return (
-    <Box sx={{ mt: 4 }}>
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        Đánh giá sản phẩm
-      </Typography>
-      <Paper elevation={3} sx={{ p: 2, mb: 2 }}>
+    <Paper elevation={3} sx={{ p: 2, mt: 2 }}>
+        <Typography variant="h5" sx={{ mb: 2 }}>
+          Đánh giá sản phẩm
+        </Typography>
         {filteredReviews && filteredReviews.length > 0 ? (
           filteredReviews.map((review) => (
             <Paper key={review._id} sx={{ p: 2, mb: 2 }}>
@@ -34,7 +33,6 @@ const ReviewsSection= ({}) => {
           </Typography>
         )}
       </Paper>
-    </Box>
   );
 };
 

@@ -29,18 +29,19 @@ const SpecificationTable = ({}) => {
   }, [specs]);
 
   return (
-    <Box sx={{ mt: 4 }}>
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        Thông số kỹ thuật
-      </Typography>
-      <Paper elevation={3}>
+    <Paper elevation={3} sx={{ padding: 2, mt: 2 }}>
+        <Typography variant="h5" sx={{ mb: 2 }}>
+          Thông số kỹ thuật
+        </Typography>
         {selectedSpec?.specifications?.length > 0 ? (
           <TableContainer>
             <Table aria-label="Specifications Table">
               <TableBody>
                 {selectedSpec.specifications.map((specification, index) => (
                   <TableRow key={index}>
-                    <TableCell>{getSpecificationKey(specification.key)}</TableCell>
+                    <TableCell>
+                      {getSpecificationKey(specification.key)}
+                    </TableCell>
                     <TableCell>{specification.value}</TableCell>
                   </TableRow>
                 ))}
@@ -53,7 +54,6 @@ const SpecificationTable = ({}) => {
           </Typography>
         )}
       </Paper>
-    </Box>
   );
 };
 

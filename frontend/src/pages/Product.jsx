@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Container,
   Typography,
@@ -12,22 +12,23 @@ import {
 import { useParams } from "react-router-dom";
 import {
   useReadProductDetailBySlug,
+  useReadAllTagAdmin,
+  useReadProductByTag,
 } from "../api/queries";
 import ProductImages from "../components/ProductDetails/ProductImages";
-import ReviewsSection from "../components/ProductDetails/ReviewsSection";
-import SpecificationTable from "../components/ProductDetails/SpecificationTable";
 import ProductGeneralInfo from "../components/ProductDetails/ProductGeneralInfo";
 import ProductDescription from "../components/ProductDetails/ProductDescription";
+import SpecificationTable from "../components/ProductDetails/SpecificationTable";
+import ReviewsSection from "../components/ProductDetails/ReviewsSection";
+import RelativeProducts from "../components/ProductDetails/RelativeProducts";
 
 const Product = () => {
   const { slug } = useParams();
+  const { data: productData, isLoading: isLoadingProduct } = useReadProductDetailBySlug(slug);
 
-  const { data: productData, isLoading } = useReadProductDetailBySlug(slug);
+  const product = productData || null;
 
-  const product = productData ? productData : null;
-  const specs = Array.isArray(product?.specs) ? product.specs : [];
-
-  if (isLoading) {
+  if (isLoadingProduct) {
     return (
       <Container>
         <Box
@@ -52,10 +53,6 @@ const Product = () => {
     );
   }
 
-  if (!specs) {
-    return <Typography>No specifications available</Typography>;
-  }
-
   return (
     <Container>
       <Breadcrumbs aria-label="breadcrumb" sx={{ mt: 2 }}>
@@ -72,12 +69,12 @@ const Product = () => {
         <Grid container spacing={4}>
           {/* Left Column: Product Info and Image */}
           <Grid item xs={12} md={6}>
-          <ProductImages />
+            <ProductImages />
           </Grid>
 
           {/* Right Column: Specifications and Add-to-Cart */}
           <Grid item xs={12} md={6}>
-            <ProductGeneralInfo/>
+            <ProductGeneralInfo />
           </Grid>
         </Grid>
       </Paper>
@@ -90,6 +87,9 @@ const Product = () => {
 
       {/* Reviews Section */}
       <ReviewsSection />
+
+      {/* Sử dụng component RelativeProducts */}
+      <RelativeProducts />
     </Container>
   );
 };

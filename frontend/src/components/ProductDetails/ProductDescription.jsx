@@ -13,13 +13,10 @@ const ProductDescription = () => {
   const images = product?.imageURLs || []; // Retrieve images like in ProductImages
 
   return (
-    <Box sx={{ mt: 4 }}>
-      {/* Product Description Section */}
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        Mô tả sản phẩm
-      </Typography>
-
-      <Paper elevation={3} sx={{ padding: 4, mt: 2 }}>
+    <Paper elevation={3} sx={{ padding: 2, mt: 2 }}>
+        <Typography variant="h5" sx={{ mb: 2 }}>
+          Mô tả sản phẩm
+        </Typography>
         {/* Product Description Text */}
         <Typography variant="body1" sx={{ mb: 4 }}>
           {product?.description || "Không có mô tả cho sản phẩm này."}
@@ -42,10 +39,11 @@ const ProductDescription = () => {
             />
           ))
         ) : (
-          <Typography variant="body2">Không có hình ảnh cho sản phẩm này.</Typography>
+          <Typography variant="body2">
+            Không có hình ảnh cho sản phẩm này.
+          </Typography>
         )}
       </Paper>
-    </Box>
   );
 };
 
