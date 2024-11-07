@@ -1,4 +1,5 @@
 import Order from "../../models/order.model.js";
+import Cart from "../../models/cart.model.js";
 
 // [GET] /client/order/user/:id
 export const index = async (req, res) => {
@@ -34,12 +35,54 @@ export const index = async (req, res) => {
 // [POST] /client/order/add
 export const add = async (req, res) => {
   try {
-    const record = new Order(req.body);
-    await record.save();
+    // Lấy `userId` và dữ liệu giỏ hàng từ yêu cầu gửi lên
+    const { userId, cart, ...orderData } = req.body;
 
-    res.json(record);
+    // Tìm `oldCart` dựa trên `userId`
+    const oldCart = await Cart.findOne({ client: userId });
+
+    if (oldCart) {
+      // Kiểm tra và loại bỏ sản phẩm có `spec` trùng lặp trong `oldCart`
+      cart.cartItems.forEach((newCartItem) => {
+        oldCart.cartItems = oldCart.cartItems.filter(
+          (oldCartItem) => oldCartItem.spec.toString() !== newCartItem.spec
+        );
+      });
+
+      // Lưu lại `oldCart` sau khi đã loại bỏ các sản phẩm trùng lặp
+      await oldCart.save();
+
+      // Tạo giỏ hàng mới không chứa `userId`
+      const newCart = new Cart({
+        cartItems: cart.cartItems, // Chỉ bao gồm các `cartItems` mới
+      });
+      await newCart.save();
+
+      // Gán `_id` của `newCart` vào `orderData`
+      orderData.cart = newCart._id;
+    } else {
+      // Nếu không có `oldCart`, tạo giỏ hàng mới và lưu `userId`
+      const newCart = new Cart({
+        client: userId,
+        cartItems: cart.cartItems,
+      });
+      await newCart.save();
+
+      // Gán `_id` của `newCart` vào `orderData`
+      orderData.cart = newCart._id;
+    }
+
+    // Gán `userId` vào `orderData` để lưu trong đơn hàng
+    orderData.userId = userId;
+
+    // Tạo mới `Order` với `orderData` và lưu vào cơ sở dữ liệu
+    const newOrder = new Order(orderData);
+    await newOrder.save();
+
+    res.json(newOrder);
   } catch (error) {
-    res.status(400).json(false);
+    console.error(error);
+    res.status(400).json({ success: false, message: "Lỗi khi tạo đơn hàng" });
   }
 };
 
