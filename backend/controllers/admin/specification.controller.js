@@ -94,12 +94,13 @@ const specController = {
   },
 
   // [GET] /spec/search
+  // [GET] /spec/search
   searchSpec: async (req, res) => {
     try {
       let filter = {};
 
       // Lấy giá trị từ query params
-      const { search, stockRange, priceRange } = req.query;
+      const { search, minStock, maxStock, minPrice, maxPrice } = req.query;
 
       // Điều kiện tìm kiếm trong specCode hoặc specifications nếu có từ khóa search
       if (search) {
@@ -121,27 +122,25 @@ const specController = {
         ];
       }
 
-      // Điều kiện lọc cho số lượng tồn kho (nếu có phạm vi cụ thể)
-      if (stockRange && stockRange !== "All") {
-        const [minStock, maxStock] = stockRange.split("-").map(Number);
+      // Điều kiện lọc cho số lượng tồn kho
+      if (minStock || maxStock) {
         filter.stockQuantity = {};
-        if (!isNaN(minStock)) {
-          filter.stockQuantity.$gte = minStock;
+        if (minStock) {
+          filter.stockQuantity.$gte = parseInt(minStock);
         }
-        if (!isNaN(maxStock)) {
-          filter.stockQuantity.$lte = maxStock;
+        if (maxStock) {
+          filter.stockQuantity.$lte = parseInt(maxStock);
         }
       }
 
-      // Điều kiện lọc cho giá (nếu có phạm vi cụ thể)
-      if (priceRange && priceRange !== "All") {
-        const [minPrice, maxPrice] = priceRange.split("-").map(Number);
+      // Điều kiện lọc cho giá
+      if (minPrice || maxPrice) {
         filter.price = {};
-        if (!isNaN(minPrice)) {
-          filter.price.$gte = minPrice;
+        if (minPrice) {
+          filter.price.$gte = parseFloat(minPrice);
         }
-        if (!isNaN(maxPrice)) {
-          filter.price.$lte = maxPrice;
+        if (maxPrice) {
+          filter.price.$lte = parseFloat(maxPrice);
         }
       }
 
