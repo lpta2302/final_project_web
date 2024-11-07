@@ -22,16 +22,7 @@ export const index = async (req, res) => {
 export const postProduct = async (req, res) => {
   try {
     // Kiểm tra mã và tên sản phẩm
-    const {
-      productCode,
-      productName,
-      price,
-      discountPercentage,
-      stockQuantity,
-      tags,
-      brand,
-      variations,
-    } = req.body;
+    const { productCode, productName, tags, brand, variations } = req.body;
 
     // Kiểm tra nếu mã sản phẩm đã tồn tại
     const existingProductCode = await Product.findOne({ productCode });
@@ -141,23 +132,21 @@ export const editProduct = async (req, res) => {
     const id = req.params.id;
 
     // Tìm sản phẩm hiện tại
-    const existingProduct = await Product.findById(id);
+    const existingProduct = await Product.findById(id).populate("specs");
     if (!existingProduct) {
       return res.status(404).json(false);
     }
 
+    // Xử lý hình ảnh mới nếu có
     const newImgUrl = req.imageUrls || [];
-
-    console.log(newImgUrl);
-
     if (newImgUrl.length > 0) {
       const oldImgUrl = existingProduct.imageURLs;
 
+      // Xóa hình ảnh cũ trên Google Drive
       for (const url of oldImgUrl) {
         const urlParams = new URL(url);
         const fileId = urlParams.searchParams.get("id");
         if (fileId) {
-          // Gọi middleware xóa hình ảnh
           await deleteFromDrive({ params: { fileId: fileId } }, res, () => {});
         }
       }
@@ -165,7 +154,60 @@ export const editProduct = async (req, res) => {
       existingProduct.imageURLs = newImgUrl;
     }
 
-    const result = await Product.findByIdAndUpdate(
+    // Xử lý cập nhật specs
+    const { variations } = req.body;
+    if (Array.isArray(variations)) {
+      for (let variation of variations) {
+        if (variation.specId) {
+          // Tìm spec hiện tại để cập nhật
+          const existingSpec = await Specs.findById(variation.specId);
+          if (existingSpec) {
+            // Cập nhật specifications (key-value)
+            existingSpec.specifications = await Promise.all(
+              variation.specifications.map(async (spec) => {
+                const isValidKey = await specsKey.findById(spec.key);
+                return isValidKey ? { key: spec.key, value: spec.value } : null;
+              })
+            ).then((specs) => specs.filter((spec) => spec !== null));
+
+            // Cập nhật các trường khác của spec
+            existingSpec.stockQuantity = variation.stockQuantity;
+            existingSpec.price = variation.price;
+            existingSpec.discountPercentage = variation.discountPercentage;
+            await existingSpec.save();
+          }
+        } else {
+          // Tạo spec mới nếu không có specId
+          const validSpecifications = await Promise.all(
+            variation.specifications.map(async (spec) => {
+              const isValidKey = await specsKey.findById(spec.key);
+              return isValidKey ? { key: spec.key, value: spec.value } : null;
+            })
+          ).then((specs) => specs.filter((spec) => spec !== null));
+
+          if (validSpecifications.length > 0) {
+            const newSpec = new Specs({
+              specCode: variation.specCode,
+              specifications: validSpecifications,
+              stockQuantity: variation.stockQuantity,
+              price: variation.price,
+              products: existingProduct._id,
+              discountPercentage: variation.discountPercentage,
+            });
+            await newSpec.save();
+
+            // Thêm spec mới vào sản phẩm
+            existingProduct.specs.push(newSpec._id);
+          }
+        }
+      }
+    }
+
+    // Lưu các cập nhật vào sản phẩm
+    await existingProduct.save();
+
+    // Cập nhật các trường khác của sản phẩm
+    const updatedProduct = await Product.findByIdAndUpdate(
       id,
       {
         ...req.body,
@@ -174,9 +216,11 @@ export const editProduct = async (req, res) => {
       {
         new: true, // Trả về sản phẩm đã cập nhật
       }
-    );
-    res.status(200).json(result);
+    ).populate("specs"); // Populate để lấy dữ liệu specs sau khi cập nhật
+
+    res.status(200).json(updatedProduct);
   } catch (error) {
+    console.error(error);
     res.status(500).json({
       message: false,
     });
