@@ -4,7 +4,7 @@ import { CustomTypography, NumberInput } from "../../../components"
 import PageToolbar from "../../../components/pageContainer/PageToolbar"
 import CustomPageContainer from "../../../components/pageContainer/CustomPageContainer"
 import { AspectRatio, Autocomplete, createFilterOptions, CssVarsProvider, extendTheme } from '@mui/joy'
-import { useCreateProduct, useReadAllBrandAdmin, useReadAllCategory, useReadAllSpecificationKeyAdmin, useReadAllTagAdmin, useReadProductDetailAdmin, useUpdateProduct } from "../../../api/queries"
+import { useCreateProduct, useDeleteProduct, useReadAllBrandAdmin, useReadAllCategory, useReadAllSpecificationKeyAdmin, useReadAllTagAdmin, useReadProductDetailAdmin, useUpdateProduct } from "../../../api/queries"
 import { useEffect, useState } from "react"
 import SpecificationDataGrid from "./createProduct/SpecificationDataGrid"
 import { ArrowDropDown, Delete, DeleteOutlined } from "@mui/icons-material"
@@ -63,6 +63,8 @@ function CreateProduct() {
   const navigate = useNavigate();
   const location = useLocation();
   const initProductId = location.state?.productId;
+  console.log(initProductId);
+  
 
   // const initProduct = state?.productId ? state.product : 
   // {
@@ -95,6 +97,7 @@ function CreateProduct() {
   const { data: specificationKeys, } = useReadAllSpecificationKeyAdmin();
   const { mutateAsync: createProduct } = useCreateProduct();
   const { mutateAsync: updateProduct } = useUpdateProduct();
+  const { mutateAsync: deleteProduct } = useDeleteProduct();
 
   useEffect(() => {
     console.log(product);
@@ -106,8 +109,8 @@ function CreateProduct() {
       setProductName(product.productName || '');
       setDescription(product.description || '');
       setTags(product.tag || []);
-      setBrand(product.brand || undefined);
-      setCategory(product.category || undefined);
+      setBrand(product.brand || '');
+      setCategory(product.category || '');
       setFiles(product.imageURLs || []);
     }
   }, [product]);
@@ -124,7 +127,7 @@ function CreateProduct() {
   const validateForm = () => {
     return !!productCode && !!productName && !!description && variants.filter(variant => variant.specifications.length > 0).length >= 1;
   }
-  const handleSave = (isSaveDraft) => {
+  const handleSave = async (isSaveDraft) => {
     const errors = { ...JSON.parse(JSON.stringify(initErrorState)) };
     const savedVariants =
       JSON.parse(JSON.stringify(
@@ -135,7 +138,6 @@ function CreateProduct() {
           return enoughData
         })
       ))
-    console.log(variants[0].specifications);
 
     savedVariants.forEach(variant => {
       variant.specifications = variant.specifications.map(spec => ({ value: spec.value, key: spec._id }))
@@ -143,27 +145,13 @@ function CreateProduct() {
 
     setFormErrors(errors);
 
-    console.log(
-      {
-        productCode,
-        productName,
-        description,
-        category: category?._id,
-        tag: tags.map(t => t._id),
-        brand: brand?._id,
-        specs: savedVariants,
-        productStatus: isSaveDraft ? "draft" : productStatus,
-        files: files.filter(file=> typeof file !== 'string'),
-        imageUrls: files.filter(file=>typeof file === 'string')
-      }
-    );
-
     // return;
     if (!validateForm())
       toaster({ variant: 'error', message: 'Lưu sản phẩm thất bại' })
     else {
-      if (initProductId)
-        updateProduct(
+      if (initProductId) {
+
+        const updatedProduct = updateProduct(
           {
             _id: product._id,
             productCode,
@@ -174,11 +162,16 @@ function CreateProduct() {
             brand: brand?._id,
             variations: savedVariants,
             productStatus: isSaveDraft ? "draft" : productStatus,
-            files: files.filter(file=> typeof file !== 'string'),
-        imageUrls: files.filter(file=>typeof file === 'string')
+            files: files.filter(file => typeof file !== 'string'),
+            imageUrls: files.filter(file => typeof file === 'string')
           })
-      else
-        createProduct({
+        if (!updatedProduct) {
+          toaster({ variant: 'error', message: 'Lưu sản phẩm thất bại' })
+        }
+      }
+
+      else {
+        const newProduct = await createProduct({
           productCode,
           productName,
           description,
@@ -189,7 +182,13 @@ function CreateProduct() {
           productStatus: isSaveDraft ? "draft" : productStatus,
           files
         })
+        if (!newProduct) {
+          toaster({ variant: 'error', message: 'Lưu sản phẩm thất bại' })
+        }
+      }
     }
+
+    toaster("Lưu sản phẩn thành công", {variant: 'success'})
 
     navigate(-1);
   }
@@ -209,7 +208,13 @@ function CreateProduct() {
       breadCrumbs={breadcrumbs}
       title='Thêm sản phẩm mới'
       slots={{ toolbar: PageToolbar }}
-      slotProps={{ toolbar: { handleSaveDraft: !initProduct && (() => handleSave(true)), handleSave: () => handleSave(), handleDelete: () => 1, disabled: !validateForm() } }}
+      slotProps={{
+        toolbar: {
+          handleSaveDraft: !initProduct && (async () => handleSave(true)), handleSave: async () => handleSave(),
+          handleDelete: initProductId ? async () => { await deleteProduct(initProductId); navigate(-1); } : ()=>navigate(-1),
+          disabled: !validateForm()
+        }
+      }}
     >
       <Grid2 container spacing={2}>
         <Grid2 size={{ xs: 12, md: 8 }} sx={{}}>
@@ -457,6 +462,7 @@ function CreateProduct() {
               <Box width="100%" p={2}>
                 <CustomTypography fontSize="1rem" variant="caption">Loại sản phẩm</CustomTypography>
                 <Autocomplete
+                  disableClearable
                   value={category}
                   onChange={(event, newValue) => setCategory(newValue)}
                   variant="plain"
@@ -476,6 +482,7 @@ function CreateProduct() {
               <Box width="100%" p={2}>
                 <CustomTypography fontSize="1rem" variant="caption">Hãng sản xuất</CustomTypography>
                 <Autocomplete
+                  disableClearable
                   value={brand}
                   onChange={(e, newValue) => setBrand(newValue)}
                   variant="plain"

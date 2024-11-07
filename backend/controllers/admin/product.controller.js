@@ -397,7 +397,7 @@ export const detail = async (req, res) => {
     const id = req.params.id;
 
     const record = await Product.findOne({ _id: id })
-      .populate("tag category")
+      .populate("tag category brand")
       .populate({
         path: "specs",
         populate: {

@@ -213,13 +213,14 @@ export const useCreateProduct = () => {
 export const useUpdateProduct = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (product) =>{
+    mutationFn: (product) => {
       console.log(product);
-      
+
       return updateProduct(
         admin_product_url.updateProduct(product._id),
         product
-      )},
+      )
+    },
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_PRODUCTS]);
     },
@@ -718,12 +719,13 @@ export const useDeleteSpecificationKeyValue = () => {
 export const useUpdateSpecificationKeyValue = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({specificationId,specification}) =>{
+    mutationFn: ({ specificationId, specification }) => {
       console.log(specification);
       console.log(specificationId);
-      
-      
-      return updateRecord(admin_specification_url.updateSpecificationKeyValue(specificationId),specification)},
+
+
+      return updateRecord(admin_specification_url.updateSpecificationKeyValue(specificationId), specification)
+    },
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_SPECIFICATION]);
     },
@@ -832,5 +834,48 @@ export const useUpdateCart = () => {
     onSuccess: () => {
       queryClient.invalidateQueries([USE_READ_OWN_CART]);
     },
+  });
+};
+
+
+// wishList: {
+//         addProduct: (id) => '/client/wishList/add-to-wissList/' + id,
+//         search: (id) => '/client/wishList/my-wishList/' + id + '/search',
+//         deleteProduct: (id) => '/client/wishList/my-wishList/del-from-wishList/' + id,
+//         getAllProduct: (id) => '/slient/wishList/my-wishList/' + id
+//     },
+
+const customer_wishlist = customer_url.wishList;
+export const useReadWishlistItems = (useId) => {
+  return useQuery({
+    queryKey: [READ_ALL_CATEGORIES],
+    queryFn: () => readAll(customer_wishlist.getAllProduct(useId)),
+  });
+};
+export const useAddItemToWishlist = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ customerId, productId }) =>
+      createRecord(customer_wishlist.addProduct(customerId), productId),
+    onSuccess: () => {
+      queryClient.invalidateQueries([READ_ALL_CATEGORIES]);
+    },
+  });
+};
+export const useRemoveItemFromWishlist = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ customerId, productId }) =>
+      updateRecord(admin_category_url.deleteCategory(customerId), productId),
+    onSuccess: () => {
+      queryClient.invalidateQueries([READ_ALL_CATEGORIES]);
+    },
+  });
+};
+export const useSearchItemInWishlist = (customerId, searchParam) => {
+  return useQuery({
+    queryKey: [SEARCH_CATEGORY, searchParam],
+    queryFn: () => search(customer_wishlist.search(customerId), searchParam),
+    enabled: !!searchParam && searchParam != {} && searchParam != []
   });
 };

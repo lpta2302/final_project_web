@@ -47,15 +47,11 @@ function ManageProduct() {
   const { mutateAsync: deleteProduct, isPending: isDeleting } = useDeleteProduct();
   const { data: searchResult } = useSearchProductAdmin(searchParam);
   
-  const { data: reviews } = useReadAllReviewsAdmin(detailId);
-  console.log(data);
   useEffect(() => {
     if(data){
       setDetailId(data[0].specs[2])
     }
   }, [data]);
-  console.log(reviews);
-  
 
   const breadcrumbs = [
     { path: '/', title: 'Home' },
@@ -110,14 +106,6 @@ function ManageProduct() {
     await deleteProduct(id)
     setRows(rows.filter((row) => row.accountCode !== id));
     setDialogPayload({ state: false, id: null });
-  }
-
-  const handleUpdate = async (updatedRow) => {
-    console.log(updatedRow);
-
-    // await updateAccountStatus(updatedRow)
-    // toaster("Cập nhật trạng thái tài khoản thành công", { variant: 'success' })
-    return updatedRow;
   }
 
   const handleUpdateError = () => {
@@ -189,7 +177,6 @@ function ManageProduct() {
         columns={columns}
         slots={{ toolbar: CustomGridToolbar }}
         slotProps={{ toolbar: { onClick: () => navigate('create-product') } }}
-        processRowUpdate={handleUpdate}
         onProcessRowUpdateError={handleUpdateError}
         loading={isLoading}
         initialState={{

@@ -10,6 +10,7 @@ import Dashboard from './admin/Dashboard'
 import ManageAccount from './admin/ManageAccount'
 import ManageProduct from './admin/ManageProduct'
 import ManageInventory from './admin/ManageInventory'
+import ManageSliderBanner from './admin/ManageSliderBanner'
 import ManageOrder from './admin/ManageOrder'
 import ManageVoucher from './admin/ManageVoucher'
 import ManageCriteria from './admin/ManageCriteria'
@@ -32,5 +33,6 @@ export {
     ManageVoucher,
     ManageCriteria,
     CreateProduct,
-    UpdateItem
+    UpdateItem,
+    ManageSliderBanner
 };
