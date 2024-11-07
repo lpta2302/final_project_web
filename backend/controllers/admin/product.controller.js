@@ -24,7 +24,7 @@ export const postProduct = async (req, res) => {
     console.log(req.body);
 
     // Kiểm tra mã và tên sản phẩm
-    const { productCode, productName, tags, brand, variations } = req.body;
+    const { productCode, productName, tag, brand, variations } = req.body;
 
     // Kiểm tra nếu mã sản phẩm đã tồn tại
     const existingProductCode = await Product.findOne({ productCode });
@@ -143,6 +143,8 @@ export const editProduct = async (req, res) => {
       return res.status(404).json(false);
     }
 
+    console.log("EP: " + existingProduct);
+
     // Xử lý hình ảnh mới nếu có
     const newImgUrl = req.imageUrls || [];
     if (newImgUrl.length > 0) {
@@ -162,28 +164,36 @@ export const editProduct = async (req, res) => {
 
     // Xử lý cập nhật specs
     const { variations } = req.body;
-    if (Array.isArray(variations)) {
-      for (let variation of variations) {
-        if (variation.specId) {
-          // Tìm spec hiện tại để cập nhật
-          const existingSpec = await Specs.findById(variation.specId);
-          if (existingSpec) {
-            // Cập nhật specifications (key-value)
-            existingSpec.specifications = await Promise.all(
-              variation.specifications.map(async (spec) => {
-                const isValidKey = await specsKey.findById(spec.key);
-                return isValidKey ? { key: spec.key, value: spec.value } : null;
-              })
-            ).then((specs) => specs.filter((spec) => spec !== null));
 
-            // Cập nhật các trường khác của spec
-            existingSpec.stockQuantity = variation.stockQuantity;
-            existingSpec.price = variation.price;
-            existingSpec.discountPercentage = variation.discountPercentage;
-            await existingSpec.save();
-          }
+    const parsedVariations = Array.isArray(variations)
+      ? variations
+      : JSON.parse(variations || "[]") || [];
+
+    if (Array.isArray(parsedVariations) && parsedVariations.length > 0) {
+      for (let variation of parsedVariations) {
+        console.log("SI: " + variation.specId);
+
+        // Tìm spec hiện tại với specCode (thay vì specId)
+        let existingSpec = await Specs.findOne({
+          specCode: variation.specCode,
+        });
+
+        if (existingSpec) {
+          // Cập nhật specifications (key-value)
+          existingSpec.specifications = await Promise.all(
+            variation.specifications.map(async (spec) => {
+              const isValidKey = await specsKey.findById(spec.key);
+              return isValidKey ? { key: spec.key, value: spec.value } : null;
+            })
+          ).then((specs) => specs.filter((spec) => spec !== null));
+
+          // Cập nhật các trường khác của spec
+          existingSpec.stockQuantity = variation.stockQuantity;
+          existingSpec.price = variation.price;
+          existingSpec.discountPercentage = variation.discountPercentage;
+          await existingSpec.save(); // Lưu thay đổi
         } else {
-          // Tạo spec mới nếu không có specId
+          // Tạo spec mới nếu không có specCode trùng
           const validSpecifications = await Promise.all(
             variation.specifications.map(async (spec) => {
               const isValidKey = await specsKey.findById(spec.key);
@@ -209,8 +219,51 @@ export const editProduct = async (req, res) => {
       }
     }
 
-    // Lưu các cập nhật vào sản phẩm
-    await existingProduct.save();
+    // Cập nhật category nếu có sự thay đổi
+    if (req.body.category) {
+      existingProduct.category = req.body.category;
+
+      const categoryDoc = await Category.findById(req.body.category);
+
+      console.log("CTE: " + categoryDoc);
+      if (categoryDoc) {
+        await categoryDoc.updateOne({
+          $addToSet: { products: existingProduct._id },
+        });
+      }
+    }
+
+    // Cập nhật brand nếu có sự thay đổi
+    if (req.body.brand) {
+      existingProduct.brand = req.body.brand;
+
+      const brandDoc = await Brand.findById(req.body.brand);
+      if (brandDoc) {
+        await brandDoc.updateOne({
+          $addToSet: { products: existingProduct._id },
+        });
+      }
+    }
+
+    if (req.body.tag) {
+      const parsedTags = JSON.parse(req.body.tag);
+      const objectIdTags = parsedTags.map(
+        (tag) => new mongoose.Types.ObjectId(tag)
+      );
+
+      // Cập nhật lại tag cho sản phẩm
+      existingProduct.tag = objectIdTags;
+
+      // Cập nhật lại trong collection Tag
+      for (const tagId of objectIdTags) {
+        const tagDoc = await Tag.findById(tagId);
+        if (tagDoc) {
+          await tagDoc.updateOne({
+            $addToSet: { products: existingProduct._id },
+          });
+        }
+      }
+    }
 
     // Cập nhật các trường khác của sản phẩm
     const updatedProduct = await Product.findByIdAndUpdate(
@@ -218,6 +271,10 @@ export const editProduct = async (req, res) => {
       {
         ...req.body,
         imageURLs: existingProduct.imageURLs, // Cập nhật hình ảnh
+        tag: existingProduct.tag, // Cập nhật tag nếu có sự thay đổi
+        specs: existingProduct.specs, // Cập nhật specs nếu có sự thay đổi
+        category: existingProduct.category,
+        brand: existingProduct.brand,
       },
       {
         new: true, // Trả về sản phẩm đã cập nhật
