@@ -26,7 +26,7 @@ const GridProduct = () => {
   });
 
   // Gọi API để lấy danh sách sản phẩm
-  const { data: products = [], isLoading, error } = useReadAllProduct();
+  const { data: products, isLoading, error } = useReadAllProduct();
 
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
