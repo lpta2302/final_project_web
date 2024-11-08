@@ -52,9 +52,6 @@ function Profile() {
                 <ListItem button component={Link} to="/favorite">
                     <ListItemText primary="Sản phẩm yêu thích" />
                 </ListItem>
-                <ListItem>
-                    <ListItemText primary="Sản phẩm đã xem gần đây" />
-                </ListItem>
             </List>
             
             {/* Recently Viewed Products */}
