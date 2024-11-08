@@ -3,7 +3,7 @@ import Review from "../../models/review.model.js";
 const reviewController = {
   // [GET] /reviews/:id
   showReviews: async (req, res) => {
-    try {
+    try {      
       const reviews = await Review.find({ spec: req.params.id });
 
       res.status(200).json(reviews);

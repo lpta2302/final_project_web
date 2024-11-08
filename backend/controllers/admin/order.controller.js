@@ -150,7 +150,7 @@ export const search = async (req, res) => {
 
     // Kiểm tra nếu orderId có trong query
     if (orderId) {
-      filter._id = orderId; // Tìm kiếm chính xác theo orderId
+      filter._id = orderId; // Tìm kiếm theo orderId
     }
 
     // Kiểm tra nếu paymentMethod có trong query

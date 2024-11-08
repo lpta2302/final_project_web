@@ -2,7 +2,13 @@ import {
   AccountBoxOutlined,
   CategoryOutlined,
   Dashboard,
+  Done,
+  DoNotDisturbAltOutlined,
+  Drafts,
+  HourglassBottomOutlined,
+  ViewCarouselOutlined,
   WarehouseOutlined,
+  Warning,
 } from "@mui/icons-material";
 import {
   BoxIcon,
@@ -20,6 +26,7 @@ import {
   Voucher,
   Dashboard as DashboardPage,
   ManageCriteria,
+  ManageSliderBanner,
 } from "../_root/pages";
 import Orders from "../_root/pages/customer/Orders";
 import Cart from "../_root/pages/customer/Cart";
@@ -49,7 +56,13 @@ export const adminNav = [
   },
   {
     kind: "header",
-    title: "Quản lý mua hàng",
+    title: "Quản lý cửa hàng",
+  },
+  {
+    segment: "manage-slider-banner",
+    title: "Slider Banner",
+    icon: <ViewCarouselOutlined />,
+    element: <ManageSliderBanner />,
   },
   {
     segment: "manage-voucher",
@@ -105,3 +118,31 @@ export const customerNav = [
     element: <Cart />,
   },
 ];
+
+export const productStatuses = {
+  available: {
+    label: 'available',
+    color: 'success',
+    icon: Done,
+  },
+  unavailable: {
+    label: 'unavailable',
+    color: 'error',
+    icon: DoNotDisturbAltOutlined,
+  },
+  outOfStock: {
+    label: 'out of stock',
+    color: 'warning',
+    icon: Warning,
+  },
+  incoming: {
+    label: 'incoming',
+    color: 'secondary',
+    icon: HourglassBottomOutlined,
+  },
+  draft: {
+    label: 'draft',
+    color: 'whitesmoke',
+    icon: Drafts,
+  },
+}

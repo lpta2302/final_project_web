@@ -16,13 +16,17 @@ import { useLogin } from "../../api/queries";
 import { enqueueSnackbar as toaster } from 'notistack';
 import { useAuthContext } from "../../context/AuthContext";
 import { setBearerToken } from "../../api/myAxios";
+import { useNavigate } from "react-router-dom";
+import { useAuthAdminContext } from "../../context/AuthAdminContext";
 
 const init_error_message = { username: '', password: '' }
 
 const Login = ({ setModalType, setModalOpen, isAdmin }) => {
+  const navigate = useNavigate();
   const [inputs, setInputs] = useState({ username: "", password: "" });
   const [errorMessage, setErrorMessage] = useState(init_error_message);
   const { checkAuthUser } = useAuthContext();
+  const { checkAuthAdminUser } = useAuthAdminContext();
 
   const { mutateAsync: login } = useLogin();
 
@@ -63,7 +67,20 @@ const Login = ({ setModalType, setModalOpen, isAdmin }) => {
     }
     else {
       toaster('Đăng nhập thành công.', { variant: 'success' });
-      localStorage.setItem('cookieFallback', JSON.stringify(token));
+      if (isAdmin){
+        localStorage.setItem('adminCookie', JSON.stringify(token));
+        const isAuthenticated = await checkAuthAdminUser();
+        console.log(isAuthenticated);
+        
+        if(isAuthenticated)
+          navigate(0);
+        else{
+          toaster('Không tìm thấy tài khoản!', { variant: 'error' })
+        }
+        return;
+      }
+      else
+        localStorage.setItem('cookieFallback', JSON.stringify(token));
       await checkAuthUser();
       setModalOpen(false);
     }

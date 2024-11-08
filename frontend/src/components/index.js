@@ -11,6 +11,7 @@ import CustomGridToolbar from './gridData/CustomGridToolbar'
 import CustomAddGridToolbar from './gridData/CustomAddGridToolbar'
 import CustomEditCell from './gridData/CustomEditCell'
 import CustomEditDropdownCell from './gridData/CustomEditDropdownCell'
+import CustomEditImageCell from './gridData/CustomEditImageCell'
 import FilterDrawer from './gridData/FilterDrawer'
 
 import ExpandableSearch from './inputs/ExpandableSearch'
@@ -38,6 +39,7 @@ export {
     CustomGridToolbar,
     CustomEditCell,
     CustomEditDropdownCell,
+    CustomEditImageCell,
 
     PageToolbar,
     CustomPageContainer,

@@ -22,7 +22,7 @@ function CustomPageContainer({ children, ...props }) {
                     textWrap: 'nowrap',
                     fontFamily: 'nunito'
                 },
-                '& .MuiBreadcrumbs-li':{
+                '& .MuiBreadcrumbs-li': {
                     display: 'flex',
                     alignItems: 'center'
                 }

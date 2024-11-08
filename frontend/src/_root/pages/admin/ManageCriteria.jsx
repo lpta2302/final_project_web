@@ -66,7 +66,7 @@ const criteria = {
     update: useUpdateSpecificationKey,
     search: useSearchSpecificationKey,
     columns: [
-      { field: 'key', headerName: 'Tên thẻ', flex: 1, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true }
+      { field: 'key', headerName: 'Loại thông số', flex: 1, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true }
     ]
   }
 }
@@ -88,8 +88,8 @@ function ManageCriteria() {
 
   const { mutateAsync: createRecord } = currentCriterion.create();
   const { data, isLoading } = currentCriterion.read();
-  const { mutateAsync: updateCriterion } = currentCriterion.update();
-  const { mutateAsync: deleteRecord } = currentCriterion.delete();
+  const { isPending: isUpdating,mutateAsync: updateCriterion } = currentCriterion.update();
+  const { isPending: isDeleting,mutateAsync: deleteRecord } = currentCriterion.delete();
   const { data: searchResult} = currentCriterion.search(searchParam);
 
 
@@ -199,7 +199,6 @@ function ManageCriteria() {
   };
 
   const handleDeleteClick = async (isAccept) => {
-    console.log("delete");
 
     const { id } = deleteDialogPayload
 
@@ -231,9 +230,11 @@ function ManageCriteria() {
       }
 
       newData = await createRecord(data);
+      setUpdateDialogPayload({ state: false, id: null });
       toaster("Tạo thành công.", { variant: 'success' })
     } else {
       const updatedData = await updateCriterion(newRow);
+      setUpdateDialogPayload({ state: false, id: null });
 
       if (!updatedData) {
         toaster("Cập nhật thất bại.", { variant: 'error' })
@@ -253,7 +254,7 @@ function ManageCriteria() {
         ...oldModel,
         [updateDialogPayload.id]: { mode: GridRowModes.View },
       }))
-      setUpdateDialogPayload({ state: false, id: null });
+      // setUpdateDialogPayload({ state: false, id: null });
       setRowChanges(null);
     } else
       setUpdateDialogPayload((prev) => ({ ...prev, state: false }));
@@ -287,7 +288,6 @@ function ManageCriteria() {
         } else {
           param[currentCriterion.columns[1].field] = searchValue
         }
-        console.log(param);
         
         setSearchParam(param)
       }, 1500);
@@ -308,12 +308,14 @@ function ManageCriteria() {
     >
       <Box
         display='flex'
+        flexWrap='wrap'
         width='100%'
         justifyContent='space-between'
         mb={3}
       >
         <Box
           maxHeight='50%'
+          sx={{mb:{xs:3, md: 0}}}
         >
           <SplitButton
             options={Object.keys(criteria)}
@@ -326,12 +328,14 @@ function ManageCriteria() {
         />
       </Box>
       <DataGridConfirmDialog
+        isPending={isDeleting}
         onClick={handleDeleteClick}
         state={deleteDialogPayload.state}
         title="Xác nhận xóa?"
-        content="Sản phẩm, bao gồm cả thông tin sẽ bị xóa vĩnh viễn và không thể khôi phục."
+        content={`${criterion}, bao gồm cả thông tin sẽ bị xóa vĩnh viễn và không thể khôi phục.`}
       />
       <DataGridConfirmDialog
+        isPending={isUpdating}
         onClick={confirmUpdate}
         state={updateDialogPayload.state}
         title="Xác nhận cập nhật?"

@@ -1,14 +1,13 @@
 /* eslint-disable react/prop-types */
-import { DataGrid, GridActionsCellItem, GridEditInputCell, GridRowModes, GridToolbar } from '@mui/x-data-grid';
-import { PageContainer } from '@toolpad/core';
+import { DataGrid, GridActionsCellItem, GridRowModes } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import DataGridConfirmDialog from '../../../components/dialogs/DataGridConfirmDialog.jsx';
-import { CustomEditCell, CustomGridToolbar, CustomPageContainer, ManagePageSearch, NumberInput, SplitButton } from "../../../components";
+import { CustomEditImageCell, CustomGridToolbar, CustomPageContainer, ManagePageSearch } from "../../../components";
 import { enqueueSnackbar as toaster } from 'notistack';
-import { Badge, Box, styled, Tooltip, tooltipClasses } from '@mui/material';
+import { Box, styled } from '@mui/material';
 import { Cancel, Delete, Edit, Save } from '@mui/icons-material';
-import { useCreateBrand, useCreateCategory, useCreateSpecification, useCreateSpecificationKey, useCreateTag, useDeleteBrand, useDeleteCategory, useDeleteSpecification, useDeleteSpecificationKey, useDeleteTag, useReadAllBrand, useReadAllCategory, useReadAllSpecificationAdmin, useReadAllSpecificationKeyAdmin, useReadAllTagAdmin, useSearchBrand, useSearchCategoryAdmin, useSearchSpecification, useSearchSpecificationKey, useSearchTagAdmin, useUpdateBrand, useUpdateCategory, useUpdateSpecification, useUpdateSpecificationKey, useUpdateTag } from '../../../api/queries.js';
-import { useNavigate } from 'react-router-dom';
+import { useCreateCarousel, useDeleteCarousel, useReadAllCarouselAdmin, useUpdateCarousel } from '../../../api/queries.js';
+import renderImageSamples from './customRenderer/renderImageSamples.jsx';
 
 const StyledBox = styled('div')(({ theme }) => ({
   '& .Mui-error': {
@@ -19,58 +18,48 @@ const StyledBox = styled('div')(({ theme }) => ({
 }));
 
 const columnFields = [
-  { field: 'specCode', headerName: 'SKU', flex:1, minWidth: 150, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true },
-  { field: 'price', min: 0, headerName: 'Đơn giá', flex:1, minWidth: 150, editable: true, type: 'number', renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true },
-  { field: 'discountPercentage', min: 0, headerName: 'Giảm giá (%)', flex:1, minWidth: 150, editable: true, 
-    type: 'number',
-    valueFormatter: (value) => {
-      if (value == null) {
-        return '';
-      }
-      return `${(value * 100).toLocaleString()} %`;
-    },
-    renderEditCell: (params) => (<CustomEditCell {...params} />)},
-  { field: 'stockQuantity', min: 0, headerName: 'Tồn kho', flex:1, minWidth: 150, editable: true, type: 'number', renderEditCell: (params) => (<CustomEditCell {...params} />), isRequired: true },
-  { 
-    field: 'specifications', headerName: 'Thông số', flex:1, minWidth: 150, valueFormatter: (value) => {
-      if(value == null) return '';
-      return `${value?.length} Thông số`;
-    },editable: true
-  }
+  {
+    field: 'imgUrl',
+    headerName: 'Avatar',
+    display: 'flex',
+    width: 200,
+    renderCell: ({ value }) => renderImageSamples({ value: [value], width: '100%', height: 'auto' }),
+    valueGetter: (value, row) => row.imgUrl,
+    sortable: false,
+    filterable: false,
+    editable: true
+  },
+  { field: 'title', headerName: 'Tiêu đề', width: 150, editable: true, isRequired: true },
+  { field: 'slug', headerName: 'Slug', flex: 1, minWidth: 150, editable: true, isRequired: true },
 ];
 
-function ManageInventory() {
-  const navigate = useNavigate();
+function ManageSliderBanner() {
   const [updateCellError, setUpdateCellError] = useState({})
   const [rows, setRows] = useState()
   const [rowModesModel, setRowModesModel] = useState({})
   const [rowChanges, setRowChanges] = useState(null)
   const [searchValue, setSearchValue] = useState("")
-  const [searchParam, setSearchParam] = useState("")
 
   const [deleteDialogPayload, setDeleteDialogPayload] = useState({ state: false, id: null });
   const [updateDialogPayload, setUpdateDialogPayload] = useState({ state: false, id: null });
 
 
 
-  const { data, isLoading } = useReadAllSpecificationAdmin();
-  const { mutateAsync: updateSpecification } = useUpdateSpecification();
-  const { mutateAsync: deleteRecord } = useDeleteSpecification();
-  const { data: searchResult } = useSearchSpecification(searchParam);
+  const { data, isLoading } = useReadAllCarouselAdmin();
+  const { mutateAsync: createSliderBanner, isPending:isCreating } = useCreateCarousel();
+  const { mutateAsync: updateSpecification, isPending:isUpdating } = useUpdateCarousel();
+  const { mutateAsync: deleteRecord, isPending:isDeleting } = useDeleteCarousel();
 
   const breadcrumbs = [
     { path: '/', title: 'Home' },
-    { path: '/manage-inventory', title: 'Quản lý kho hàng' },
+    { path: '/manage-slider-banner', title: 'Quản lý slider banner' },
   ]
 
   useEffect(() => {
     setRows(data);
-    columnFields[4].renderEditCell = (params)=>{
-      const {row, hasFocus} = params
-      if (hasFocus) {
-        navigate('manage-item', { state: row})}
-      }
   }, [data])
+
+  columnFields[0].renderEditCell = (params) => <CustomEditImageCell {...params} />
 
   const handleEditCellProps = (arg) => {
     const { field, row, isRequired, props, type, min, max } = arg;
@@ -78,6 +67,7 @@ function ManageInventory() {
     setRowChanges(prev => ({ ...prev, [field]: value !== row[field] }));
 
     let errorMessage;
+    console.log(props);
 
     if (type === 'number') {
       if ((isRequired && !value) || typeof value !== 'number')
@@ -87,7 +77,8 @@ function ManageInventory() {
       else if (value > max)
         errorMessage = `Max is ${max}`
 
-    } else if (isRequired && !value || !value.toString().trim()) {
+
+    } else if (isRequired && (!value || !value?.toString().trim())) {
       errorMessage = 'Require'
     }
     // const errorMessage = (!value || value.trim() === "") ? "Require" : ""
@@ -166,7 +157,7 @@ function ManageInventory() {
 
   const handleEditClick = (id) => () => {
     // navigate('manage-item', { state: rows?.find(row => row._id === id || row.id === id) })
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });  
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
   };
 
   const handleCancelClick = (id) => () => {
@@ -206,14 +197,28 @@ function ManageInventory() {
   const handleUpdate = async (newRow, oldRow) => {
     let newData;
 
-    const updatedData = await updateSpecification(newRow);
+    if (newRow.isNew) {
+      newData = await createSliderBanner(newRow);
 
-    if (!updatedData) {
-      toaster("Cập nhật thất bại.", { variant: 'error' })
-      return oldRow;
+      if (!newData) {
+        toaster("Tạo thất bại.", { variant: 'error' })
+        setUpdateDialogPayload({ state: false, id: null });
+        return oldRow;
+      }
+      toaster("Tạo thành công.", { variant: 'success' })
+    } else {
+      const updatedData = await updateSpecification(newRow);
+
+      if (!updatedData) {
+        toaster("Cập nhật thất bại.", { variant: 'error' })
+        setUpdateDialogPayload({ state: false, id: null });
+
+        return oldRow;
+      }
+      newData = { ...newRow, ...updatedData };
+      toaster("Cập nhật thành công.", { variant: 'success' })
     }
-    newData = { ...newRow, ...updatedData };
-    toaster("Cập nhật thành công.", { variant: 'success' })
+    setUpdateDialogPayload({ state: false, id: null });
 
     return newData
 
@@ -225,7 +230,6 @@ function ManageInventory() {
         ...oldModel,
         [updateDialogPayload.id]: { mode: GridRowModes.View },
       }))
-      setUpdateDialogPayload({ state: false, id: null });
       setRowChanges(null);
     } else
       setUpdateDialogPayload((prev) => ({ ...prev, state: false }));
@@ -235,31 +239,6 @@ function ManageInventory() {
     console.error(error);
   }
 
-  const handleSearch = () => {
-    if (!searchValue) {
-      return;
-    }
-    const param = {};
-    if (searchValue.startsWith('#')) {
-      param[columnFields[0].field] = searchValue.substring(1)
-    } else {
-      param[columnFields[1].field] = searchValue
-    }
-    setSearchParam(param)
-  }
-
-  useEffect(() => {
-    setTimeout(() => {
-      const param = {};
-      if (searchValue.startsWith('#')) {
-        param[columnFields[0].field] = searchValue.substring(1)
-      } else {
-        param[columnFields[1].field] = searchValue
-      }
-
-      setSearchParam(param)
-    }, 1500);
-  }, [searchValue]);
 
   const handleRowModesModelChange = (newRowModesModel) => {
     setRowModesModel(newRowModesModel);
@@ -274,17 +253,8 @@ function ManageInventory() {
       breadCrumbs={breadcrumbs}
       sx={{ maxWidth: { xl: 'unset', lg: '94vw', sm: '92vw', xs: '100vw' } }}
     >
-      <Box
-        display='flex'
-        width='100%'
-        justifyContent='flex-end'
-        mb={3}
-      >
-        <ManagePageSearch
-          {...{ searchValue, setSearchValue, handleSearch }}
-        />
-      </Box>
       <DataGridConfirmDialog
+        isPending={isDeleting}
         onClick={handleDeleteClick}
         state={deleteDialogPayload.state}
         title="Xác nhận xóa?"
@@ -292,6 +262,7 @@ function ManageInventory() {
       />
       <DataGridConfirmDialog
         onClick={confirmUpdate}
+        isPending={isUpdating || isCreating}
         state={updateDialogPayload.state}
         title="Xác nhận cập nhật?"
         content="Sau khi cập nhật, thông tin sẽ được thay đổi trên toàn bộ hệ thống."
@@ -300,11 +271,11 @@ function ManageInventory() {
         <DataGrid
           loading={isLoading}
           getRowId={(row) => row._id ? row._id : row.id}
-          rows={searchResult && searchValue ? searchResult : rows}
+          rows={rows}
           columns={columns}
           editMode='row'
           rowModesModel={rowModesModel}
-          slots={{ toolbar: GridToolbar }}
+          slots={{ toolbar: CustomGridToolbar }}
           slotProps={{ toolbar: { setRows, setRowModesModel, columnFields: columns.map(column => column.field) } }}
           processRowUpdate={handleUpdate}
           onRowEditStop={handleRowEditStop}
@@ -317,6 +288,7 @@ function ManageInventory() {
               },
             },
           }}
+          rowHeight={200}
           pageSizeOptions={[5, 10]}
         />
       </StyledBox>
@@ -325,4 +297,4 @@ function ManageInventory() {
   )
 }
 
-export default ManageInventory
+export default ManageSliderBanner
