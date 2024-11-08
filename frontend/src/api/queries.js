@@ -10,7 +10,8 @@ import {
   updateRecord,
   getCurrentUser,
   createProduct,
-  updateProduct
+  updateProduct,
+  manageCarousel
 } from "./api";
 import {
   READ_ALL_ACCOUNTS,
@@ -42,7 +43,8 @@ import {
   READ_ALL_SPECIFICATION,
   SEARCH_ORDER,
   SEARCH_REVIEW,
-  READ_OWN_WISHLIST
+  READ_OWN_WISHLIST,
+  READ_ALL_SEEN_PRODUCTS
 } from "./queryKeys";
 import { admin_url, customer_url } from "./API_URL";
 
@@ -523,7 +525,7 @@ export const useCreateCarousel = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (carousel) =>
-      createRecord(admin_carousel_url.addCarousel(), carousel),
+      manageCarousel(admin_carousel_url.addCarousel(), carousel),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_CAROUSEL]);
     },
@@ -533,7 +535,7 @@ export const useUpdateCarousel = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (carousel) =>
-      updateRecord(
+      manageCarousel(
         admin_carousel_url.updateCarousel(carousel._id),
         carousel
       ),
@@ -646,7 +648,7 @@ export const useAddNewReview = () => {
 const admin_review_url = admin_url.review;
 export const useReadAllReviewsAdmin = (productId) => {
   return useQuery({
-    queryKey: [READ_ALL_ORDERS, productId],
+    queryKey: [READ_ALL_REVIEWS, productId],
     queryFn: () => readAll(admin_review_url.getAllReview(productId)),
     enabled: !!productId
   });
@@ -880,5 +882,24 @@ export const useSearchItemInWishlist = (customerId, searchParam) => {
     queryKey: [SEARCH_CATEGORY, searchParam],
     queryFn: () => search(customer_wishlist.search(customerId), searchParam),
     enabled: !!searchParam && searchParam != {} && searchParam != []
+  });
+};
+//---------------------------WISHLIST--------------------------------
+const customer_seen = customer_url.seen;
+export const useReadSeenProducts = (userId) => {
+  return useQuery({
+    queryKey: [READ_ALL_SEEN_PRODUCTS],
+    queryFn: () => readAll(customer_seen.getOwnSeenProducts(userId)),
+    enabled: !!userId
+  });
+};
+export const useAddItemToSeens = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ data:{userId, productId} }) =>
+      createRecord(customer_seen.addSeenProduct(), {userId, productId}),
+    onSuccess: () => {
+      queryClient.invalidateQueries([READ_ALL_SEEN_PRODUCTS]);
+    },
   });
 };

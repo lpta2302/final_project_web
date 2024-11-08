@@ -2,10 +2,10 @@ import { DeleteOutlined, Done, Save } from "@mui/icons-material"
 import { Box, Button, Typography } from "@mui/material"
 import { PageContainerToolbar } from "@toolpad/core"
 
-function PageToolbar({ handleSave, handleSaveDraft, handleDelete, disabled }) {
+function PageToolbar({ handleSave, handleSaveDraft, handleDelete, disabled, isMobile }) {
     return (
         <Box
-            sx={{ display: { md: 'inline-flex', xs: 'none' }, gap: '8px', ml: 'auto' }}
+            sx={{ display: { md: 'inline-flex', xs: isMobile ? 'inline-flex' : 'none' }, gap: '8px', ml: 'auto', width: isMobile && '100%', justifyContent: 'flex-end'}}
         >
             {
                 handleDelete &&

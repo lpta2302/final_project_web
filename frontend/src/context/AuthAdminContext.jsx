@@ -1,10 +1,9 @@
 /* eslint-disable react/prop-types */
 import { createContext, useEffect, useState, useContext } from "react";
-import { getLocalstorage, setLocalstorage, removeLocalstorage } from "../util/localstorage";
+import { getLocalstorage, setLocalstorage } from "../util/localstorage";
 import { setBearerToken } from "../api/myAxios";
 import { getCurrentUser } from "../api/api";
-import { enqueueSnackbar as toaster } from 'notistack';
-
+import { useLocation, useNavigate } from "react-router-dom";
 const INIT_USER = {
     id: '',
     name: '',
@@ -21,33 +20,29 @@ const INIT_STATE = {
     isLoading: false,
     setUser() { },
     setIsAuthenticated() { },
-    checkAuthUser: async () => false,
-    logout: () => {},
+    checkAuthAdminUser: async () => false,
 };
 
-const AuthContext = createContext(INIT_STATE)
+const AuthAdminContext = createContext(INIT_STATE)
 
-export default function AuthProvider({ children }) {
-    // const navigate = useNavigate();
+export default function AuthAdminProvider({ children }) {
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const [user, setUser] = useState(INIT_USER);
     const [token, setToken] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    async function checkAuthUser() {
+    async function checkAuthAdminUser() {
         try {
-            const cookieFallback = getLocalstorage('cookieFallback');
+            const adminCookie = getLocalstorage('adminCookie');
             
-            if(!cookieFallback)
+            if(!adminCookie)
                 return false;
 
-            setBearerToken(cookieFallback);
-            
-            // if return user
-            // setUser(cookieFallback)
+            setBearerToken(adminCookie);
 
-            // if return token
             const user = await getCurrentUser();
             const { id} = user
             
@@ -59,7 +54,7 @@ export default function AuthProvider({ children }) {
             setIsAuthenticated(true);
             return true;
         } catch (error) {
-            setLocalstorage('cookieFallback',null);
+            setLocalstorage('adminCookie',null);
             console.log(error);
             return false;
         } finally {
@@ -67,21 +62,15 @@ export default function AuthProvider({ children }) {
         }
     }
 
-    const logout = () => {
-        removeLocalstorage('cookieFallback');
-        setUser(INIT_USER);
-        setIsAuthenticated(false);
-        setBearerToken(null);
-        toaster('Đăng xuất thành công', { variant: 'success' });
-    };
-
     useEffect(() => {
+        if(!location.pathname.startsWith('/admin'))
+            return;
         if (
-            localStorage.getItem('cookieFallback') === null
+            localStorage.getItem('adminCookie') === null
         )
-            console.log('not found');
+            navigate('/admin/login')
         else
-            checkAuthUser();
+            checkAuthAdminUser();
     }, []);
 
     const value = {
@@ -92,13 +81,12 @@ export default function AuthProvider({ children }) {
         setUser,
         setToken,
         setIsAuthenticated,
-        checkAuthUser,
-        logout,
+        checkAuthAdminUser,
     }
 
     return (
-        <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+        <AuthAdminContext.Provider value={value}>{children}</AuthAdminContext.Provider>
     )
 }
 
-export const useAuthContext = () => useContext(AuthContext);
+export const useAuthAdminContext = () => useContext(AuthAdminContext);

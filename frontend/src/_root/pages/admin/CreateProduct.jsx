@@ -210,7 +210,7 @@ function CreateProduct() {
       slots={{ toolbar: PageToolbar }}
       slotProps={{
         toolbar: {
-          handleSaveDraft: !initProduct && (async () => handleSave(true)), handleSave: async () => handleSave(),
+          handleSaveDraft: !initProductId && (async () => handleSave(true)), handleSave: async () => handleSave(),
           handleDelete: initProductId ? async () => { await deleteProduct(initProductId); navigate(-1); } : ()=>navigate(-1),
           disabled: !validateForm()
         }
@@ -235,7 +235,7 @@ function CreateProduct() {
                   setProductCode(e.target.value)
                 }}
                 label="Mã sản phẩm" fullWidth margin="normal" placeholder="PC001" />
-              <FormControl margin="normal">
+              <FormControl sx={{width: { md: '30%', xs: '100%' }}} margin="normal">
                 <InputLabel id="product-status">Trạng thái</InputLabel>
                 <Select sx={{ height: '100%' }} labelId="product-status" label='Trạng thái' value={productStatus} onChange={(e) => setProductStatus(e.target.value)}>
                   {
@@ -519,6 +519,14 @@ function CreateProduct() {
               </Box>
             </CssVarsProvider>
           </Box>
+        </Grid2>
+        <Grid2 size={{xs:12, md: 0}} display={{xs: 'block', md: 'none'}}>
+          <PageToolbar {...{
+            handleSaveDraft: !initProductId && (async () => handleSave(true)), handleSave: async () => handleSave(),
+            handleDelete: initProductId ? async () => { await deleteProduct(initProductId); navigate(-1); } : ()=>navigate(-1),
+            disabled: !validateForm(),
+            isMobile:true
+          }}/>
         </Grid2>
       </Grid2>
     </CustomPageContainer>
