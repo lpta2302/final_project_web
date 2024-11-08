@@ -1,8 +1,10 @@
 /* eslint-disable react/prop-types */
 import { createContext, useEffect, useState, useContext } from "react";
-import { getLocalstorage } from "../util/localstorage";
+import { getLocalstorage, removeLocalstorage } from "../util/localstorage";
 import { setBearerToken } from "../api/myAxios";
 import { getCurrentUser } from "../api/api";
+import { enqueueSnackbar as toaster } from 'notistack';
+
 const INIT_USER = {
     id: '',
     name: '',
@@ -20,6 +22,7 @@ const INIT_STATE = {
     setUser() { },
     setIsAuthenticated() { },
     checkAuthUser: async () => false,
+    logout: () => {},
 };
 
 const AuthContext = createContext(INIT_STATE)
@@ -63,6 +66,14 @@ export default function AuthProvider({ children }) {
         }
     }
 
+    const logout = () => {
+        removeLocalstorage('cookieFallback');
+        setUser(INIT_USER);
+        setIsAuthenticated(false);
+        setBearerToken(null);
+        toaster('Đăng xuất thành công', { variant: 'success' });
+    };
+
     useEffect(() => {
         if (
             localStorage.getItem('cookieFallback') === '[]' ||
@@ -83,6 +94,7 @@ export default function AuthProvider({ children }) {
         setToken,
         setIsAuthenticated,
         checkAuthUser,
+        logout,
     }
 
     return (
