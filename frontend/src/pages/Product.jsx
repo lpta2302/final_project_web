@@ -25,7 +25,7 @@ const Product = () => {
   const { data: productData, isLoading: isLoadingProduct } = useReadProductDetailBySlug(slug);
 
   const product = productData || null;
-  const specId = product?.specs?.[0]?._id; // Lấy specId từ sản phẩm đầu tiên, hoặc thay đổi nếu cần
+  const specId = product?.specs?.[0]?._id;
 
   if (isLoadingProduct) {
     return (

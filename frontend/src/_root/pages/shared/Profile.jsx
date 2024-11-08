@@ -1,18 +1,29 @@
 import React, { useEffect } from 'react';
-import { Container, Typography, List, ListItem, ListItemText, Button, Box } from '@mui/material';
+import { Container, Typography, List, ListItem, ListItemText, Button, Box, CircularProgress } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../../context/AuthContext';
+import SeenProducts from '../../../components/ProductDetails/SeenProducts';
 
 function Profile() {
     const { user, isAuthenticated, isLoading, logout } = useAuthContext();
     const navigate = useNavigate();
 
-    // Redirect to the homepage if the user is not authenticated
+    // Redirect to the homepage if the user is not authenticated and loading is complete
     useEffect(() => {
-        if (!isAuthenticated) {
+        if (!isAuthenticated && !isLoading) {
             navigate('/');
         }
-    }, [isAuthenticated, navigate]);
+    }, [isAuthenticated, isLoading, navigate]);
+
+    if (isLoading) {
+        return (
+            <Container>
+                <Box display="flex" justifyContent="center" alignItems="center" height="80vh">
+                    <CircularProgress />
+                </Box>
+            </Container>
+        );
+    }
 
     return (
         <Container>
@@ -45,6 +56,9 @@ function Profile() {
                     <ListItemText primary="Sản phẩm đã xem gần đây" />
                 </ListItem>
             </List>
+            
+            {/* Recently Viewed Products */}
+            <SeenProducts />
         </Container>
     );
 }
