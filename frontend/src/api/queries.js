@@ -43,7 +43,8 @@ import {
   READ_ALL_SPECIFICATION,
   SEARCH_ORDER,
   SEARCH_REVIEW,
-  READ_OWN_WISHLIST
+  READ_OWN_WISHLIST,
+  READ_ALL_SEEN_PRODUCTS
 } from "./queryKeys";
 import { admin_url, customer_url } from "./API_URL";
 
@@ -881,5 +882,24 @@ export const useSearchItemInWishlist = (customerId, searchParam) => {
     queryKey: [SEARCH_CATEGORY, searchParam],
     queryFn: () => search(customer_wishlist.search(customerId), searchParam),
     enabled: !!searchParam && searchParam != {} && searchParam != []
+  });
+};
+//---------------------------WISHLIST--------------------------------
+const customer_seen = customer_url.seen;
+export const useReadSeenProducts = (userId) => {
+  return useQuery({
+    queryKey: [READ_ALL_SEEN_PRODUCTS],
+    queryFn: () => readAll(customer_seen.getOwnSeenProducts(userId)),
+    enabled: !!userId
+  });
+};
+export const useAddItemToSeens = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ data:{userId, productId} }) =>
+      createRecord(customer_seen.addSeenProduct(), {userId, productId}),
+    onSuccess: () => {
+      queryClient.invalidateQueries([READ_ALL_SEEN_PRODUCTS]);
+    },
   });
 };
