@@ -17,6 +17,8 @@ import ManageCriteria from './admin/ManageCriteria'
 import CreateProduct from './admin/CreateProduct'
 import UpdateItem from './admin/UpdateItem'
 
+import CustomerDashboard from './admin/dashboards/CustomerDashboard'
+
 export {
     HomePage,
     Cart,
@@ -34,5 +36,7 @@ export {
     ManageCriteria,
     CreateProduct,
     UpdateItem,
-    ManageSliderBanner
+    ManageSliderBanner,
+
+    CustomerDashboard,
 };

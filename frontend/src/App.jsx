@@ -115,11 +115,17 @@ function App() {
                 <Route path="/admin" element={<AdminLayout />}>
                   <Route index element={<AdminHomePage />} />
                   {adminNav.map(navItem =>
-                    <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
+                    navItem.children ?
+                      <Route path={navItem.segment} key={navItem.title}>
+                        {navItem.children.map(child => (
+                          <Route path={child.segment} element={child.element} key={child.title} />
+                        ))}
+                      </Route> :
+                      <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
                   )}
                   <Route path="manage-product/product-detail/:productCode" element={<CreateProduct />} />
                   <Route path="manage-product/create-product" element={<CreateProduct />} />
-                  <Route path="manage-inventory/manage-item/" element={<UpdateItem/>} />
+                  <Route path="manage-inventory/manage-item/" element={<UpdateItem />} />
                 </Route>
                 <Route path="admin/login" element={<Login isAdmin />} />
               </Routes>
