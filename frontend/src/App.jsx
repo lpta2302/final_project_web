@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import AuthProvider from "./context/AuthContext";
 import RootLayout from './_root/RootLayout';
-import { CreateProduct, HomePage, Profile } from './_root/pages';
+import { CreateProduct, HomePage, Profile, UpdateItem } from './_root/pages';
 import './globalStyle.css'
 import AdminLayout from './_root/AdminLayout';
 import AdminHomePage from './_root/pages/admin/AdminHomePage';
@@ -21,6 +21,7 @@ import ManagePersonalOrder from "./pages/ManagePersonalOrder.jsx";
 import Favorite from "./pages/Favorite.jsx";
 import Product from "./pages/Product.jsx";
 import { CssVarsProvider, extendTheme } from "@mui/joy";
+import AuthAdminProvider from "./context/AuthAdminContext.jsx";
 
 const muiTheme = createTheme({
   colorSchemes: {
@@ -36,6 +37,9 @@ const muiTheme = createTheme({
     black: {
       main: "#000",
       light: "#505050",
+    },
+    blackLight: {
+      main: "#757575"
     },
     secondary: {
       main: "#09083d",
@@ -94,7 +98,7 @@ function App() {
             <AuthProvider>
               <Routes>
                 <Route element={<RootLayout />}>
-                  <Route index element={<HomePage />} path='/' />
+                  <Route index element={<HomePage />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/manage-profile" element={<ManagePersonalProfile />} />
                   <Route path="/manage-order" element={<ManagePersonalOrder />} />
@@ -106,16 +110,20 @@ function App() {
                 </Route>
               </Routes>
             </AuthProvider>
-            <Routes>
-              <Route path="/admin" element={<AdminLayout />}>
-                <Route index element={<AdminHomePage />} />
-                {adminNav.map(navItem =>
-                  <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
-                )}
-                <Route path="manage-product/create-product" element={<CreateProduct />} />
-              </Route>
-              <Route path="admin/login" element={<Login />} />
-            </Routes>
+            <AuthAdminProvider>
+              <Routes>
+                <Route path="/admin" element={<AdminLayout />}>
+                  <Route index element={<AdminHomePage />} />
+                  {adminNav.map(navItem =>
+                    <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
+                  )}
+                  <Route path="manage-product/product-detail/:productCode" element={<CreateProduct />} />
+                  <Route path="manage-product/create-product" element={<CreateProduct />} />
+                  <Route path="manage-inventory/manage-item/" element={<UpdateItem/>} />
+                </Route>
+                <Route path="admin/login" element={<Login isAdmin />} />
+              </Routes>
+            </AuthAdminProvider>
           </SnackbarProvider>
         </ThemeProvider>
       </Container>

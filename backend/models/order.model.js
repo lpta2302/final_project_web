@@ -21,7 +21,6 @@ const orderScheme = new mongoose.Schema(
     },
     totalAmount: {
       type: Number,
-      required: true,
     },
     shippingCost: {
       type: Number,

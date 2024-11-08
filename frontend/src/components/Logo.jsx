@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
 import { Typography } from "@mui/material"
 
-function Logo({ margin, variant }) {
+function Logo(props) {
+    const { margin, variant, fontSize } = props
     return (
-        <Typography variant={variant || "h5"} sx={{ m: margin, fontFamily: 'Nunito', color: 'primary.main', fontWeight: 'bold' }}>
+        <Typography {...props} variant={variant || "h5"} sx={{ m: margin, fontFamily: 'Nunito', color: 'primary.main', fontWeight: 'bold', fontSize: fontSize }}>
             FCOMPUTER
         </Typography>
     )

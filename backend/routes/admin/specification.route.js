@@ -9,8 +9,11 @@ specRouter.get("/search", specController.searchSpec);
 // Sửa specification
 specRouter.patch("/:specId", specController.updateSpec);
 
-// Xóa specification
+// Xóa specification / xóa biến thể
 specRouter.delete("/:specId", specController.delSpec);
+
+specRouter.delete("/specification/:specId/:keyId", specController.delSpecification);
+specRouter.patch("/specification/:specId/:keyId", specController.updateSpecification);
 
 // Thêm specification
 specRouter.post("/", specController.addSpec);

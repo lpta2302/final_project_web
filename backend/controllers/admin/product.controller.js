@@ -21,17 +21,10 @@ export const index = async (req, res) => {
 // [POST] /products/postProduct
 export const postProduct = async (req, res) => {
   try {
+    console.log(req.body);
+
     // Kiểm tra mã và tên sản phẩm
-    const {
-      productCode,
-      productName,
-      price,
-      discountPercentage,
-      stockQuantity,
-      tags,
-      brand,
-      variations,
-    } = req.body;
+    const { productCode, productName, tag, brand, variations } = req.body;
 
     // Kiểm tra nếu mã sản phẩm đã tồn tại
     const existingProductCode = await Product.findOne({ productCode });
@@ -46,7 +39,8 @@ export const postProduct = async (req, res) => {
     }
 
     // Trong hàm postProduct
-    const parsedTags = tags ? JSON.parse(tags) : []; // Nếu tags là chuỗi JSON
+    const parsedTags = tag ? JSON.parse(tag) : []; // Nếu tags là chuỗi JSON
+
     const objectIdTags = parsedTags.map(
       (tag) => new mongoose.Types.ObjectId(tag)
     );
@@ -65,6 +59,8 @@ export const postProduct = async (req, res) => {
     });
 
     const savedProduct = await newProduct.save();
+
+    console.log("Variations: " + variations);
 
     const parsedVariations = Array.isArray(variations)
       ? variations
@@ -131,6 +127,7 @@ export const postProduct = async (req, res) => {
     res.status(200).json(savedProduct);
   } catch (error) {
     console.log(error);
+
     return res.status(400).json(error);
   }
 };
@@ -141,42 +138,192 @@ export const editProduct = async (req, res) => {
     const id = req.params.id;
 
     // Tìm sản phẩm hiện tại
-    const existingProduct = await Product.findById(id);
+    const existingProduct = await Product.findById(id).populate("specs");
     if (!existingProduct) {
       return res.status(404).json(false);
     }
+    // Xử lý hình ảnh mới nếu có
 
-    const newImgUrl = req.imageUrls || [];
+    let newImgUrl = [];
 
-    console.log(newImgUrl);
+    console.log("NC: " + req.body.variations);
 
-    if (newImgUrl.length > 0) {
-      const oldImgUrl = existingProduct.imageURLs;
+    // Kiểm tra req.imageUrls
+    if (req.imageUrls && req.imageUrls.length > 0) {
+      newImgUrl = req.imageUrls;
 
-      for (const url of oldImgUrl) {
+      if (req.body.imageUrls) {
+        // Đảm bảo newImgUrl là một mảng đúng
+        newImgUrl = [...newImgUrl, ...JSON.parse(req.body.imageUrls)];
+      }
+    }
+    // Kiểm tra req.body.imageUrls nếu req.imageUrls không có giá trị
+    else if (req.body.imageUrls) {
+      newImgUrl = JSON.parse(req.body.imageUrls);
+    }
+    const oldImgUrl = existingProduct.imageURLs || [];
+
+    // Nếu có sự thay đổi trong danh sách hình ảnh (bao gồm cả giảm số lượng)
+    if (newImgUrl.length !== oldImgUrl.length) {
+      // Tìm những hình ảnh cũ cần xóa
+      const imgUrlsToDelete = oldImgUrl.filter(
+        (url) => !newImgUrl.includes(url)
+      );
+
+      // Xóa hình ảnh cũ trên Google Drive
+      for (const url of imgUrlsToDelete) {
         const urlParams = new URL(url);
         const fileId = urlParams.searchParams.get("id");
         if (fileId) {
-          // Gọi middleware xóa hình ảnh
-          await deleteFromDrive({ params: { fileId: fileId } }, res, () => {});
+          await deleteFromDrive({ params: { fileId: fileId } }, res, () => { });
         }
       }
 
+      // Cập nhật danh sách hình ảnh mới
       existingProduct.imageURLs = newImgUrl;
     }
 
-    const result = await Product.findByIdAndUpdate(
+    // Xử lý cập nhật specs
+    const { variations } = req.body;
+
+    const parsedVariations = Array.isArray(variations)
+      ? variations
+      : JSON.parse(variations || "[]") || [];
+
+    if (Array.isArray(parsedVariations) && parsedVariations.length > 0) {
+      const specIdsToKeep = []; // Dùng để lưu các specIds của sản phẩm cần giữ lại
+
+      for (let variation of parsedVariations) {
+        console.log("SI: " + variation.specId);
+
+        // Tìm spec hiện tại với specCode và productId
+        let existingSpec = await Specs.findOne({
+          specCode: variation.specCode,
+          products: req.params.id, // Chỉ tìm các specs có chứa product hiện tại
+        });
+
+        if (existingSpec) {
+          // Cập nhật specifications (key-value)
+          existingSpec.specifications = await Promise.all(
+            variation.specifications.map(async (spec) => {
+              const isValidKey = await specsKey.findById(spec.key);
+              return isValidKey ? { key: spec.key, value: spec.value } : null;
+            })
+          ).then((specs) => specs.filter((spec) => spec !== null));
+
+          // Cập nhật các trường khác của spec
+          existingSpec.stockQuantity = variation.stockQuantity;
+          existingSpec.price = variation.price;
+          existingSpec.discountPercentage = variation.discountPercentage;
+
+          await existingSpec.save(); // Lưu thay đổi
+
+          // Thêm specId vào danh sách giữ lại
+          specIdsToKeep.push(existingSpec._id);
+        } else {
+          // Tạo spec mới nếu không có specCode trùng
+          const validSpecifications = await Promise.all(
+            variation.specifications.map(async (spec) => {
+              const isValidKey = await specsKey.findById(spec.key);
+              return isValidKey ? { key: spec.key, value: spec.value } : null;
+            })
+          ).then((specs) => specs.filter((spec) => spec !== null));
+
+          if (validSpecifications.length > 0) {
+            const newSpec = new Specs({
+              specCode: variation.specCode,
+              specifications: validSpecifications,
+              stockQuantity: variation.stockQuantity,
+              price: variation.price,
+              products: [req.params.id], // Liên kết sản phẩm vào spec mới
+              discountPercentage: variation.discountPercentage,
+            });
+            await newSpec.save();
+
+            // Thêm spec mới vào sản phẩm
+            existingProduct.specs.push(newSpec._id);
+
+            // Thêm specId vào danh sách giữ lại
+            specIdsToKeep.push(newSpec._id);
+          }
+        }
+      }
+
+      // Xóa các specs không còn liên kết với sản phẩm
+      await Specs.deleteMany({
+        _id: { $nin: specIdsToKeep }, // Chỉ xóa những specs có id không nằm trong danh sách giữ lại
+        products: { $in: [req.params.id] }, // Đảm bảo rằng spec vẫn còn liên kết với sản phẩm
+      });
+    }
+
+    // Cập nhật category nếu có sự thay đổi
+    if (
+      req.body.category &&
+      mongoose.Types.ObjectId.isValid(req.body.category)
+    ) {
+      existingProduct.category = req.body.category;
+
+      const categoryDoc = await Category.findById(req.body.category);
+
+      console.log("CTE: " + categoryDoc);
+      if (categoryDoc) {
+        await categoryDoc.updateOne({
+          $addToSet: { products: existingProduct._id },
+        });
+      }
+    }
+
+    // Cập nhật brand nếu có sự thay đổi
+    if (req.body.brand && mongoose.Types.ObjectId.isValid(req.body.brand)) {
+      existingProduct.brand = req.body.brand;
+
+      const brandDoc = await Brand.findById(req.body.brand);
+      if (brandDoc) {
+        await brandDoc.updateOne({
+          $addToSet: { products: existingProduct._id },
+        });
+      }
+    }
+
+    if (req.body.tag) {
+      const parsedTags = JSON.parse(req.body.tag);
+      const objectIdTags = parsedTags.map(
+        (tag) => new mongoose.Types.ObjectId(tag)
+      );
+
+      // Cập nhật lại tag cho sản phẩm
+      existingProduct.tag = objectIdTags;
+
+      // Cập nhật lại trong collection Tag
+      for (const tagId of objectIdTags) {
+        const tagDoc = await Tag.findById(tagId);
+        if (tagDoc) {
+          await tagDoc.updateOne({
+            $addToSet: { products: existingProduct._id },
+          });
+        }
+      }
+    }
+
+    // Cập nhật các trường khác của sản phẩm
+    const updatedProduct = await Product.findByIdAndUpdate(
       id,
       {
         ...req.body,
         imageURLs: existingProduct.imageURLs, // Cập nhật hình ảnh
+        tag: existingProduct.tag, // Cập nhật tag nếu có sự thay đổi
+        specs: existingProduct.specs, // Cập nhật specs nếu có sự thay đổi
+        category: existingProduct.category,
+        brand: existingProduct.brand,
       },
       {
         new: true, // Trả về sản phẩm đã cập nhật
       }
-    );
-    res.status(200).json(result);
+    ).populate("specs"); // Populate để lấy dữ liệu specs sau khi cập nhật
+
+    res.status(200).json(updatedProduct);
   } catch (error) {
+    console.error(error);
     res.status(500).json({
       message: false,
     });
@@ -230,7 +377,7 @@ export const deleteProduct = async (req, res) => {
       const fileId = urlParams.searchParams.get("id");
       if (fileId) {
         // Gọi middleware xóa hình ảnh
-        await deleteFromDrive({ params: { fileId: fileId } }, res, () => {});
+        await deleteFromDrive({ params: { fileId: fileId } }, res, () => { });
       }
     }
 
@@ -248,12 +395,19 @@ export const deleteProduct = async (req, res) => {
 export const detail = async (req, res) => {
   try {
     const id = req.params.id;
-    console.log(id);
 
-    const record = await Product.findOne({ _id: id });
+    const record = await Product.findOne({ _id: id })
+      .populate("tag category brand")
+      .populate({
+        path: "specs",
+        populate: {
+          path: "specifications.key",
+        },
+      });
 
     res.status(200).json(record);
   } catch (error) {
+    console.log(error);
     res.status(400).json({
       message: false,
     });
@@ -388,7 +542,6 @@ export const statisticBrand = async (req, res) => {
     const brand = await Brand.findOne({ _id: brandId }).populate("products");
     res.status(200).json(brand.products);
   } catch (error) {
-    console.log(error);
     res.status(500).json(false);
   }
 };

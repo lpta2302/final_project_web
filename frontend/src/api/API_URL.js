@@ -18,7 +18,7 @@ export const customer_url = {
         addItem: () => '/cart/add',
         deleteItem: () => '/cart/delete',
         getOwnCart: (id) => '/cart/showCart/' + id,
-        updateOwnCart: (id) => '/cart/my-cart/' + id,
+        updateOwnCart: (id) => '/cart/my-cart/' + id
     },
     brand: {
         getAllBrand: () => '/client/brand/',
@@ -124,6 +124,7 @@ export const admin_url = {
         getOrderOfUser: (id) => '/order/user/' + id,
         getOrderDetail: (id) => '/order/detail/' + id,
         editOrder: (id) => '/order/edit/' + id,
+        deleteOrder: (id) => '/order/' + id,
         search: () => '/order/search/',
         generalStatistic: () => '/order/statistic/',//x
         statisticRevenue: () => '/order/statistic-revenue/'//x
@@ -135,7 +136,7 @@ export const admin_url = {
         deleteCarousel: (id) => '/carousel/' + id,
     },
     review: {
-        getAllReview: (id) => '/client/reviews/' + id,
+        getAllReview: (id) => '/reviews/' + id,
         search: (id) => '/reviews/' + id + '/search/',
         deleteReview: (id) => '/reviews/' + id,
         getReview: (id) => '/reviews/' + id
@@ -145,5 +146,15 @@ export const admin_url = {
         addSpecificationKey: () => '/spec/specification-keys',
         deleteSpecificationKey: (id) => '/spec/specification-keys/' + id,
         updateSpecificationKey: (id) => '/spec/specification-keys/' + id
+    },
+    specification: {
+        getAllSpecification: () => '/spec/',
+        addSpecification: () => '/spec/specification/',
+        deleteSpecification: (id) => '/spec/' + id,
+        deleteSpecificationKeyValue: (id) => '/spec/specification/' + id,
+        updateSpecificationKeyValue: (id) => '/spec/specification/' + id,
+        updateSpecification: (id) => '/spec/' + id,
+        searchSpecification: () => '/spec/search/',
     }
 }
+

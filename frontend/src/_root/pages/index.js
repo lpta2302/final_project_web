@@ -10,10 +10,12 @@ import Dashboard from './admin/Dashboard'
 import ManageAccount from './admin/ManageAccount'
 import ManageProduct from './admin/ManageProduct'
 import ManageInventory from './admin/ManageInventory'
+import ManageSliderBanner from './admin/ManageSliderBanner'
 import ManageOrder from './admin/ManageOrder'
 import ManageVoucher from './admin/ManageVoucher'
 import ManageCriteria from './admin/ManageCriteria'
 import CreateProduct from './admin/CreateProduct'
+import UpdateItem from './admin/UpdateItem'
 
 export {
     HomePage,
@@ -30,5 +32,7 @@ export {
     ManageOrder,
     ManageVoucher,
     ManageCriteria,
-    CreateProduct
+    CreateProduct,
+    UpdateItem,
+    ManageSliderBanner
 };
