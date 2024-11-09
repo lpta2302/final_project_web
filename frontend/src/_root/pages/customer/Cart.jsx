@@ -17,29 +17,40 @@ import {
   useUpdateCart,
 } from "../../../api/queries";
 import CartItem from "../../../components/Cart/CartItem";
+import { useAuthContext } from "../../../context/AuthContext";
 
 const Cart = () => {
   // Sử dụng hook để đọc dữ liệu giỏ hàng
-  const { data: fetchedCartItems, error, isLoading } = useReadOwnCart();
+  const { user, isAuthenticated } = useAuthContext();
+  const { data: fetchedCartItems, error, isLoading } = useReadOwnCart(user?._id);
   const createCartItem = useAddCartItem();
-  const updateCart = useUpdateCart();
+  const { mutateAsync: updateCart } = useUpdateCart();
 
   const [cartItems, setCartItems] = useState([]);
   const [shippingFee, setShippingFee] = useState(0);
   const [discountValue, setDiscountValue] = useState(0);
 
   useEffect(() => {
-    if (fetchedCartItems && Array.isArray(fetchedCartItems)) {
-      setCartItems(fetchedCartItems);
+    if (fetchedCartItems && Array.isArray(fetchedCartItems.cartItems)) {
+      setCartItems(fetchedCartItems?.cartItems);
     }
   }, [fetchedCartItems]);
 
   const isMobile = useMediaQuery("(max-width:600px)");
 
+  const handleUpdateCart = async () => {
+    try {
+      const response = await updateCart({ cart: { cardId: fetchedCartItems?._id, cartItems: fetchedCartItems?.cartItems } });
+      console.log("Cập nhật giỏ hàng thành công!", response);
+    } catch (error) {
+      console.error("Lỗi khi cập nhật giỏ hàng", error);
+    }
+  }
+
   const handleQuantityChange = (id, operation) => {
     setCartItems((prevItems) =>
       prevItems.reduce((acc, item) => {
-        if (item.id === id) {
+        if (item._id === id) {
           const newQuantity =
             operation === "increase" ? item.quantity + 1 : item.quantity - 1;
           if (newQuantity > 0) {
@@ -57,12 +68,11 @@ const Cart = () => {
   };
 
   const handleDeleteItem = (id) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+    setCartItems((prevItems) => prevItems.filter((item) => item._id !== id));
   };
 
   const totalAmount = cartItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
+    (acc, item) => acc + item.spec?.price * item.quantity, 0
   );
 
   const totalWithDiscountAndShipping =
@@ -130,7 +140,7 @@ const Cart = () => {
             <Box sx={{ maxHeight: "400px", overflowY: "auto" }}>
               {cartItems.map((item) => (
                 <CartItem
-                  key={item.id}
+                  key={item._id}
                   item={item}
                   isMobile={isMobile}
                   handleQuantityChange={handleQuantityChange}
@@ -172,7 +182,7 @@ const Cart = () => {
 
               <Button
                 variant="contained"
-                color="secondary"
+                color="primary"
                 fullWidth
                 sx={{ marginTop: "16px" }}
                 component={Link}

@@ -821,7 +821,7 @@ export const useAddCartItem = () => {
 
   return useMutation({
     mutationFn: (item) =>
-      deleteRecord(customerCart.addItem(item)),
+      createRecord(customerCart.addItem(),item),
     onSuccess: () => {
       queryClient.invalidateQueries([USE_READ_OWN_CART]);
     },

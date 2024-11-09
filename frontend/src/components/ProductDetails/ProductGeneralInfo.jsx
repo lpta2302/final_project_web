@@ -9,7 +9,8 @@ import {
 } from "@mui/material";
 import { Add, Remove, Favorite, FavoriteBorder } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
-import { useReadAllReviewsAdmin, useReadProductDetailBySlug } from "../../api/queries";
+import { useAddCartItem, useReadAllReviewsAdmin, useReadProductDetailBySlug } from "../../api/queries";
+import { useAuthContext } from "../../context/AuthContext";
 
 const ProductGeneralInfo = () => {
   const { slug } = useParams();
@@ -19,6 +20,7 @@ const ProductGeneralInfo = () => {
   const [activeSpec, setActiveSpec] = useState(null);
   const [selectedSpec, setSelectedSpec] = useState(null);
 
+  const { user, isAuthenticated, isLoading } = useAuthContext();
   const { data: productData } = useReadProductDetailBySlug(slug);
 
   // Lấy specId từ sản phẩm
@@ -27,6 +29,19 @@ const ProductGeneralInfo = () => {
 
   // Fetch các reviews từ API dựa trên specId
   const { data: productReview, isPending: isLoadingReviews } = useReadAllReviewsAdmin(specId);
+  const { mutateAsync: addToCart } = useAddCartItem();
+
+  const handleAddToCart = async () =>{
+    if (isAuthenticated){
+      try{
+        const userId = user?._id;
+        const respone = await addToCart({client: userId, spec: selectedSpec?._id, quantity});
+        console.log("Sản phẩm đã được thêm vào giỏ hàng!", respone);
+      } catch(error) {
+        console.error("Lỗi khi thêm hàng vào giỏ", error);
+      }
+    }
+  }
 
   useEffect(() => {
     if (specs && specs.length > 0) {
@@ -184,7 +199,7 @@ const ProductGeneralInfo = () => {
       {/* Add to Cart Button */}
       {selectedSpec && selectedSpec.stockQuantity > 0 && (
         <Box sx={{ display: "flex", alignItems: "center", mt: 3 }}>
-          <Button variant="contained" color="primary">
+          <Button variant="contained" color="primary" onClick={handleAddToCart}>
             Thêm vào giỏ hàng
           </Button>
         </Box>

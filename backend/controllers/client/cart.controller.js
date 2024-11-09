@@ -21,6 +21,7 @@ export const add = async (req, res) => {
 
       if (itemIndex !== -1) {
         // Nếu sản phẩm đã tồn tại, tăng số lượng lên bằng quantity từ req.body
+        console.log(quantity)
         exitCart.cartItems[itemIndex].quantity += quantity || 1; // Dùng quantity nếu có, mặc định là 1 nếu không có
       } else {
         // Nếu sản phẩm chưa tồn tại, thêm sản phẩm mới vào cartItems với quantity từ req.body
@@ -88,7 +89,7 @@ export const showCart = async (req, res) => {
       path: "cartItems.spec",
       populate: {
         path: "products", // Populate product trong spec
-        select: "productName price", // Chọn các trường cần thiết từ product
+        select: "productName price imageURLs", // Chọn các trường cần thiết từ product
       },
     });
 
