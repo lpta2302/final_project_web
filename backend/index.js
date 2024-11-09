@@ -8,6 +8,7 @@ import routesClient from "./routes/client/index.js";
 
 import dotenv, { parse } from "dotenv";
 import database from "./config/database.js";
+import cookieParser from "cookie-parser";
 
 // App config
 const app = express();
@@ -17,6 +18,8 @@ const port = process.env.PORT || 4000;
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(cors());
 app.use(morgan("common"));
+
+app.use(cookieParser())
 
 app.get('/', (req, res) => {
   res.cookie('__vercel_live_token', 'cookieValue', {
