@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Container, Typography, TextField, Button, Grid2, Box, Avatar } from '@mui/material';
-import { useAuthContext } from '../context/AuthContext';
-import { useUpdateAccount } from '../api/queries';
+import { useAuthContext } from '../../../context/AuthContext';
+import { useUpdateAccount } from '../../../api/queries';
 
 const ManagePersonalProfile = () => {
   const { isAuthenticated, isLoading: isLoadingUser, user } = useAuthContext();
   const { mutateAsync: updateAccount } = useUpdateAccount();
-  
-  
+
+
   // Khởi tạo state với các giá trị từ `user`
   const [inputs, setInputs] = useState({
     username: "",
@@ -43,7 +43,7 @@ const ManagePersonalProfile = () => {
       });
     }
   }, [user]);
-  
+
   // Xử lý thay đổi dữ liệu
   const handleChange = (event) => {
     const { name, value } = event.target;

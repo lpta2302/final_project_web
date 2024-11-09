@@ -861,9 +861,10 @@ export const useAddItemToWishlist = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ customerId, productId }) =>
-      createRecord(customer_wishlist.addProduct(customerId), productId),
+      createRecord(customer_wishlist.addProduct(customerId), {productId: productId}),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_OWN_WISHLIST]);
+      queryClient.invalidateQueries([READ_ALL_PRODUCTS]);
     },
   });
 };
@@ -874,6 +875,7 @@ export const useRemoveItemFromWishlist = () => {
       updateRecord(admin_category_url.deleteCategory(customerId), productId),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_OWN_WISHLIST]);
+      queryClient.invalidateQueries([READ_ALL_PRODUCTS]);
     },
   });
 };

@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import { Box, Typography, useTheme, CircularProgress } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Box, Typography, useTheme, CircularProgress, Grid2 } from "@mui/material";
 import Slider from "react-slick";
 import BannerSlider from "../../../components/Homepage/BannerSlider";
 import ProductCard from "../../../components/Homepage/ProductCard";
 import SubNavbar from "../../../components/Homepage/Subnavbar";
-import { useReadAllCategory, useReadAllProduct } from "../../../api/queries";
+import { useReadAllCategory, useReadAllProduct, useReadWishlistItems } from "../../../api/queries";
+import { useAuthContext } from "../../../context/AuthContext";
 
 const sliderSettings = {
   dots: false,
@@ -44,7 +45,8 @@ const sliderSettings = {
 };
 
 const HomePage = ({ handleAddToCart }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { user, isAuthenticated } = useAuthContext();
+  const [userId, setUserId] = useState()
   const [favorites, setFavorites] = useState({});
   const { data: categories, isLoading: isLoadingCat } = useReadAllCategory();
   const {
@@ -53,24 +55,12 @@ const HomePage = ({ handleAddToCart }) => {
     isError,
     error,
   } = useReadAllProduct();
-  // const products
+  const { data: wishList } = useReadWishlistItems(userId);
 
-  // useEffect(() => {
-  //   set
-  // }, []);
-
-
-  const handleToggleFavorite = (product) => {
-    if (!isLoggedIn) {
-      alert("Bạn cần đăng nhập để thích sản phẩm này!");
-      return;
-    }
-    setFavorites((prevFavorites) => ({
-      ...prevFavorites,
-      [product.id]: !prevFavorites[product.id],
-    }));
-  };
-
+  useEffect(() => {
+    if (!isAuthenticated || !user._id) return;
+    setUserId(user._id)
+  }, [user]);
   if (isLoadingCat || isLoadingProd) {
     return <CircularProgress />;
   }
@@ -100,16 +90,11 @@ const HomePage = ({ handleAddToCart }) => {
         >
           Sản phẩm thịnh hành
         </Typography>
-        <Slider {...sliderSettings}>
+        <Box display='inline-flex' gap={2} overflow="auto" width="100%" py={1}>
           {products.map((product) => (
-            <ProductCard
-              product={product}
-              key={product.id}
-              handleToggleFavorite={handleToggleFavorite}
-              isFavorite={favorites[product.id]}
-            />
+            <ProductCard wishList={wishList} customer={user} isLoggedIn product={product} key={product._id} />
           ))}
-        </Slider>
+        </Box>
 
         {/* Promotion Products Section */}
         <Typography
@@ -119,16 +104,11 @@ const HomePage = ({ handleAddToCart }) => {
         >
           Sản phẩm khuyến mãi
         </Typography>
-        <Slider {...sliderSettings}>
+        <Box display='inline-flex' gap={2} overflow="auto" width="100%" py={1}>
           {products.map((product) => (
-            <ProductCard
-              product={product}
-              key={product.id}
-              handleToggleFavorite={handleToggleFavorite}
-              isFavorite={favorites[product.id]}
-            />
+            <ProductCard wishList={wishList} customer={user} isLoggedIn={isAuthenticated} product={product} key={product._id} />
           ))}
-        </Slider>
+        </Box>
 
         {/* Best-selling Products Section */}
         <Typography
@@ -138,16 +118,11 @@ const HomePage = ({ handleAddToCart }) => {
         >
           Laptop bán chạy
         </Typography>
-        <Slider {...sliderSettings}>
+        <Box display='inline-flex' gap={2} overflow="auto" width="100%" py={1}>
           {products.map((product) => (
-            <ProductCard
-              product={product}
-              key={product.id}
-              handleToggleFavorite={handleToggleFavorite}
-              isFavorite={favorites[product.id]}
-            />
+            <ProductCard wishList={wishList} customer={user} isLoggedIn={isAuthenticated} product={product} key={product._id} />
           ))}
-        </Slider>
+        </Box>
 
         {/* Featured Products Section */}
         <Typography
@@ -157,16 +132,11 @@ const HomePage = ({ handleAddToCart }) => {
         >
           Sản phẩm nổi bật
         </Typography>
-        <Slider {...sliderSettings}>
+        <Box display='inline-flex' gap={2} overflow="auto" width="100%" py={1}>
           {products.map((product) => (
-            <ProductCard
-              product={product}
-              key={product.id}
-              handleToggleFavorite={handleToggleFavorite}
-              isFavorite={favorites[product.id]}
-            />
+            <ProductCard wishList={wishList} customer={user} isLoggedIn={isAuthenticated} product={product} key={product._id} />
           ))}
-        </Slider>
+        </Box>
       </Box>
     </>
   );

@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import wishList from "../../models/wishlist.model.js";
 
 const wishListController = {
@@ -54,14 +55,24 @@ const wishListController = {
   // [GET] client/wishList/my-wishList
   showWishList: async (req, res) => {
     try {
+
+      const id = mongoose.Types.ObjectId.createFromHexString(req.params.id);
+      console.log(id);
+            
+      
       const products = await wishList
-        .find({
-          client: req.params.id,
+        .findOne({
+          client: id,
         })
         .populate("products");
 
+      console.log("65"+products);
+      
+
       res.status(200).json(products);
     } catch (err) {
+      console.log(err);
+      
       res.status(500).json(false);
     }
   },

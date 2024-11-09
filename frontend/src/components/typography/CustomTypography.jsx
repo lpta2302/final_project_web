@@ -1,5 +1,6 @@
 import { Typography } from "@mui/material"
 
+
 const CustomTypography
     = ({ children, fontSize, wrap, ...props }) => {
         return <Typography

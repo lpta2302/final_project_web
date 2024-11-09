@@ -17,12 +17,12 @@ import {
   IconButton,
   DialogActions,
 } from "@mui/material";
-import { useAuthContext } from "../context/AuthContext";
+import { useAuthContext } from "../../../context/AuthContext";
 import {
   useReadAllOrdersOfUser,
   useGetOrderDetail,
   useUpdateOrderAdmin,
-} from "../api/queries";
+} from "../../../api/queries";
 import moment from "moment";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -306,7 +306,7 @@ const ManagePersonalOrder = () => {
                     - {orderDetail.discountAmount.toLocaleString()} VND
                   </Typography>
                 </Grid>
-                <Grid container spacing={2} sx={{mt: 1}}>
+                <Grid container spacing={2} sx={{ mt: 1 }}>
                   <Grid item xs={6}>
                     <Typography variant="body2" color="black" fontWeight="bold">
                       Tổng cộng:
