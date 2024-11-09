@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import AuthProvider from "./context/AuthContext";
 import RootLayout from './_root/RootLayout';
-import { CreateProduct, HomePage, Profile, UpdateItem } from './_root/pages';
+import { CreateProduct, Favorite, HomePage, Profile, UpdateItem } from './_root/pages';
 import './globalStyle.css'
 import AdminLayout from './_root/AdminLayout';
 import AdminHomePage from './_root/pages/admin/AdminHomePage';
@@ -16,14 +16,14 @@ import { Login } from './components/index.js';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { SnackbarProvider } from 'notistack'
-import ManagePersonalProfile from "./pages/ManagePersonalProfile.jsx";
-import ManagePersonalOrder from "./pages/ManagePersonalOrder.jsx";
-import Favorite from "./pages/Favorite.jsx";
-import Product from "./pages/Product.jsx";
 import { CssVarsProvider, extendTheme } from "@mui/joy";
 import AuthAdminProvider from "./context/AuthAdminContext.jsx";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import ManagePersonalProfile from "./_root/pages/customer/ManagePersonalProfile.jsx";
+import ManagePersonalOrder from "./_root/pages/customer/ManagePersonalOrder.jsx";
+import Product from "./_root/pages/customer/Product.jsx";
+import ProductGrid from "./components/ProductGrid/ProductGrid.jsx";
 
 const muiTheme = createTheme({
   colorSchemes: {
@@ -101,6 +101,7 @@ function App() {
               <Routes>
                 <Route element={<RootLayout />}>
                   <Route index element={<HomePage />} />
+                  <Route path="/products" element={<ProductGrid />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/manage-profile" element={<ManagePersonalProfile />} />
                   <Route path="/manage-order" element={<ManagePersonalOrder />} />

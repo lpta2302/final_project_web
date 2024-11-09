@@ -6,12 +6,12 @@ mongoose.plugin(slug);
 const wishListSchema = new mongoose.Schema({
   client: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "account",
+    ref: "Account",
   },
   products: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "product",
+      ref: "Product",
     },
   ],
 });

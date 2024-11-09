@@ -2,6 +2,7 @@ import HomePage from "./customer/HomePage";
 import Cart from "./customer/Cart";
 import Orders from "./customer/Orders";
 import Voucher from "./customer/Voucher";
+import Favorite from "./customer/Favorite";
 import Profile from "./shared/Profile";
 
 import AdminAccount from './admin/AdminAccount'
@@ -26,6 +27,7 @@ export {
     Orders as Order,
     Voucher,
     Profile,
+    Favorite,
     AdminHomePage,
     Dashboard,
     AdminAccount,

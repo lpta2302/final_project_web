@@ -48,10 +48,10 @@ export const customer_url = {
         getRelativeProducts: (id) => '/relative/' + id
     },
     wishList: {
-        addProduct: (id) => '/client/wishList/add-to-wissList/' + id,
+        addProduct: (id) => '/client/wishList/add-to-wishList/' + id,
         search: (id) => '/client/wishList/my-wishList/' + id + '/search',
         deleteProduct: (id) => '/client/wishList/my-wishList/del-from-wishList/' + id,
-        getAllProduct: (id) => '/slient/wishList/my-wishList/' + id
+        getAllProduct: (id) => '/client/wishList/my-wishList/' + id
     },
     account: {//ok
         getAccountDetail: (id) => '/client/account/details/' + id,
@@ -162,7 +162,7 @@ export const admin_url = {
         getNewUsersWeekly: () => '/stats/weekly',
         getNewUsersMonthly: () => '/stats/monthly',
         getAccountRoleStatistics: () => '/stats/roles',
-        
+
         // Product statistics
         getProductSpecsStatistics: () => '/stats/specs-per-product',
         getProductWithDiscountStatistics: () => '/stats/product-discount',

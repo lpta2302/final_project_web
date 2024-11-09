@@ -1,8 +1,8 @@
-import ManagePersonalOrder from "../../../pages/ManagePersonalOrder";
+import ManagePersonalOrder from "./ManagePersonalOrder";
 
 function Orders() {
     return (
-        <ManagePersonalOrder/>
+        <ManagePersonalOrder />
     )
 }
 

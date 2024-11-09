@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -6,17 +6,60 @@ import {
   CardMedia,
   CardContent,
   IconButton,
+  styled,
+  Button,
 } from "@mui/material";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import { Link } from "react-router-dom"; // Import Link từ react-router-dom
+import { Link } from "react-router-dom"; 
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { enqueueSnackbar } from "notistack";
+import { useAddItemToWishlist, useRemoveItemFromWishlist } from "../../api/queries";
 
-const ProductCard = ({ product, handleToggleFavorite, isFavorite }) => {
+const TruncatedTypography = styled(Typography, {
+  shouldForwardProp: (prop) => prop !== 'lineClamp', // Ensure lineClamp can be passed as a prop
+})(({ lineClamp = 3 }) => ({
+  display: '-webkit-box',
+  overflow: 'hidden',
+  WebkitBoxOrient: 'vertical',
+  WebkitLineClamp: lineClamp, // Use dynamic lineClamp value
+  lineClamp, // Fallback for other browsers
+}));
+
+const ProductCard = ({ product, wishList, customer, isLoggedIn }) => {
+  const [isFavorite, setIsFavorite] = useState(false);
+  const { mutateAsync: like, isPending: isLiking } = useAddItemToWishlist();
+  const { mutateAsync: unLike, isPending: isUnliking } = useRemoveItemFromWishlist();
+  
+  useEffect(() => {
+    if(!wishList) return;
+    setIsFavorite(wishList.products.some((prod) => String(prod._id) === String(product._id)));  
+  }, [wishList, product._id]);
+
+  const handleToggleFavorite = async () => {
+    if (!isLoggedIn || !customer._id) {
+      enqueueSnackbar("Bạn cần đăng nhập để thích sản phẩm này!", { variant: 'info' });
+      return;
+    }
+
+    if (isFavorite) {
+      await unLike({ customerId: customer._id, productId: product._id });
+    } else {
+      await like({ customerId: customer._id, productId: product._id })
+    }
+
+    setIsFavorite(!isFavorite);
+
+
+  }
+  useEffect(() => {
+    console.log("isFavorite inside useEffect:", isFavorite); // Make sure this shows the updated value
+}, [isFavorite]);
+  
+
   return (
     <Card
       sx={{
-        maxWidth: 264,
-        width: "100%",
+        minWidth: 264,
         margin: "0 auto",
         display: "flex",
         flexDirection: "column",
@@ -47,16 +90,15 @@ const ProductCard = ({ product, handleToggleFavorite, isFavorite }) => {
           }}
         >
           <Box>
-            <Typography variant="h6" component="div">
+            <TruncatedTypography lineClamp={2} variant="h6" fontSize='1.1rem' lineHeight="1.2" mb={1} component="div">
               {product.productName}
-            </Typography>
-            <Typography
+            </TruncatedTypography>
+            <TruncatedTypography
               variant="body2"
               color="text.secondary"
-              sx={{ marginBottom: "8px" }}
             >
               {product.description}
-            </Typography>
+            </TruncatedTypography>
           </Box>
           <Typography
             variant="body1"
@@ -73,14 +115,16 @@ const ProductCard = ({ product, handleToggleFavorite, isFavorite }) => {
         display="flex"
         justifyContent="space-between"
         alignItems="center"
-        p={2}
+        px={2}
+        mt={'auto'}
+        mb={0.5}
       >
         <IconButton
           color="error"
-          onClick={() => handleToggleFavorite(product)}
+          onClick={handleToggleFavorite}
           aria-label="favorite"
         >
-          {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+            {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
         </IconButton>
         <Typography variant="body2">Mã: {product.productCode}</Typography>
       </Box>

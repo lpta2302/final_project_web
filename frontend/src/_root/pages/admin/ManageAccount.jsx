@@ -26,6 +26,8 @@ function ManageAccount() {
   ]
 
   useEffect(() => setRows(data), [data])
+  console.log(data);
+  
 
   const columns = [
     { field: 'accountCode', headerName: 'Id', width: 150 },
