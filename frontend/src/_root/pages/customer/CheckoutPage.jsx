@@ -12,11 +12,12 @@ import {
   Grid,
   Paper,
 } from "@mui/material";
-import { useGetCurrentUser, useReadOwnCart } from "../../../api/queries";
+import { useGetCurrentUser, useReadOwnCart, useReadAllVouchers } from "../../../api/queries";
 
 function CheckoutPage() {
   const { data: currentUser } = useGetCurrentUser();
-  const { data: cartData, isLoading } = useReadOwnCart(currentUser?._id);
+  const { data: cartData, isLoading: isCartLoading } = useReadOwnCart(currentUser?._id);
+  const { data: vouchersData, isLoading: isVouchersLoading } = useReadAllVouchers();
 
   // Lấy thời gian hiện tại và cộng thêm 5 ngày
   const currentDateTime = new Date();
@@ -47,6 +48,8 @@ function CheckoutPage() {
           ...prevData.cart,
           cartItems: cartData.cartItems.map((item) => ({
             spec: item.spec._id,
+            productName: item.spec.products.productName,
+            price: item.spec.price,
             quantity: item.quantity,
           })),
         },
@@ -73,7 +76,7 @@ function CheckoutPage() {
     const { value } = e.target;
     setOrderData((prevData) => ({
       ...prevData,
-      voucher: [...prevData.voucher, value],
+      voucher: value, // value là mảng các voucher đã chọn
     }));
   };
 
@@ -83,7 +86,8 @@ function CheckoutPage() {
     // Gửi orderData lên server
   };
 
-  if (isLoading) return <Typography>Loading cart data...</Typography>;
+  if (isCartLoading) return <Typography>Loading cart data...</Typography>;
+  if (isVouchersLoading) return <Typography>Loading vouchers...</Typography>;
 
   return (
     <Container maxWidth="md">
@@ -175,14 +179,30 @@ function CheckoutPage() {
             onChange={handleChange}
             margin="normal"
           />
-          <TextField
-            fullWidth
-            label="Vouchers (enter and press Enter)"
-            name="voucher"
-            placeholder="Voucher ID"
-            onBlur={handleAddVoucher}
-            margin="normal"
-          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Vouchers</InputLabel>
+            <Select
+              name="voucher"
+              multiple
+              value={orderData.voucher}
+              onChange={handleAddVoucher}
+              renderValue={(selected) =>
+                selected
+                  .map(
+                    (id) =>
+                      vouchersData.find((voucher) => voucher._id === id)
+                        ?.voucherName || id
+                  )
+                  .join(", ")
+              }
+            >
+              {vouchersData.map((voucher) => (
+                <MenuItem key={voucher._id} value={voucher._id}>
+                  {voucher.voucherName} - {voucher.discountPercentage}% off
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
           <Typography variant="h6" gutterBottom mt={2}>
             Cart Items
@@ -192,15 +212,14 @@ function CheckoutPage() {
               <Grid item xs={6}>
                 <TextField
                   fullWidth
-                  label="Spec ID"
-                  name="spec"
-                  value={item.spec}
-                  onChange={(e) => handleNestedChange(e, index)}
+                  label="Product Name"
+                  name="productName"
+                  value={item.productName}
                   margin="normal"
                   disabled
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={3}>
                 <TextField
                   fullWidth
                   type="number"
@@ -209,6 +228,16 @@ function CheckoutPage() {
                   value={item.quantity}
                   onChange={(e) => handleNestedChange(e, index)}
                   margin="normal"
+                />
+              </Grid>
+              <Grid item xs={3}>
+                <TextField
+                  fullWidth
+                  label="Price"
+                  name="price"
+                  value={item.price}
+                  margin="normal"
+                  disabled
                 />
               </Grid>
             </Grid>

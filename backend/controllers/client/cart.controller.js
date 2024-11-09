@@ -5,7 +5,7 @@ import Voucher from "../../models/voucher.model.js";
 // [POST] /cart/add
 export const add = async (req, res) => {
   try {
-    const { client, spec } = req.body;
+    const { client, spec, quantity } = req.body;
 
     // Chuyển đổi spec từ chuỗi sang ObjectId
     const specObjectId = new mongoose.Types.ObjectId(spec);
@@ -21,7 +21,7 @@ export const add = async (req, res) => {
 
       if (itemIndex !== -1) {
         // Nếu sản phẩm đã tồn tại, tăng số lượng
-        exitCart.cartItems[itemIndex].quantity++;
+        exitCart.cartItems[itemIndex].quantity += quantity;
       } else {
         // Nếu sản phẩm chưa tồn tại, thêm sản phẩm mới vào cartItems
         exitCart.cartItems.push({
