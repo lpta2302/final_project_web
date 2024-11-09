@@ -138,8 +138,11 @@ function CreateProduct() {
           return enoughData
         })
       ))
-
+    console.log(savedVariants);
+    
     savedVariants.forEach(variant => {
+      console.log(variant);
+      
       variant.specifications = variant.specifications.map(spec => ({ value: spec.value, key: spec._id }))
     })
 
@@ -149,6 +152,20 @@ function CreateProduct() {
     if (!validateForm())
       toaster({ variant: 'error', message: 'Lưu sản phẩm thất bại' })
     else {
+
+      console.log({
+        productCode,
+        productName,
+        description,
+        category: category?._id,
+        tag: tags.map(t => t._id),
+        brand: brand?._id,
+        variations: savedVariants,
+        productStatus: isSaveDraft ? "draft" : productStatus,
+        files
+      });
+      
+      
       if (initProductId) {
 
         const updatedProduct = updateProduct(
@@ -355,6 +372,7 @@ function CreateProduct() {
                     specificatinKeys={specificationKeys}
                     specifications={variant.specifications}
                     setSpecifications={newSpecs => {
+                      console.log(newSpecs)
                       setVariantInfo(index, 'specifications', newSpecs)
                     }} key={index} />
                 </Box>

@@ -829,7 +829,7 @@ export const useAddCartItem = () => {
 
   return useMutation({
     mutationFn: (item) =>
-      deleteRecord(customerCart.addItem(item)),
+      createRecord(customerCart.addItem(),item),
     onSuccess: () => {
       queryClient.invalidateQueries([USE_READ_OWN_CART]);
     },
@@ -964,5 +964,46 @@ export const useGetTotalStockValue = () => {
   return useQuery({
     queryKey: ['GET_TOTAL_STOCK_VALUE'],
     queryFn: () => readAll(stats.getTotalStockValue()),
+  });
+};
+
+//---------------------------WISHLIST--------------------------------
+const customer_address_url = customer_url.address;
+export const useReadOwnAddresses = (userId) => {
+  return useQuery({
+    queryKey: [READ_OWN_WISHLIST],
+    queryFn: () => readAll(customer_address_url.getOwnAddresses(userId)),
+    enabled: !!userId
+  });
+};
+export const useAddAddress = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data) =>
+      createRecord(customer_address_url.addAddress(), data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['READ_OWN_ADDRESSES']);
+    },
+  });
+};
+
+export const useRemoveAddress = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (addressId) =>
+      deleteRecord(customer_address_url.deleteAddress(addressId)),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['READ_OWN_ADDRESSES']);
+    },
+  });
+};
+export const useUpdateAddress = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (address) =>
+      updateRecord(customer_address_url.editAddress(address._id),address),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['READ_OWN_ADDRESSES']);
+    },
   });
 };
