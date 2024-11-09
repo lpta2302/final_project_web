@@ -26,7 +26,7 @@ const ProductGeneralInfo = () => {
   const specId = selectedSpec?._id; // specId sẽ lấy từ selectedSpec
 
   // Fetch các reviews từ API dựa trên specId
-  const { data: productReview } = useReadAllReviewsAdmin(specId);
+  const { data: productReview, isPending: isLoadingReviews } = useReadAllReviewsAdmin(specId);
 
   useEffect(() => {
     if (specs && specs.length > 0) {
@@ -42,6 +42,8 @@ const ProductGeneralInfo = () => {
   };
 
   const calculateAverageRating = (reviews) => {
+    console.log(reviews);
+    
     if (!reviews || reviews.length === 0) return 0;
     const totalStars = reviews.reduce((sum, review) => sum + review.star, 0);
     return totalStars / reviews.length;
