@@ -6,7 +6,7 @@ import routesAdmin from "./routes/admin/index.route.js";
 
 import routesClient from "./routes/client/index.js";
 
-import dotenv from "dotenv";
+import dotenv, { parse } from "dotenv";
 import database from "./config/database.js";
 
 // App config
@@ -17,11 +17,14 @@ const port = process.env.PORT || 4000;
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(cors());
 app.use(morgan("common"));
+
 app.use((req, res, next) => {
+  const secureCookie = req.protocol === "https"; // Crucial for Vercel
+
   res.cookie("__vercel_live_token", "value", {
-    httpOnly: true, // recommended for security
-    secure: true, // ensures cookie is sent over HTTPS
-    sameSite: "None", // allows the cookie to be sent in cross-origin requests
+    httpOnly: true,
+    secure: secureCookie, // Set based on protocol
+    sameSite: secureCookie ? "None" : "Lax", // Dynamic SameSite
   });
   next();
 });
