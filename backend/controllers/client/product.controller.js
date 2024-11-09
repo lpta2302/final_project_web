@@ -97,6 +97,20 @@ const productController = {
     }
   },
 
+  // [GET] client/category/search
+  searchCategory: async (req, res) => {
+    try {
+      const { categoryId } = req.params;
+      const products = await Product.find({
+        category: categoryId,
+      });
+
+      res.status(200).json(products);
+    } catch (err) {
+      res.status(500).json(false);
+    }
+  },
+
   getProductBySlug: async (req, res) => {
     try {
       const slug = req.params.slug;
