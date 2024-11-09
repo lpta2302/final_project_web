@@ -155,6 +155,18 @@ export const admin_url = {
         updateSpecificationKeyValue: (id) => '/spec/specification/'+id,
         updateSpecification: (id) => '/spec/'+id,
         searchSpecification: () => '/spec/search/',
+    },
+    stats: {
+        // Account statistics
+        getNewUsersDaily: () => '/stats/daily',
+        getNewUsersWeekly: () => '/stats/weekly',
+        getNewUsersMonthly: () => '/stats/monthly',
+        getAccountRoleStatistics: () => '/stats/roles',
+        
+        // Product statistics
+        getProductSpecsStatistics: () => '/stats/specs-per-product',
+        getProductWithDiscountStatistics: () => '/stats/product-discount',
+        getTotalStockValue: () => '/stats/total-stock-value',
     }
 }
 

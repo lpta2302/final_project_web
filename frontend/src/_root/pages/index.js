@@ -18,6 +18,7 @@ import CreateProduct from './admin/CreateProduct'
 import UpdateItem from './admin/UpdateItem'
 
 import CustomerDashboard from './admin/dashboards/CustomerDashboard'
+import OrderDashboard from './admin/dashboards/OrderDashboard'
 
 export {
     HomePage,
@@ -39,4 +40,5 @@ export {
     ManageSliderBanner,
 
     CustomerDashboard,
+    OrderDashboard,
 };

@@ -1,11 +1,22 @@
-import { Box, Typography } from "@mui/material"
+import { Box, Stack, Typography } from "@mui/material"
+import { LoadingIcon } from "../../assets"
+import CustomTypography from "../typography/CustomTypography"
 
-function HighLightCard({title, value}) {
+function HighLightCard({ title, value, isLoading }) {
+  const isLight = window.localStorage.getItem('toolpad-mode') === 'light';
   return (
-    <Box>
-      <Typography variant='h4' fontSize={{xs: '1rem', md: '1.5rem'}}>{title}</Typography>
-      <Typography variant="body1">{value}</Typography>
-    </Box>
+    <Stack alignItems='center' height="100%">
+      <CustomTypography textAlign="center" lineHeight={1} wrap maxWidth="100%" fontSize="1.2rem" fontWeight="400">{title}</CustomTypography>
+      {
+        isLoading ?
+          <Box display='flex' alignItems='center' height="100%" width="100%" justifyContent='center'>
+            <Box sx={{ filter: isLight && "brightness(0)" }} component='img' src={LoadingIcon} />
+          </Box> :
+          <Box display='flex' alignItems='center' height="100%" width="100%" justifyContent='center'>
+            <Typography my='auto' variant="body1">{value}</Typography>
+          </Box>
+      }
+    </Stack>
   )
 }
 

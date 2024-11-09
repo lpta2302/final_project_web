@@ -26,11 +26,13 @@ import ColumnChartCard from './dashboard/ColumnChart'
 import PieChartCard from './dashboard/PieChartCard'
 import HighLightCard from './dashboard/HighLightCard'
 
+import Loading from './Loading'
 export {
     Login,
     Register,
     ForgotPassword,
     TopAppBar,
+    Loading,
 
     ExpandableSearch,
     Search,

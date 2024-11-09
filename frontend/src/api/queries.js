@@ -903,3 +903,56 @@ export const useAddItemToSeens = () => {
     },
   });
 };
+
+
+//-------------------------------------STATS----------------------------
+const stats = admin_url.stats;
+
+export const useGetNewUsersDaily = () => {
+  return useQuery({
+    queryKey: ['GET_NEW_USERS_DAILY'],
+    queryFn: () => readAll(stats.getNewUsersDaily()),
+  });
+};
+
+export const useGetNewUsersWeekly = () => {
+  return useQuery({
+    queryKey: ['GET_NEW_USERS_WEEKLY'],
+    queryFn: () => readAll(stats.getNewUsersWeekly()),
+  });
+};
+
+export const useGetNewUsersMonthly = () => {
+  return useQuery({
+    queryKey: ['GET_NEW_USERS_MONTHLY'],
+    queryFn: () => readAll(stats.getNewUsersMonthly()),
+  });
+};
+
+export const useGetAccountRoleStatistics = () => {
+  return useQuery({
+    queryKey: ['GET_ACCOUNT_ROLE_STATISTICS'],
+    queryFn: () => readAll(stats.getAccountRoleStatistics()),
+  });
+};
+
+export const useGetProductSpecsStatistics = () => {
+  return useQuery({
+    queryKey: ['GET_PRODUCT_SPECS_STATISTICS'],
+    queryFn: () => readAll(stats.getProductSpecsStatistics()),
+  });
+};
+
+export const useGetProductWithDiscountStatistics = () => {
+  return useQuery({
+    queryKey: ['GET_PRODUCT_WITH_DISCOUNT_STATISTICS'],
+    queryFn: () => readAll(stats.getProductWithDiscountStatistics()),
+  });
+};
+
+export const useGetTotalStockValue = () => {
+  return useQuery({
+    queryKey: ['GET_TOTAL_STOCK_VALUE'],
+    queryFn: () => readAll(stats.getTotalStockValue()),
+  });
+};

@@ -4,11 +4,12 @@ import { useDeleteoOrderAmin, useReadAllOrdersAdmin, useSearchOrderAdmin, useUpd
 import { CreditCard, Delete, Done, DoNotDisturbAltOutlined, FilterAlt, FilterAltOff, HourglassTopOutlined, LensBlurRounded, LocalShipping, Money, Pending } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
 import DataGridConfirmDialog from '../../../components/dialogs/DataGridConfirmDialog.jsx';
-import { CustomPageContainer, FilterDrawer, ManagePageSearch } from "../../../components";
+import { CustomPageContainer, FilterDrawer, HighLightCard, ManagePageSearch } from "../../../components";
 import { enqueueSnackbar as toaster } from 'notistack';
-import { Box, Button, ButtonGroup, Drawer } from '@mui/material';
+import { Box, Button, ButtonGroup, Drawer, Grid2 } from '@mui/material';
 import { renderCustomStatus, renderEditCustomStatus } from './customRenderer/customStatusRender.jsx';
 import setDeepState from '../../../util/setDeepState.js';
+import { formatDate } from '../../../util/datetimeHandler.js';
 
 // {"_id":"6718dc7a3010027ae58c30d1",
 //   "userId":"670dd3f0602cc40efb3bc78c",
@@ -79,12 +80,15 @@ const defaultSorting = [
   { field: 'processStatus', sort: 'asc' }, // Default sort on 'status' column (Pending -> Processing -> Other)
 ];
 
+const today = formatDate(new Date());
+
 function ManageOrder() {
   const [isOpenFilter, setIsOpenFilter] = useState(false)
   const [searchValue, setSearchValue] = useState('')
   const [searchParam, setSearchParam] = useState()
+  const [todayOrders, setTodayOrders] = useState()
   const [rows, setRows] = useState()
-  const { data, isLoading } = useReadAllOrdersAdmin();
+  const { data: orders, isLoading: isLoadingOrders } = useReadAllOrdersAdmin();
   const [dialogPayload, setDialogPayload] = useState({ state: false, id: null });
   const { mutateAsync: deleteOrder } = useDeleteoOrderAmin();
   const { mutateAsync: updateOrderStatus } = useUpdateOrderAdmin();
@@ -95,7 +99,11 @@ function ManageOrder() {
   ]
   const handleAddParam = setDeepState(setSearchParam);
 
-  useEffect(() => setRows(data), [data])
+  useEffect(() => {
+    if (!orders) return;
+    setRows(orders), [orders];
+    setTodayOrders(orders.filter(order => formatDate(new Date(order.createdAt)) === today));
+  },[orders])
   useEffect(() => {
     setTimeout(() => {
       if (!searchValue && Object.keys(searchParam)?.length < 1) {
@@ -106,8 +114,6 @@ function ManageOrder() {
       )
     }, 1500);
   }, [searchValue]);
-
-  console.log(rows);
   
   const columns = [
     // { field: 'accountCode', headerName: 'Id', width: 150 },
@@ -280,6 +286,19 @@ function ManageOrder() {
       breadCrumbs={breadcrumbs}
       sx={{ maxWidth: { xl: 'unset', lg: '94vw', sm: '92vw', xs: '100vw' } }}
     >
+    <Grid2 container spacing={2} pb={2}>
+      {/* Thống kê trong ngày */}
+      <Grid2 size={{ md: 4, xs: 12 }} sx={{ boxShadow: '0 0 5px 0 rgba(0,0,0,0.3)' }} padding={{ xs: 2, md: 3 }} borderRadius={1} height={160}>
+          <HighLightCard isLoading={!todayOrders} title="Đơn hàng trong ngày" value={todayOrders?.length} />
+        </Grid2>
+        <Grid2 size={{ md: 4, xs: 12 }} sx={{ boxShadow: '0 0 5px 0 rgba(0,0,0,0.3)' }} padding={{ xs: 2, md: 3 }} borderRadius={1} height={160}>
+          <HighLightCard isLoading={isLoadingOrders} title="Đơn hàng chờ xác nhận" value={orders?.filter(o => o.processStatus === 'pending')?.length} />
+        </Grid2>
+        <Grid2 size={{ md: 4, xs: 12 }} sx={{ boxShadow: '0 0 5px 0 rgba(0,0,0,0.3)' }} padding={{ xs: 2, md: 3 }} borderRadius={1} height={160}>
+          <HighLightCard isLoading={isLoadingOrders} title="Đơn hàng đang xử lí" value={orders?.filter(o => o.processStatus === 'processing')?.length} />
+        </Grid2>
+    </Grid2>
+
     <Drawer
         sx={{
           '& .MuiDrawer-paper': { backgroundImage: 'none', py: '80px' },
@@ -329,7 +348,7 @@ function ManageOrder() {
         slots={{ toolbar: GridToolbar }}
         processRowUpdate={handleUpdate}
         onProcessRowUpdateError={handleUpdateError}
-        loading={isLoading}
+        loading={isLoadingOrders}
         initialState={{
           pagination: {
             paginationModel: {

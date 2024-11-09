@@ -29,6 +29,7 @@ import {
   ManageCriteria,
   ManageSliderBanner,
   CustomerDashboard,
+  OrderDashboard,
 } from "../_root/pages";
 import Orders from "../_root/pages/customer/Orders";
 import Cart from "../_root/pages/customer/Cart";
@@ -94,12 +95,6 @@ export const adminNav = [
     title: "Báo cáo",
   },
   {
-    segment: "dashboard",
-    title: "Thống kê",
-    icon: <Dashboard />,
-    element: <DashboardPage />,
-  },
-  {
     segment: 'reports',
     title: 'Thống kê',
     icon: <Dashboard />,
@@ -108,7 +103,13 @@ export const adminNav = [
         segment: 'customers',
         title: 'Khách hàng',
         icon: <People />,
-        element: <CustomerDashboard/>
+        element: <CustomerDashboard />
+      },
+      {
+        segment: 'orders',
+        title: 'Đơn hàng',
+        icon: <OrderIcon />,
+        element: <OrderDashboard />
       },
     ],
   }

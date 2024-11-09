@@ -8,7 +8,7 @@ import DataGridConfirmDialog from '../../../components/dialogs/DataGridConfirmDi
 import { CustomPageContainer, ManagePageSearch } from "../../../components";
 import { enqueueSnackbar as toaster } from 'notistack';
 import { Box } from '@mui/material';
-import { formatDDMMYYY } from '../../../util/formatter.js';
+import { formatDDMMYYY } from '../../../util/datetimeHandler.js';
 
 
 function ManageAccount() {
@@ -34,7 +34,7 @@ function ManageAccount() {
     { field: 'lastName', headerName: 'Tên', width: 200 },
     { field: 'email', headerName: 'Email', width: 200 },
     { field: 'phoneNumber', headerName: 'Số điện thoại', width: 150 },
-    { field: 'dateOfBirth', headerName: 'Ngày sinh', width: 150, valueFormatter:(value)=> formatDDMMYYY(new Date(value)) },
+    { field: 'dateOfBirth', headerName: 'Ngày sinh', width: 150, valueFormatter: (value) => formatDDMMYYY(new Date(value)) },
     {
       field: 'accountStatus', headerName: 'Trạng thái', width: 150, renderCell: renderCustomerStatus,
       renderEditCell: renderEditCustomerStatus,
@@ -124,14 +124,14 @@ function ManageAccount() {
         processRowUpdate={handleUpdate}
         onProcessRowUpdateError={handleUpdateError}
         loading={isLoading}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 5,
-              },
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 5,
             },
-          }}
-          pageSizeOptions={[5, 10]}
+          },
+        }}
+        pageSizeOptions={[5, 10]}
       />
 
     </CustomPageContainer>
