@@ -15,7 +15,7 @@ const ProductCard = ({ product, handleToggleFavorite, isFavorite }) => {
   return (
     <Card
       sx={{
-        maxWidth: 300,
+        maxWidth: 264,
         width: "100%",
         margin: "0 auto",
         display: "flex",
@@ -32,9 +32,9 @@ const ProductCard = ({ product, handleToggleFavorite, isFavorite }) => {
           image={product.imageURLs[0]}
           alt={product.productName}
           sx={{
-            width: "100%",
-            height: "300px",
-            objectFit: "cover",
+            width: "264px", // Chiều rộng cố định
+            height: "264px", // Chiều cao cố định
+            objectFit: "contain", // Đảm bảo hình ảnh được cắt mà không bị méo
             borderRadius: "8px 8px 0 0",
           }}
         />
