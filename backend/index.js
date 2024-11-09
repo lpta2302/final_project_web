@@ -23,8 +23,8 @@ app.use((req, res, next) => {
 
   res.cookie("__vercel_live_token", "value", {
     httpOnly: true,
-    secure: secureCookie, // Set based on protocol
-    sameSite: secureCookie ? "None" : "Lax", // Dynamic SameSite
+    secure: true, // Set based on protocol
+    sameSite: "lax", // Dynamic SameSite
   });
   next();
 });
