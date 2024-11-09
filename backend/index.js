@@ -22,7 +22,6 @@ app.use((req, res, next) => {
     httpOnly: true, // recommended for security
     secure: true, // ensures cookie is sent over HTTPS
     sameSite: "None", // allows the cookie to be sent in cross-origin requests
-    maxAge: 24 * 60 * 60 * 1000, // expires in 1 day, adjust as needed
   });
   next();
 });

@@ -56,7 +56,8 @@ const HomePage = ({ handleAddToCart }) => {
     error,
   } = useReadAllProduct();
   const { data: wishList } = useReadWishlistItems(userId);
-
+  console.log(products);
+  
   useEffect(() => {
     if (!isAuthenticated || !user._id) return;
     setUserId(user._id)
@@ -65,7 +66,7 @@ const HomePage = ({ handleAddToCart }) => {
     return <CircularProgress />;
   }
 
-  if (isError) {
+  if (isError || !products) {
     return <Typography>Có lỗi xảy ra: {error.message}</Typography>;
   }
 
@@ -91,7 +92,7 @@ const HomePage = ({ handleAddToCart }) => {
           Sản phẩm thịnh hành
         </Typography>
         <Box display='inline-flex' gap={2} overflow="auto" width="100%" py={1}>
-          {products.map((product) => (
+          {products?.map((product) => (
             <ProductCard wishList={wishList} customer={user} isLoggedIn product={product} key={product._id} />
           ))}
         </Box>
@@ -105,7 +106,7 @@ const HomePage = ({ handleAddToCart }) => {
           Sản phẩm khuyến mãi
         </Typography>
         <Box display='inline-flex' gap={2} overflow="auto" width="100%" py={1}>
-          {products.map((product) => (
+          {products?.map((product) => (
             <ProductCard wishList={wishList} customer={user} isLoggedIn={isAuthenticated} product={product} key={product._id} />
           ))}
         </Box>
@@ -119,7 +120,7 @@ const HomePage = ({ handleAddToCart }) => {
           Laptop bán chạy
         </Typography>
         <Box display='inline-flex' gap={2} overflow="auto" width="100%" py={1}>
-          {products.map((product) => (
+          {products?.map((product) => (
             <ProductCard wishList={wishList} customer={user} isLoggedIn={isAuthenticated} product={product} key={product._id} />
           ))}
         </Box>
@@ -133,7 +134,7 @@ const HomePage = ({ handleAddToCart }) => {
           Sản phẩm nổi bật
         </Typography>
         <Box display='inline-flex' gap={2} overflow="auto" width="100%" py={1}>
-          {products.map((product) => (
+          {products?.map((product) => (
             <ProductCard wishList={wishList} customer={user} isLoggedIn={isAuthenticated} product={product} key={product._id} />
           ))}
         </Box>
