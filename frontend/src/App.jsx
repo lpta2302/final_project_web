@@ -108,7 +108,7 @@ function App() {
                   <Route path="/manage-order" element={<ManagePersonalOrder />} />
                   <Route path="/favorite" element={<Favorite />} />
                   <Route path="/product/:slug" element={<Product />} />
-                  <Route path="/checkoutpage/:cartId" element={<CheckoutPage />} />
+                  <Route path="/checkoutpage" element={<CheckoutPage />} />
                   {customerNav.map(navItem =>
                     <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
                   )}
