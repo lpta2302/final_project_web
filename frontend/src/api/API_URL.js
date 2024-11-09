@@ -144,17 +144,29 @@ export const admin_url = {
     specificationKey: {
         getAllSpecificationKey: () => '/spec/specification-keys',
         addSpecificationKey: () => '/spec/specification-keys',
-        deleteSpecificationKey: (id) => '/spec/specification-keys/'+id,
-        updateSpecificationKey: (id) => '/spec/specification-keys/'+id
+        deleteSpecificationKey: (id) => '/spec/specification-keys/' + id,
+        updateSpecificationKey: (id) => '/spec/specification-keys/' + id
     },
     specification: {
         getAllSpecification: () => '/spec/',
         addSpecification: () => '/spec/specification/',
-        deleteSpecification: (id) => '/spec/'+id,
-        deleteSpecificationKeyValue: (id) => '/spec/specification/'+id,
-        updateSpecificationKeyValue: (id) => '/spec/specification/'+id,
-        updateSpecification: (id) => '/spec/'+id,
+        deleteSpecification: (id) => '/spec/' + id,
+        deleteSpecificationKeyValue: (id) => '/spec/specification/' + id,
+        updateSpecificationKeyValue: (id) => '/spec/specification/' + id,
+        updateSpecification: (id) => '/spec/' + id,
         searchSpecification: () => '/spec/search/',
+    },
+    stats: {
+        // Account statistics
+        getNewUsersDaily: () => '/stats/daily',
+        getNewUsersWeekly: () => '/stats/weekly',
+        getNewUsersMonthly: () => '/stats/monthly',
+        getAccountRoleStatistics: () => '/stats/roles',
+        
+        // Product statistics
+        getProductSpecsStatistics: () => '/stats/specs-per-product',
+        getProductWithDiscountStatistics: () => '/stats/product-discount',
+        getTotalStockValue: () => '/stats/total-stock-value',
     }
 }
 

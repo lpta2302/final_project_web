@@ -6,6 +6,7 @@ import {
   DoNotDisturbAltOutlined,
   Drafts,
   HourglassBottomOutlined,
+  People,
   ViewCarouselOutlined,
   WarehouseOutlined,
   Warning,
@@ -27,9 +28,12 @@ import {
   Dashboard as DashboardPage,
   ManageCriteria,
   ManageSliderBanner,
+  CustomerDashboard,
+  OrderDashboard,
 } from "../_root/pages";
 import Orders from "../_root/pages/customer/Orders";
 import Cart from "../_root/pages/customer/Cart";
+import { element } from "prop-types";
 
 export const adminNav = [
   {
@@ -91,11 +95,24 @@ export const adminNav = [
     title: "Báo cáo",
   },
   {
-    segment: "dashboard",
-    title: "Thống kê",
+    segment: 'reports',
+    title: 'Thống kê',
     icon: <Dashboard />,
-    element: <DashboardPage />,
-  },
+    children: [
+      {
+        segment: 'customers',
+        title: 'Khách hàng',
+        icon: <People />,
+        element: <CustomerDashboard />
+      },
+      {
+        segment: 'orders',
+        title: 'Đơn hàng',
+        icon: <OrderIcon />,
+        element: <OrderDashboard />
+      },
+    ],
+  }
 ];
 
 export const customerNav = [

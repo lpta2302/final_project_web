@@ -22,12 +22,17 @@ import NumberInputBasic from './inputs/NumberInput'
 import SplitButton from './buttons/SplitButton'
 
 import CustomTypography from './typography/CustomTypography'
+import ColumnChartCard from './dashboard/ColumnChart'
+import PieChartCard from './dashboard/PieChartCard'
+import HighLightCard from './dashboard/HighLightCard'
 
+import Loading from './Loading'
 export {
     Login,
     Register,
     ForgotPassword,
     TopAppBar,
+    Loading,
 
     ExpandableSearch,
     Search,
@@ -44,5 +49,8 @@ export {
     PageToolbar,
     CustomPageContainer,
     CustomTypography,
-    CustomAddGridToolbar
+    CustomAddGridToolbar,
+
+    ColumnChartCard as ColumnChart,
+    HighLightCard
 }

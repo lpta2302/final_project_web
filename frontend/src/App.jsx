@@ -22,6 +22,8 @@ import Favorite from "./pages/Favorite.jsx";
 import Product from "./pages/Product.jsx";
 import { CssVarsProvider, extendTheme } from "@mui/joy";
 import AuthAdminProvider from "./context/AuthAdminContext.jsx";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const muiTheme = createTheme({
   colorSchemes: {
@@ -110,20 +112,28 @@ function App() {
                 </Route>
               </Routes>
             </AuthProvider>
-            <AuthAdminProvider>
-              <Routes>
-                <Route path="/admin" element={<AdminLayout />}>
-                  <Route index element={<AdminHomePage />} />
-                  {adminNav.map(navItem =>
-                    <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
-                  )}
-                  <Route path="manage-product/product-detail/:productCode" element={<CreateProduct />} />
-                  <Route path="manage-product/create-product" element={<CreateProduct />} />
-                  <Route path="manage-inventory/manage-item/" element={<UpdateItem/>} />
-                </Route>
-                <Route path="admin/login" element={<Login isAdmin />} />
-              </Routes>
-            </AuthAdminProvider>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <AuthAdminProvider>
+                <Routes>
+                  <Route path="/admin" element={<AdminLayout />}>
+                    <Route index element={<AdminHomePage />} />
+                    {adminNav.map(navItem =>
+                      navItem.children ?
+                        <Route path={navItem.segment} key={navItem.title}>
+                          {navItem.children.map(child => (
+                            <Route path={child.segment} element={child.element} key={child.title} />
+                          ))}
+                        </Route> :
+                        <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
+                    )}
+                    <Route path="manage-product/product-detail/:productCode" element={<CreateProduct />} />
+                    <Route path="manage-product/create-product" element={<CreateProduct />} />
+                    <Route path="manage-inventory/manage-item/" element={<UpdateItem />} />
+                  </Route>
+                  <Route path="admin/login" element={<Login isAdmin />} />
+                </Routes>
+              </AuthAdminProvider>
+            </LocalizationProvider>
           </SnackbarProvider>
         </ThemeProvider>
       </Container>

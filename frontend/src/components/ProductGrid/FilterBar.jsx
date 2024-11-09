@@ -25,9 +25,13 @@ const FilterBar = ({ onFilterChange }) => {
         size="small"
         sx={{ minWidth: "150px" }}
       >
-        <MenuItem value="all">Tag</MenuItem>
-        <MenuItem value="gaming">TagCode</MenuItem>
-        <MenuItem value="office">TagName</MenuItem>
+        <MenuItem value="all">Tất cả</MenuItem>
+        <MenuItem value="CAT-01">Laptap</MenuItem>
+        <MenuItem value="CAT-02">Máy tính - PC</MenuItem>
+        <MenuItem value="CAT-03">CPU</MenuItem>
+        <MenuItem value="CAT-04">Ram Laptop</MenuItem>
+        <MenuItem value="CAT-05">HDD/SSD</MenuItem>
+        <MenuItem value="CAT-06">Khác</MenuItem>
       </Select>
 
       {/* Price Filter */}
@@ -47,7 +51,7 @@ const FilterBar = ({ onFilterChange }) => {
 
       {/* Specification Filter */}
       <Select
-        name="specification"
+        name="specifications"
         defaultValue="all"
         onChange={handleChange}
         size="small"
@@ -69,12 +73,11 @@ const FilterBar = ({ onFilterChange }) => {
         sx={{ minWidth: "150px" }}
       >
         <MenuItem value="all">Tất cả thương hiệu</MenuItem>
-        <MenuItem value="dell">Dell</MenuItem>
-        <MenuItem value="apple">Apple</MenuItem>
-        <MenuItem value="samsung">SamSung</MenuItem>
-        <MenuItem value="acer">Acer</MenuItem>
-        <MenuItem value="asus">Asus</MenuItem>
-        <MenuItem value="hp">HP</MenuItem>
+        <MenuItem value="DELL">Dell</MenuItem>
+        <MenuItem value="APPLE">Apple</MenuItem>
+
+        <MenuItem value="ASUS">Asus</MenuItem>
+        <MenuItem value="HP">HP</MenuItem>
       </Select>
 
       {/* Tag Filter */}
