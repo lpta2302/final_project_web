@@ -12,21 +12,29 @@ import {
   Grid,
   Paper,
 } from "@mui/material";
-import { useGetCurrentUser, useReadOwnCart, useReadAllVouchers, useReadOwnAddresses } from "../../../api/queries";
+import {
+  useReadOwnCart,
+  useReadAllVouchers,
+  useReadOwnAddresses,
+} from "../../../api/queries";
+import { useAuthContext } from "../../../context/AuthContext";
 
 function CheckoutPage() {
-  const { data: currentUser } = useGetCurrentUser();
+  // Get the current user from context
+  const { user: currentUser, isLoading: isUserLoading } = useAuthContext();
+  
+  // Fetch cart, vouchers, and addresses data
   const { data: cartData, isLoading: isCartLoading } = useReadOwnCart(currentUser?._id);
   const { data: vouchersData, isLoading: isVouchersLoading } = useReadAllVouchers();
   const { data: addressesData, isLoading: isAddressesLoading } = useReadOwnAddresses(currentUser?._id);
 
-  // Lấy thời gian hiện tại và cộng thêm 5 ngày
+  // Get current date and add 5 days
   const currentDateTime = new Date();
   const takeOrderTime = new Date(currentDateTime);
   takeOrderTime.setDate(takeOrderTime.getDate() + 5);
 
   const [orderData, setOrderData] = useState({
-    userId: currentUser?._id || "",
+    userId: "",
     paymentStatus: "unpaid",
     paymentMethod: "credit_card",
     shippingCost: 58500,
@@ -36,11 +44,12 @@ function CheckoutPage() {
     address: "",
     voucher: [],
     cart: {
-      client: currentUser?._id || "",
+      client: "",
       cartItems: [],
     },
   });
 
+  // Update user ID when currentUser data is loaded
   useEffect(() => {
     if (currentUser && currentUser._id) {
       setOrderData((prevData) => ({
@@ -48,14 +57,15 @@ function CheckoutPage() {
         userId: currentUser._id,
         cart: {
           ...prevData.cart,
-          client: currentUser._id
-        }
+          client: currentUser._id,
+        },
       }));
     }
   }, [currentUser]);
 
+  // Update cart data when cartData is loaded
   useEffect(() => {
-    if (cartData) {
+    if (cartData && cartData.cartItems) {
       setOrderData((prevData) => ({
         ...prevData,
         cart: {
@@ -71,11 +81,13 @@ function CheckoutPage() {
     }
   }, [cartData]);
 
+  // Handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setOrderData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  // Handle changes within cart items
   const handleNestedChange = (e, index) => {
     const { name, value } = e.target;
     const cartItems = [...orderData.cart.cartItems];
@@ -86,21 +98,24 @@ function CheckoutPage() {
     }));
   };
 
+  // Handle adding voucher to order
   const handleAddVoucher = (e) => {
     const { value } = e.target;
     setOrderData((prevData) => ({
       ...prevData,
-      voucher: value, // value là mảng các voucher đã chọn
+      voucher: value,
     }));
   };
 
+  // Handle order submission
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("Order Data:", orderData);
-    // Gửi orderData lên server
+    // Implement API call to create order here
   };
 
-  if (isCartLoading || isVouchersLoading || isAddressesLoading) {
+  // Show loading while data is being fetched
+  if (isUserLoading || isCartLoading || isVouchersLoading || isAddressesLoading) {
     return <Typography>Loading data...</Typography>;
   }
 
@@ -116,7 +131,6 @@ function CheckoutPage() {
             label="User ID"
             name="userId"
             value={orderData.userId}
-            onChange={handleChange}
             margin="normal"
             disabled
           />
