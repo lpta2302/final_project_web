@@ -967,11 +967,11 @@ export const useGetTotalStockValue = () => {
   });
 };
 
-//---------------------------WISHLIST--------------------------------
+//---------------------------ADDRESS--------------------------------
 const customer_address_url = customer_url.address;
 export const useReadOwnAddresses = (userId) => {
   return useQuery({
-    queryKey: [READ_OWN_WISHLIST],
+    queryKey: ['READ_OWN_ADDRESSES'],
     queryFn: () => readAll(customer_address_url.getOwnAddresses(userId)),
     enabled: !!userId
   });
