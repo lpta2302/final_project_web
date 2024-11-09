@@ -19,22 +19,9 @@ app.use(bodyParser.json({ limit: "50mb" }));
 app.use(cors());
 app.use(morgan("common"));
 
-app.use(cookieParser())
-
-app.get('/', (req, res) => {
-  res.cookie('__vercel_live_token', 'cookieValue', {
-    httpOnly: true,
-    secure: true, // Only set secure flag in production
-    sameSite: 'Lax', // Lax is one of the acceptable values
-    maxAge: 24 * 60 * 60 * 1000, // Cookie expiration (1 day)
-  });
-  res.send('Cookie with SameSite=Lax is set');
-});
-
 app.use((req, res, next) => {
   const isHttps = req.protocol === "https"; // Check if the protocol is HTTPS
   const secureCookie = isHttps ? true : false; // Set secure flag based on protocol
-  const sameSiteValue = secureCookie ? "None" : "Lax"; // Dynamic SameSite value
   
   // Fetch or generate token (use a session value or any dynamic value you prefer)
   const liveToken = req.session ? req.session.liveToken : "default_token_value"; 
@@ -42,7 +29,7 @@ app.use((req, res, next) => {
   res.cookie("__vercel_live_token", liveToken, {
     httpOnly: true,
     secure: true, // Only set secure flag if HTTPS
-    sameSite: 'lax', // Use dynamic SameSite value
+    sameSite: 'strict', // Use dynamic SameSite value
   });
   
   next();
