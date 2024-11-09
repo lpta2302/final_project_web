@@ -17,6 +17,15 @@ const port = process.env.PORT || 4000;
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(cors());
 app.use(morgan("common"));
+app.use((req, res, next) => {
+  res.cookie("__vercel_live_token", "value", {
+    httpOnly: true, // recommended for security
+    secure: true, // ensures cookie is sent over HTTPS
+    sameSite: "None", // allows the cookie to be sent in cross-origin requests
+    maxAge: 24 * 60 * 60 * 1000, // expires in 1 day, adjust as needed
+  });
+  next();
+});
 
 // Dotenv
 dotenv.config();
