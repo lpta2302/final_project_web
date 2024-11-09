@@ -11,7 +11,7 @@ import {
   getCurrentUser,
   createProduct,
   updateProduct,
-  manageCarousel
+  manageCarousel,
 } from "./api";
 import {
   READ_ALL_ACCOUNTS,
@@ -44,7 +44,7 @@ import {
   SEARCH_ORDER,
   SEARCH_REVIEW,
   READ_OWN_WISHLIST,
-  READ_ALL_SEEN_PRODUCTS
+  READ_ALL_SEEN_PRODUCTS,
 } from "./queryKeys";
 import { admin_url, customer_url } from "./API_URL";
 
@@ -74,7 +74,7 @@ export const useGetAccountDetail = (accountId) => {
   return useQuery({
     queryKey: [ADMIN_ACCOUNT_DETAIL, accountId],
     queryFn: () => readAll(customer_url.account.getAccountDetail(accountId)),
-    enabled: !!accountId
+    enabled: !!accountId,
   });
 };
 
@@ -82,10 +82,7 @@ export const useUpdateAccount = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (user) =>
-      updateRecord(
-        customer_url.account.udpateAccountDetail(user._id),
-        user
-      ),
+      updateRecord(customer_url.account.udpateAccountDetail(user._id), user),
     onSuccess: (data) => {
       console.log(data);
 
@@ -93,7 +90,6 @@ export const useUpdateAccount = () => {
     },
   });
 };
-
 
 //admin
 const admin_account_url = admin_url.account;
@@ -108,7 +104,7 @@ export const useGetAdminAccountDetail = (accountId) => {
   return useQuery({
     queryKey: [ADMIN_ACCOUNT_DETAIL, accountId],
     queryFn: () => readAll(admin_account_url.getAccountDetail(accountId)),
-    enabled: !!accountId
+    enabled: !!accountId,
   });
 };
 
@@ -141,7 +137,7 @@ export const useSearchAccount = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_ACCOUNT, searchParam],
     queryFn: () => search(admin_account_url.search(), searchParam),
-    enabled: !!searchParam && searchParam != {} && searchParam != []
+    enabled: !!searchParam && searchParam != {} && searchParam != [],
   });
 };
 //----------------------------- Product -----------------------------
@@ -158,7 +154,7 @@ export const useSearchProduct = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_PRODUCT, searchParam],
     queryFn: () => search(customer_product_url.search(), searchParam),
-    enabled: !!searchParam && searchParam != {} && searchParam != []
+    enabled: !!searchParam && searchParam != {} && searchParam != [],
   });
 };
 
@@ -166,7 +162,7 @@ export const useReadProductByTag = (tagId) => {
   return useQuery({
     queryKey: [READ_ALL_PRODUCTS, tagId],
     queryFn: () => readAll(customer_product_url.getProductByTag(tagId)),
-    enabled: !!tagId
+    enabled: !!tagId,
   });
 };
 
@@ -174,7 +170,7 @@ export const useReadProductDetail = (productId) => {
   return useQuery({
     queryKey: [READ_PRODUCT_DETAIL, productId],
     queryFn: () => readAll(customer_product_url.getDetailProduct(productId)),
-    enabled: !!productId
+    enabled: !!productId,
   });
 };
 
@@ -182,7 +178,7 @@ export const useReadProductDetailBySlug = (slug) => {
   return useQuery({
     queryKey: [READ_PRODUCT_DETAIL, slug],
     queryFn: () => readAll(customer_product_url.getDetailProductBySlug(slug)),
-    enabled: !!slug
+    enabled: !!slug,
   });
 };
 
@@ -190,7 +186,7 @@ export const useReadRelativeProducts = (productId) => {
   return useQuery({
     queryKey: [RELATIVE_PRODUCTS, productId],
     queryFn: () => readAll(customer_product_url.getRelativeProducts(productId)),
-    enabled: !!productId
+    enabled: !!productId,
   });
 };
 //admin
@@ -206,7 +202,7 @@ export const useReadProductDetailAdmin = (productId) => {
   return useQuery({
     queryKey: [PRODUCT_DETAIL, productId],
     queryFn: () => readAll(admin_product_url.getProductDetail(productId)),
-    enabled: !!productId
+    enabled: !!productId,
   });
 };
 
@@ -230,7 +226,7 @@ export const useUpdateProduct = () => {
       return updateProduct(
         admin_product_url.updateProduct(product._id),
         product
-      )
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_PRODUCTS]);
@@ -253,7 +249,7 @@ export const useSearchProductAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_PRODUCT, searchParam],
     queryFn: () => search(admin_product_url.search(), searchParam),
-    enabled: !!searchParam && searchParam != {} && searchParam != []
+    enabled: !!searchParam && searchParam != {} && searchParam != [],
   });
 };
 
@@ -261,7 +257,7 @@ export const useReadStatisticBrand = (brandId) => {
   return useQuery({
     queryKey: [STATISTIC_BRAND, brandId],
     queryFn: () => readAll(admin_product_url.statisticBrand(brandId)),
-    enabled: !!brandId
+    enabled: !!brandId,
   });
 };
 
@@ -278,8 +274,9 @@ export const useReadAllVouchers = () => {
 export const useReadOwnVouchers = (currentAccountId) => {
   return useQuery({
     queryKey: [READ_ALL_VOUCHERS, currentAccountId],
-    queryFn: () => readAll(customer_voucher_url.getOwnVouchers(currentAccountId)),
-    enabled: !!currentAccountId
+    queryFn: () =>
+      readAll(customer_voucher_url.getOwnVouchers(currentAccountId)),
+    enabled: !!currentAccountId,
   });
 };
 
@@ -294,7 +291,7 @@ export const useSearchVoucher = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(customer_voucher_url.search(), searchParam),
-    enabled: !!searchParam && searchParam != {} && searchParam != []
+    enabled: !!searchParam && searchParam != {} && searchParam != [],
   });
 };
 
@@ -320,10 +317,7 @@ export const useUpdateVoucher = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (voucher) =>
-      updateRecord(
-        admin_voucher_url.updateVoucher(voucher._id),
-        voucher
-      ),
+      updateRecord(admin_voucher_url.updateVoucher(voucher._id), voucher),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_VOUCHERS]);
     },
@@ -343,7 +337,7 @@ export const useSearchVoucherAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(admin_voucher_url.search(), searchParam),
-    enabled: !!searchParam && searchParam != {} && searchParam != []
+    enabled: !!searchParam && searchParam != {} && searchParam != [],
   });
 };
 //----------------------------- Brand -----------------------------
@@ -359,7 +353,7 @@ export const useSearchBrand = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_BRAND, searchParam],
     queryFn: () => search(customer_brand_url.search(), searchParam),
-    enabled: !!searchParam && searchParam != {} && searchParam != []
+    enabled: !!searchParam && searchParam != {} && searchParam != [],
   });
 };
 //admin
@@ -402,7 +396,7 @@ export const useSearchBrandAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(admin_brand_url.search(), searchParam),
-    enabled: !!searchParam && searchParam != {} && searchParam != []
+    enabled: !!searchParam && searchParam != {} && searchParam != [],
   });
 };
 //----------------------------- Tag -----------------------------
@@ -445,7 +439,7 @@ export const useSearchTagAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_TAG, searchParam],
     queryFn: () => search(admin_tag_url.search(), searchParam),
-    enabled: !!searchParam && searchParam != {} && searchParam != []
+    enabled: !!searchParam && searchParam != {} && searchParam != [],
   });
 };
 //----------------------------- Category -----------------------------
@@ -461,7 +455,7 @@ export const useSearchCategory = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_VOUCHER, searchParam],
     queryFn: () => search(customer_category_url.search(), searchParam),
-    enabled: !!searchParam && searchParam != {} && searchParam != []
+    enabled: !!searchParam && searchParam != {} && searchParam != [],
   });
 };
 //admin
@@ -486,10 +480,7 @@ export const useUpdateCategory = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (category) =>
-      updateRecord(
-        admin_category_url.updateCategory(category._id),
-        category
-      ),
+      updateRecord(admin_category_url.updateCategory(category._id), category),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_CATEGORIES]);
     },
@@ -509,7 +500,7 @@ export const useSearchCategoryAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_CATEGORY, searchParam],
     queryFn: () => search(admin_category_url.search(), searchParam),
-    enabled: !!searchParam && searchParam != {} && searchParam != []
+    enabled: !!searchParam && searchParam != {} && searchParam != [],
   });
 };
 //----------------------------- Carousel -----------------------------
@@ -535,10 +526,7 @@ export const useUpdateCarousel = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (carousel) =>
-      manageCarousel(
-        admin_carousel_url.updateCarousel(carousel._id),
-        carousel
-      ),
+      manageCarousel(admin_carousel_url.updateCarousel(carousel._id), carousel),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_CAROUSEL]);
     },
@@ -561,13 +549,14 @@ export const useReadAllOrdersOfUser = (userId) => {
   return useQuery({
     queryKey: [READ_ALL_ORDERS, userId],
     queryFn: () => readAll(customer_order_url.getOwnOrders(userId)),
-    enabled: !!userId
+    enabled: !!userId,
   });
 };
 export const useCreateNewOrder = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (order) => createRecord(customer_order_url.addNewOrder(), order),
+    mutationFn: (order) =>
+      createRecord(customer_order_url.addNewOrder(), order),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_ORDERS]);
     },
@@ -577,7 +566,7 @@ export const useGetOrderDetail = (orderId) => {
   return useQuery({
     queryKey: [ORDER_DETAIL, orderId],
     queryFn: () => readAll(customer_order_url.getOrderDetail(orderId)),
-    enabled: !!orderId
+    enabled: !!orderId,
   });
 };
 //admin
@@ -592,14 +581,14 @@ export const useReadOrdersOfUserAdmin = (userId) => {
   return useQuery({
     queryKey: [READ_ALL_ORDERS, userId],
     queryFn: () => readAll(admin_order_url.getOrderOfUser(userId)),
-    enabled: !!userId
+    enabled: !!userId,
   });
 };
 export const useGetOrderDetailAdmin = (orderId) => {
   return useQuery({
     queryKey: [ORDER_DETAIL, orderId],
     queryFn: () => readAll(admin_order_url.getOrderDetail(orderId)),
-    enabled: !!orderId
+    enabled: !!orderId,
   });
 };
 export const useUpdateOrderAdmin = () => {
@@ -615,8 +604,7 @@ export const useUpdateOrderAdmin = () => {
 export const useDeleteoOrderAmin = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (orderId) =>
-      deleteRecord(admin_order_url.deleteOrder(orderId)),
+    mutationFn: (orderId) => deleteRecord(admin_order_url.deleteOrder(orderId)),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_ORDERS]);
     },
@@ -626,7 +614,7 @@ export const useSearchOrderAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_ORDER, searchParam],
     queryFn: () => search(admin_order_url.search(), searchParam),
-    enabled: !!searchParam && searchParam != {} && searchParam != []
+    enabled: !!searchParam && searchParam != {} && searchParam != [],
   });
 };
 //----------------------------- Reviews -----------------------------
@@ -643,14 +631,13 @@ export const useAddNewReview = () => {
   });
 };
 
-
 //admin
 const admin_review_url = admin_url.review;
 export const useReadAllReviewsAdmin = (productId) => {
   return useQuery({
     queryKey: [READ_ALL_REVIEWS, productId],
     queryFn: () => readAll(admin_review_url.getAllReview(productId)),
-    enabled: !!productId
+    enabled: !!productId,
   });
 };
 export const useDeleteReview = () => {
@@ -667,7 +654,7 @@ export const useSearchReviewAdmin = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_REVIEW, searchParam],
     queryFn: () => search(admin_review_url.search(), searchParam),
-    enabled: !!searchParam && searchParam != {} && searchParam != []
+    enabled: !!searchParam && searchParam != {} && searchParam != [],
   });
 };
 
@@ -709,7 +696,9 @@ export const useDeleteSpecification = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (SpecificationId) =>
-      deleteRecord(admin_specification_url.deleteSpecification(SpecificationId)),
+      deleteRecord(
+        admin_specification_url.deleteSpecification(SpecificationId)
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_SPECIFICATION]);
     },
@@ -720,7 +709,9 @@ export const useDeleteSpecificationKeyValue = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (SpecificationId) =>
-      deleteRecord(admin_specification_url.deleteSpecificationKeyValue(SpecificationId)),
+      deleteRecord(
+        admin_specification_url.deleteSpecificationKeyValue(SpecificationId)
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_SPECIFICATION]);
     },
@@ -734,8 +725,10 @@ export const useUpdateSpecificationKeyValue = () => {
       console.log(specification);
       console.log(specificationId);
 
-
-      return updateRecord(admin_specification_url.updateSpecificationKeyValue(specificationId), specification)
+      return updateRecord(
+        admin_specification_url.updateSpecificationKeyValue(specificationId),
+        specification
+      );
     },
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_SPECIFICATION]);
@@ -746,9 +739,8 @@ export const useUpdateSpecificationKeyValue = () => {
 export const useSearchSpecification = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_SPECIFICATION, searchParam],
-    queryFn: () =>
-      search(admin_specification_url.search(), searchParam),
-    enabled: !!searchParam && searchParam != {} && searchParam != []
+    queryFn: () => search(admin_specification_url.search(), searchParam),
+    enabled: !!searchParam && searchParam != {} && searchParam != [],
   });
 };
 //----------------------------- SPECIFICATION KEYS -----------------------------
@@ -764,7 +756,10 @@ export const useCreateSpecificationKey = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (SpecificationKey) =>
-      createRecord(admin_specificationKey_url.addSpecificationKey(), SpecificationKey),
+      createRecord(
+        admin_specificationKey_url.addSpecificationKey(),
+        SpecificationKey
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_SPECIFICATION_KEY]);
     },
@@ -789,7 +784,9 @@ export const useDeleteSpecificationKey = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (SpecificationKeyId) =>
-      deleteRecord(admin_specificationKey_url.deleteSpecificationKey(SpecificationKeyId)),
+      deleteRecord(
+        admin_specificationKey_url.deleteSpecificationKey(SpecificationKeyId)
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_SPECIFICATION_KEY]);
     },
@@ -802,7 +799,7 @@ export const useSearchSpecificationKey = (searchParam) => {
     queryFn: () =>
       // search(admin_specificationKey_url.search(), searchParam),
       console.log("searching"),
-    enabled: !!searchParam && searchParam != {} && searchParam != []
+    enabled: !!searchParam && searchParam != {} && searchParam != [],
   });
 };
 
@@ -813,15 +810,14 @@ export const useReadOwnCart = (currentAccountId) => {
   return useQuery({
     queryKey: [USE_READ_OWN_CART],
     queryFn: () => readAll(customerCart.getOwnCart(currentAccountId)),
-    enabled: !!currentAccountId
+    enabled: !!currentAccountId,
   });
 };
 export const useAddCartItem = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (item) =>
-      deleteRecord(customerCart.addItem(item)),
+    mutationFn: (item) => deleteRecord(customerCart.addItem(item)),
     onSuccess: () => {
       queryClient.invalidateQueries([USE_READ_OWN_CART]);
     },
@@ -830,8 +826,7 @@ export const useAddCartItem = () => {
 export const useDeleteCartItem = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: () =>
-      deleteRecord(customerCart.deleteItem()),
+    mutationFn: () => deleteRecord(customerCart.deleteItem()),
     onSuccess: () => {
       queryClient.invalidateQueries([USE_READ_OWN_CART]);
     },
@@ -854,14 +849,16 @@ export const useReadWishlistItems = (useId) => {
   return useQuery({
     queryKey: [READ_OWN_WISHLIST],
     queryFn: () => readAll(customer_wishlist.getAllProduct(useId)),
-    enabled: !!useId
+    enabled: !!useId,
   });
 };
 export const useAddItemToWishlist = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ customerId, productId }) =>
-      createRecord(customer_wishlist.addProduct(customerId), {productId: productId}),
+      createRecord(customer_wishlist.addProduct(customerId), {
+        productId: productId,
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_OWN_WISHLIST]);
       queryClient.invalidateQueries([READ_ALL_PRODUCTS]);
@@ -883,7 +880,7 @@ export const useSearchItemInWishlist = (customerId, searchParam) => {
   return useQuery({
     queryKey: [SEARCH_CATEGORY, searchParam],
     queryFn: () => search(customer_wishlist.search(customerId), searchParam),
-    enabled: !!searchParam && searchParam != {} && searchParam != []
+    enabled: !!searchParam && searchParam != {} && searchParam != [],
   });
 };
 //---------------------------WISHLIST--------------------------------
@@ -892,69 +889,68 @@ export const useReadSeenProducts = (userId) => {
   return useQuery({
     queryKey: [READ_ALL_SEEN_PRODUCTS],
     queryFn: () => readAll(customer_seen.getOwnSeenProducts(userId)),
-    enabled: !!userId
+    enabled: !!userId,
   });
 };
 export const useAddItemToSeens = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ data:{userId, productId} }) =>
-      createRecord(customer_seen.addSeenProduct(), {userId, productId}),
+    mutationFn: ({ data: { userId, productId } }) =>
+      createRecord(customer_seen.addSeenProduct(), { userId, productId }),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_SEEN_PRODUCTS]);
     },
   });
 };
 
-
 //-------------------------------------STATS----------------------------
 const stats = admin_url.stats;
 
 export const useGetNewUsersDaily = () => {
   return useQuery({
-    queryKey: ['GET_NEW_USERS_DAILY'],
+    queryKey: ["GET_NEW_USERS_DAILY"],
     queryFn: () => readAll(stats.getNewUsersDaily()),
   });
 };
 
 export const useGetNewUsersWeekly = () => {
   return useQuery({
-    queryKey: ['GET_NEW_USERS_WEEKLY'],
+    queryKey: ["GET_NEW_USERS_WEEKLY"],
     queryFn: () => readAll(stats.getNewUsersWeekly()),
   });
 };
 
 export const useGetNewUsersMonthly = () => {
   return useQuery({
-    queryKey: ['GET_NEW_USERS_MONTHLY'],
+    queryKey: ["GET_NEW_USERS_MONTHLY"],
     queryFn: () => readAll(stats.getNewUsersMonthly()),
   });
 };
 
 export const useGetAccountRoleStatistics = () => {
   return useQuery({
-    queryKey: ['GET_ACCOUNT_ROLE_STATISTICS'],
+    queryKey: ["GET_ACCOUNT_ROLE_STATISTICS"],
     queryFn: () => readAll(stats.getAccountRoleStatistics()),
   });
 };
 
 export const useGetProductSpecsStatistics = () => {
   return useQuery({
-    queryKey: ['GET_PRODUCT_SPECS_STATISTICS'],
+    queryKey: ["GET_PRODUCT_SPECS_STATISTICS"],
     queryFn: () => readAll(stats.getProductSpecsStatistics()),
   });
 };
 
 export const useGetProductWithDiscountStatistics = () => {
   return useQuery({
-    queryKey: ['GET_PRODUCT_WITH_DISCOUNT_STATISTICS'],
+    queryKey: ["GET_PRODUCT_WITH_DISCOUNT_STATISTICS"],
     queryFn: () => readAll(stats.getProductWithDiscountStatistics()),
   });
 };
 
 export const useGetTotalStockValue = () => {
   return useQuery({
-    queryKey: ['GET_TOTAL_STOCK_VALUE'],
+    queryKey: ["GET_TOTAL_STOCK_VALUE"],
     queryFn: () => readAll(stats.getTotalStockValue()),
   });
 };
