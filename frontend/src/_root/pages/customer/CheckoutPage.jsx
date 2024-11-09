@@ -16,17 +16,21 @@ import {
   useReadOwnCart,
   useReadAllVouchers,
   useReadOwnAddresses,
+  useCreateNewOrder,
 } from "../../../api/queries";
 import { useAuthContext } from "../../../context/AuthContext";
 
 function CheckoutPage() {
   // Get the current user from context
   const { user: currentUser, isLoading: isUserLoading } = useAuthContext();
-  
+
   // Fetch cart, vouchers, and addresses data
   const { data: cartData, isLoading: isCartLoading } = useReadOwnCart(currentUser?._id);
   const { data: vouchersData, isLoading: isVouchersLoading } = useReadAllVouchers();
   const { data: addressesData, isLoading: isAddressesLoading } = useReadOwnAddresses(currentUser?._id);
+
+  // Mutation hook for creating a new order
+  const createNewOrder = useCreateNewOrder();
 
   // Get current date and add 5 days
   const currentDateTime = new Date();
@@ -41,7 +45,7 @@ function CheckoutPage() {
     orderNote: "",
     expectedReceiveTime: currentDateTime.toISOString().slice(0, 16),
     takeOrderTime: takeOrderTime.toISOString().slice(0, 16),
-    address: "",
+    address: "",  // Ensure this is set with a valid ObjectId
     voucher: [],
     cart: {
       client: "",
@@ -49,7 +53,7 @@ function CheckoutPage() {
     },
   });
 
-  // Update user ID when currentUser data is loaded
+  // Set user and client information when currentUser data is loaded
   useEffect(() => {
     if (currentUser && currentUser._id) {
       setOrderData((prevData) => ({
@@ -63,7 +67,7 @@ function CheckoutPage() {
     }
   }, [currentUser]);
 
-  // Update cart data when cartData is loaded
+  // Set cart items when cartData is loaded
   useEffect(() => {
     if (cartData && cartData.cartItems) {
       setOrderData((prevData) => ({
@@ -80,6 +84,16 @@ function CheckoutPage() {
       }));
     }
   }, [cartData]);
+
+  // Set default address if available
+  useEffect(() => {
+    if (addressesData && addressesData.length > 0 && !orderData.address) {
+      setOrderData((prevData) => ({
+        ...prevData,
+        address: addressesData[0]._id,  // Default to the first address
+      }));
+    }
+  }, [addressesData, orderData.address]);
 
   // Handle form field changes
   const handleChange = (e) => {
@@ -110,8 +124,23 @@ function CheckoutPage() {
   // Handle order submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Order Data:", orderData);
-    // Implement API call to create order here
+
+    // Validate address selection
+    if (!orderData.address) {
+      alert("Please select an address before submitting the order.");
+      return;
+    }
+
+    // Call the mutation to create a new order
+    createNewOrder.mutate(orderData, {
+      onSuccess: () => {
+        console.log("Order created successfully");
+        // Optionally, navigate to a different page or reset form here
+      },
+      onError: (error) => {
+        console.error("Error creating order:", error);
+      },
+    });
   };
 
   // Show loading while data is being fetched
