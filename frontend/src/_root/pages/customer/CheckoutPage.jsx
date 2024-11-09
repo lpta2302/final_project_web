@@ -12,12 +12,13 @@ import {
   Grid,
   Paper,
 } from "@mui/material";
-import { useGetCurrentUser, useReadOwnCart, useReadAllVouchers } from "../../../api/queries";
+import { useGetCurrentUser, useReadOwnCart, useReadAllVouchers, useReadOwnAddresses } from "../../../api/queries";
 
 function CheckoutPage() {
   const { data: currentUser } = useGetCurrentUser();
   const { data: cartData, isLoading: isCartLoading } = useReadOwnCart(currentUser?._id);
   const { data: vouchersData, isLoading: isVouchersLoading } = useReadAllVouchers();
+  const { data: addressesData, isLoading: isAddressesLoading } = useReadOwnAddresses(currentUser?._id);
 
   // Lấy thời gian hiện tại và cộng thêm 5 ngày
   const currentDateTime = new Date();
@@ -39,6 +40,19 @@ function CheckoutPage() {
       cartItems: [],
     },
   });
+
+  useEffect(() => {
+    if (currentUser && currentUser._id) {
+      setOrderData((prevData) => ({
+        ...prevData,
+        userId: currentUser._id,
+        cart: {
+          ...prevData.cart,
+          client: currentUser._id
+        }
+      }));
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     if (cartData) {
@@ -86,8 +100,9 @@ function CheckoutPage() {
     // Gửi orderData lên server
   };
 
-  if (isCartLoading) return <Typography>Loading cart data...</Typography>;
-  if (isVouchersLoading) return <Typography>Loading vouchers...</Typography>;
+  if (isCartLoading || isVouchersLoading || isAddressesLoading) {
+    return <Typography>Loading data...</Typography>;
+  }
 
   return (
     <Container maxWidth="md">
@@ -171,14 +186,20 @@ function CheckoutPage() {
               shrink: true,
             }}
           />
-          <TextField
-            fullWidth
-            label="Address"
-            name="address"
-            value={orderData.address}
-            onChange={handleChange}
-            margin="normal"
-          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Address</InputLabel>
+            <Select
+              name="address"
+              value={orderData.address}
+              onChange={handleChange}
+            >
+              {addressesData.map((address) => (
+                <MenuItem key={address._id} value={address._id}>
+                  {`${address.address}, ${address.ward}, ${address.district}, ${address.city}`}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <FormControl fullWidth margin="normal">
             <InputLabel>Vouchers</InputLabel>
             <Select
