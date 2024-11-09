@@ -43,7 +43,8 @@ const Voucher = () => {
   };
 
   if (isLoading) return <Typography>Đang tải dữ liệu voucher...</Typography>;
-  if (error) return <Typography>Có lỗi xảy ra khi lấy dữ liệu voucher</Typography>;
+  if (error)
+    return <Typography>Có lỗi xảy ra khi lấy dữ liệu voucher</Typography>;
 
   return (
     <Container>
@@ -90,7 +91,9 @@ const Voucher = () => {
         <Dialog open={open} onClose={handleClose}>
           <DialogTitle>{selectedVoucher.voucherName}</DialogTitle>
           <DialogContent>
-            <Typography variant="body1">{selectedVoucher.description}</Typography>
+            <Typography variant="body1">
+              {selectedVoucher.description}
+            </Typography>
             {selectedVoucher.discountPercentage && (
               <Typography variant="body1">
                 Giảm {selectedVoucher.discountPercentage}%
@@ -105,7 +108,8 @@ const Voucher = () => {
               Mã áp dụng: {selectedVoucher.voucherCode || "Không có mã"}
             </Typography>
             <Typography variant="body1">
-              Ngày cập nhật: {new Date(selectedVoucher.updatedAt).toLocaleDateString("vi-VN")}
+              Ngày cập nhật:{" "}
+              {new Date(selectedVoucher.updatedAt).toLocaleDateString("vi-VN")}
             </Typography>
             <Typography variant="body1">
               Số khách hàng đã thu thập: {selectedVoucher.clients.length}
@@ -115,22 +119,9 @@ const Voucher = () => {
             <Button onClick={handleClose} color="secondary">
               Đóng
             </Button>
-            <Button onClick={() => handleCollectVoucher(selectedVoucher)} color="primary">
-              Thu thập mã
-            </Button>
           </DialogActions>
         </Dialog>
       )}
-
-      {/* Display collected voucher codes */}
-      <Typography variant="h5" style={{ marginTop: "20px" }}>
-        Danh sách mã đã thu thập:
-      </Typography>
-      <ul>
-        {collectedVouchers.map((code, index) => (
-          <li key={index}>{code}</li>
-        ))}
-      </ul>
     </Container>
   );
 };

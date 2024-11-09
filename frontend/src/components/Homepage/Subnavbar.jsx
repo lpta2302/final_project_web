@@ -31,7 +31,7 @@ const SubNavbar = () => {
   }, []);
 
   const handleCategoryClick = (category) => {
-    navigate(`/products?category=${category}`);
+    navigate(`/productgrid?category=${category}`);
   };
 
   if (isLoading) return <CircularProgress />;
@@ -63,7 +63,7 @@ const SubNavbar = () => {
           key={categoryCode}
           label={categoryName}
           icon={<CategoryIcon />}
-          onClick={() => handleCategoryClick(categoryName)}
+          onClick={() => handleCategoryClick(categoryCode)}
         />
       ))}
     </BottomNavigation>
@@ -83,7 +83,7 @@ const SubNavbar = () => {
         {categories.map(({ categoryName, categoryCode }) => (
           <ListItem disablePadding key={categoryCode}>
             <ListItemButton
-              onClick={() => handleCategoryClick(categoryName)}
+              onClick={() => handleCategoryClick(categoryCode)}
               sx={{ p: "4px 8px" }}
             >
               <ListItemText primary={categoryName} />

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -9,18 +9,48 @@ import {
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import { Link } from "react-router-dom"; // Import Link từ react-router-dom
+import { Link } from "react-router-dom";
+import { useAuthContext } from "../../context/AuthContext";
+import {
+  useAddItemToWishlist,
+  useRemoveItemFromWishlist,
+} from "../../api/queries";
 
-const ProductCard = ({ product, handleToggleFavorite, isFavorite }) => {
+const ProductCard = ({ product, favorites, setFavorites }) => {
+  const { isAuthenticated, user } = useAuthContext();
+  const [isFavorite, setIsFavorite] = useState(favorites[product._id] || false);
+
+  const { mutate: addItemToWishlist } = useAddItemToWishlist();
+  const { mutate: removeItemFromWishlist } = useRemoveItemFromWishlist();
+
+  const handleFavoriteClick = () => {
+    if (!isAuthenticated) {
+      window.location.href = "/login";
+      return;
+    }
+
+    if (isFavorite) {
+      // Xóa sản phẩm khỏi danh sách yêu thích
+      removeItemFromWishlist({ customerId: user._id, productId: product._id });
+      setFavorites((prev) => ({ ...prev, [product._id]: false }));
+    } else {
+      // Thêm sản phẩm vào danh sách yêu thích
+      addItemToWishlist({ customerId: user._id, productId: product._id });
+      setFavorites((prev) => ({ ...prev, [product._id]: true }));
+    }
+
+    // Cập nhật trạng thái yêu thích của sản phẩm
+    setIsFavorite(!isFavorite);
+  };
+
   return (
     <Card
       sx={{
         maxWidth: 264,
-        width: "100%",
         margin: "0 auto",
         display: "flex",
         flexDirection: "column",
-        height: "525px", // Chiều cao cố định cho các thẻ card
+        height: "525px",
       }}
     >
       <Link
@@ -32,9 +62,9 @@ const ProductCard = ({ product, handleToggleFavorite, isFavorite }) => {
           image={product.imageURLs[0]}
           alt={product.productName}
           sx={{
-            width: "264px", // Chiều rộng cố định
-            height: "264px", // Chiều cao cố định
-            objectFit: "contain", // Đảm bảo hình ảnh được cắt mà không bị méo
+            width: 264,
+            height: 264,
+            objectFit: "contain",
             borderRadius: "8px 8px 0 0",
           }}
         />
@@ -47,9 +77,7 @@ const ProductCard = ({ product, handleToggleFavorite, isFavorite }) => {
           }}
         >
           <Box>
-            <Typography variant="h6" component="div">
-              {product.productName}
-            </Typography>
+            <Typography variant="h6">{product.productName}</Typography>
             <Typography
               variant="body2"
               color="text.secondary"
@@ -77,7 +105,7 @@ const ProductCard = ({ product, handleToggleFavorite, isFavorite }) => {
       >
         <IconButton
           color="error"
-          onClick={() => handleToggleFavorite(product)}
+          onClick={handleFavoriteClick}
           aria-label="favorite"
         >
           {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}

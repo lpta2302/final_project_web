@@ -1,81 +1,135 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
-  Card,
-  CardContent,
-  CardMedia,
-  CardActionArea,
-  Typography,
   Box,
-  Rating,
+  Typography,
+  Card,
+  CardMedia,
+  CardContent,
+  IconButton,
 } from "@mui/material";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { Link } from "react-router-dom";
+import { useAuthContext } from "../../context/AuthContext";
+import {
+  useAddItemToWishlist,
+  useRemoveItemFromWishlist,
+  useGetCurrentUser, // Hook để lấy thông tin người dùng hiện tại
+} from "../../api/queries";
 
-const ProductCard = ({ product, onClick }) => {
-  if (!product) return null;
+const ProductCard = ({ product }) => {
+  const { isAuthenticated, user } = useAuthContext();
 
-  const discountPercentage = product.originalPrice
-    ? Math.round(
-        ((product.originalPrice - product.discountPrice) /
-          product.originalPrice) *
-          100
-      )
-    : 0;
+  // Lấy thông tin người dùng hiện tại từ React Query
+  const { data: currentUser, isLoading, error } = useGetCurrentUser();
+
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  const { mutate: addItemToWishlist } = useAddItemToWishlist();
+  const { mutate: removeItemFromWishlist } = useRemoveItemFromWishlist();
+
+  useEffect(() => {
+    if (currentUser) {
+      // Kiểm tra xem sản phẩm có trong danh sách yêu thích của người dùng không
+      setIsFavorite(currentUser.wishlist.includes(product._id));
+    }
+  }, [currentUser, product._id]);
+
+  const handleFavoriteClick = () => {
+    if (!isAuthenticated) {
+      window.location.href = "/login";
+      return;
+    }
+
+    if (isFavorite) {
+      // Xóa sản phẩm khỏi danh sách yêu thích
+      removeItemFromWishlist({ customerId: user._id, productId: product._id });
+    } else {
+      // Thêm sản phẩm vào danh sách yêu thích
+      addItemToWishlist({ customerId: user._id, productId: product._id });
+    }
+
+    // Cập nhật trạng thái yêu thích
+    setIsFavorite(!isFavorite);
+  };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading user information</div>;
+  }
 
   return (
-    <Card sx={{ width: "100%", border: "1px solid #1976d2" }}>
-      <CardActionArea onClick={onClick}>
+    <Card
+      sx={{
+        maxWidth: 264,
+        margin: "0 auto",
+        display: "flex",
+        flexDirection: "column",
+        height: "525px",
+      }}
+    >
+      <Link
+        to={`/product/${product.slug}`}
+        style={{ textDecoration: "none", color: "inherit" }}
+      >
         <CardMedia
           component="img"
-          sx={{ height: "250px", objectFit: "cover" }}
-          image={product.imageUrl || "https://via.placeholder.com/300"}
-          alt={product.title || "Product Image"}
+          image={product.imageURLs[0]}
+          alt={product.productName}
+          sx={{
+            width: 264,
+            height: 264,
+            objectFit: "contain",
+            borderRadius: "8px 8px 0 0",
+          }}
         />
-        <CardContent>
-          <Box sx={{ textAlign: "center" }}>
-            <Typography gutterBottom variant="h6">
-              {product.title || "Unknown Title"}
+        <CardContent
+          sx={{
+            flexGrow: 1,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          <Box>
+            <Typography variant="h6">{product.productName}</Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ marginBottom: "8px" }}
+            >
+              {product.description}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {product.description || "No description available."}
-            </Typography>
-            {product.discountPrice && product.originalPrice && (
-              <Box sx={{ mt: 2 }}>
-                <Typography
-                  variant="body1"
-                  sx={{ textDecoration: "line-through", color: "gray" }}
-                >
-                  {`${product.originalPrice.toLocaleString()} VND`}
-                </Typography>
-                <Typography
-                  variant="h6"
-                  sx={{ color: "red", fontWeight: "bold" }}
-                >
-                  {`${product.discountPrice.toLocaleString()} VND`}
-                </Typography>
-                {discountPercentage > 0 && (
-                  <Typography
-                    variant="body2"
-                    sx={{ color: "green", fontWeight: "bold", mt: 1 }}
-                  >
-                    {`-${discountPercentage}%`}
-                  </Typography>
-                )}
-              </Box>
-            )}
-            <Typography sx={{ mt: 1 }}>
-              Status: {product.status || "N/A"}
-            </Typography>
-            <Typography sx={{ mt: 1 }}>
-              Specs: {product.specs || "N/A"}
-            </Typography>
-            <Rating
-              name="read-only"
-              value={product.rating || 0}
-              readOnly
-              sx={{ mt: 1 }}
-            />
           </Box>
+          <Typography
+            variant="body1"
+            style={{
+              color: product.productStatus === "available" ? "green" : "red",
+            }}
+          >
+            Trạng thái:{" "}
+            {product.productStatus === "available" ? "Còn hàng" : "Hết hàng"}
+          </Typography>
         </CardContent>
-      </CardActionArea>
+      </Link>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        p={2}
+      >
+        <IconButton
+          color="error"
+          onClick={handleFavoriteClick}
+          aria-label="favorite"
+        >
+          {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+        </IconButton>
+        <Typography variant="body2">Mã: {product.productCode}</Typography>
+      </Box>
     </Card>
   );
 };
