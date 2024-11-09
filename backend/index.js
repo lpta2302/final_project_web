@@ -19,13 +19,19 @@ app.use(cors());
 app.use(morgan("common"));
 
 app.use((req, res, next) => {
-  const secureCookie = req.protocol === "https"; // Crucial for Vercel
+  const isHttps = req.protocol === "https"; // Check if the protocol is HTTPS
+  const secureCookie = isHttps ? true : false; // Set secure flag based on protocol
+  const sameSiteValue = secureCookie ? "None" : "Lax"; // Dynamic SameSite value
+  
+  // Fetch or generate token (use a session value or any dynamic value you prefer)
+  const liveToken = req.session ? req.session.liveToken : "default_token_value"; 
 
-  res.cookie("__vercel_live_token", "value", {
+  res.cookie("__vercel_live_token", liveToken, {
     httpOnly: true,
-    secure: true, // Set based on protocol
-    sameSite: "lax", // Dynamic SameSite
+    secure: secureCookie, // Only set secure flag if HTTPS
+    sameSite: sameSiteValue, // Use dynamic SameSite value
   });
+  
   next();
 });
 
