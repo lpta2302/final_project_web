@@ -1,10 +1,15 @@
+import multer from 'multer';
 import drive from "../config/googleDrive.js";
 import fs from "fs";
 
+// Use memory storage for multer instead of disk storage
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
 async function uploadToDrive(req, res, next) {
   try {
-    const files = req.files; // Lấy tất cả các tệp từ req.files
-    const folderId = "1CmrmFj8DSW0Hqsm1HfiW22CUthH4PFko"; // ID của thư mục đích
+    const files = req.files;
+    const folderId = "1CmrmFj8DSW0Hqsm1HfiW22CUthH4PFko";
 
     const authorization = await drive();
     if (!authorization) {
@@ -13,46 +18,37 @@ async function uploadToDrive(req, res, next) {
 
     if (!files || files.length === 0) {
       req.imageUrls = [];
-      return next(); // Ngăn chặn đoạn mã bên dưới run
+      return next();
     }
 
-    req.imageUrls = []; // Khởi tạo mảng để lưu trữ các URL hình ảnh
+    req.imageUrls = [];
 
     for (const file of files) {
-      const filePath = file.path; // Đường dẫn của tệp hiện tại
-
-      // Tải file lên Google Drive vào thư mục đích
+      // Upload directly from memory without writing to the file system
       const response = await authorization.files.create({
         requestBody: {
           name: file.originalname,
           mimeType: file.mimetype,
-          parents: [folderId], // Chỉ định thư mục đích
+          parents: [folderId],
         },
         media: {
           mimeType: file.mimetype,
-          body: fs.createReadStream(filePath),
+          body: fs.createReadStream(file.buffer), // Use the buffer instead of file path
         },
       });
-
-      console.log("RP:" + response);
 
       const fileId = response.data.id;
 
-      // Cấp quyền xem công khai cho file nhưng không cho phép chỉnh sửa
       await authorization.permissions.create({
         fileId: fileId,
         requestBody: {
-          role: "reader", // Quyền xem (không chỉnh sửa)
-          type: "anyone", // Công khai cho mọi người
+          role: "reader",
+          type: "anyone",
         },
       });
 
-      // Lấy URL công khai để xem file
       const imageUrl = `https://drive.google.com/thumbnail?id=${fileId}`;
-      req.imageUrls.push(imageUrl); // Thêm URL vào mảng
-
-      // Xóa file tạm
-      fs.unlinkSync(filePath);
+      req.imageUrls.push(imageUrl);
     }
 
     next();
