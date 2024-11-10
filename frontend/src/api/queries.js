@@ -826,7 +826,8 @@ export const useAddCartItem = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (item) => createRecord(customerCart.addItem(), item),
+    mutationFn: (item) =>
+      createRecord(customerCart.addItem(), item),
     onSuccess: () => {
       queryClient.invalidateQueries([USE_READ_OWN_CART]);
     },
@@ -878,7 +879,7 @@ export const useRemoveItemFromWishlist = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ customerId, productId }) =>
-      updateRecord(customer_wishlist.deleteProduct(customerId), {productId}),
+      updateRecord(customer_wishlist.deleteProduct(customerId), { productId }),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_OWN_WISHLIST]);
       queryClient.invalidateQueries([READ_ALL_PRODUCTS]);
