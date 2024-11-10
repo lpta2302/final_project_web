@@ -27,15 +27,24 @@ const productController = {
   // [GET] client/product/search
   searchProduct: async (req, res) => {
     try {
-      const { productName, minPrice, maxPrice, productStatus, category, tag, brand, slug } = req.query;
-  
+      const {
+        productName,
+        minPrice,
+        maxPrice,
+        productStatus,
+        category,
+        tag,
+        brand,
+        slug,
+      } = req.query;
+
       let filter = {};
-  
+
       // Product name (case-insensitive partial match)
       if (productName) {
         filter.productName = { $regex: productName, $options: "i" };
       }
-  
+
       // Price filtering based on the first element of the specs array
       if (minPrice || maxPrice) {
         filter["specs.0.price"] = {}; // Accessing the price of the first element in specs
@@ -46,12 +55,12 @@ const productController = {
           filter["specs.0.price"].$lte = Number(maxPrice); // Less than or equal to maxPrice
         }
       }
-  
+
       // Product status
       if (productStatus) {
         filter.productStatus = productStatus;
       }
-  
+
       // Category filtering
       if (category) {
         filter.category = category;
@@ -60,31 +69,31 @@ const productController = {
       if (brand) {
         filter.brand = brand;
       }
-  
+
       // Tag filtering
       if (tag) {
         filter.tag = { $in: tag }; // Match any tag in the array
       }
-  
+
       // Slug filtering
       if (slug) {
         filter.slug = slug;
       }
-  
+
       // Query products based on filter conditions, and populate necessary references
       const products = await Product.find(filter)
         .populate("category")
         .populate("tag")
         .populate("specs")
         .populate("brand");
-  
+
       // Return the list of products
       res.status(200).json(products);
     } catch (error) {
       res.status(500).json(false);
     }
   },
-  
+
   // [GET] /client/product/relative/:idProduct
   relativeProduct: async (req, res) => {
     try {
@@ -152,6 +161,20 @@ const productController = {
       res.json(product);
     } catch (error) {
       res.json(false);
+    }
+  },
+
+  popular: async (req, res) => {
+    try {
+      const topProducts = await Product.find({})
+        .sort({ purchaseCount: -1 })
+        .limit(5);
+
+      res.status(200).json(topProducts);
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Error retrieving popular products", error });
     }
   },
 };

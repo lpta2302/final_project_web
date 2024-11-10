@@ -78,6 +78,17 @@ export const add = async (req, res) => {
     const newOrder = new Order(orderData);
     await newOrder.save();
 
+    // Cập nhật purchaseCount của sản phẩm dựa trên cartItems
+    for (const item of cart.cartItems) {
+      const spec = await Specification.findById(item.spec);
+      if (spec && spec.products) {
+        // Tăng purchaseCount của sản phẩm liên quan theo quantity
+        await Product.findByIdAndUpdate(spec.products, {
+          $inc: { purchaseCount: item.quantity },
+        });
+      }
+    }
+
     // Populate `spec`, `voucher`, and other fields in response
     const populatedOrder = await Order.findById(newOrder._id)
       .populate({

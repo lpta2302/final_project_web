@@ -41,6 +41,7 @@ const productSchema = new mongoose.Schema(
         ref: "Product",
       },
     ],
+    purchaseCount: { type: Number, default: 0 },
   },
   {
     timestamps: true,
