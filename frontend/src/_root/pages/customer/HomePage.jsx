@@ -6,6 +6,7 @@ import ProductCard from "../../../components/Homepage/ProductCard";
 import SubNavbar from "../../../components/Homepage/Subnavbar";
 import { useReadAllCategory, useReadAllProduct, useReadWishlistItems } from "../../../api/queries";
 import { useAuthContext } from "../../../context/AuthContext";
+import { Loading } from "../../../components";
 
 const sliderSettings = {
   dots: false,
@@ -62,7 +63,7 @@ const HomePage = ({ handleAddToCart }) => {
     setUserId(user._id)
   }, [user]);
   if (isLoadingCat || isLoadingProd) {
-    return <CircularProgress sx={{mx:'auto'}}/>;
+    return<Loading/>;
   }
 
   if (isError || !products) {

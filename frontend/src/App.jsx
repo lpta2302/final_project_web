@@ -79,8 +79,6 @@ const muiTheme = createTheme({
   },
 });
 
-const joyTheme = extendTheme();
-
 const queryClient = new QueryClient();
 
 function App() {

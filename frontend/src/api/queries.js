@@ -1000,7 +1000,6 @@ export const useUpdateAddress = () => {
   return useMutation({
     mutationFn: (address) =>
       updateRecord(customer_address_url.editAddress(address._id), address),
-      updateRecord(customer_address_url.editAddress(address._id), address),
     onSuccess: () => {
       queryClient.invalidateQueries(["READ_OWN_ADDRESSES"]);
     },
