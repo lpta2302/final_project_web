@@ -114,7 +114,7 @@ const ProductCard = ({ product, wishList, customer, isLoggedIn }) => {
               textDecoration: product.specs[0]?.discount && 'line-through'
             }}
             style={{
-              color: product.productStatus === "available" ? "green" : "red",
+              color: product.specs[0]?.discount && "#353535",
             }}
             textAlign='right'
           >
@@ -126,7 +126,7 @@ const ProductCard = ({ product, wishList, customer, isLoggedIn }) => {
               fontSize="1rem"
               variant="body1"
               style={{
-                color: product.productStatus === "available" ? "green" : "red",
+                color: "red"
               }}
               textAlign='right'
             >

@@ -8,6 +8,8 @@ import { useReadAllCategory, useReadAllProduct, useReadWishlistItems } from "../
 import { useAuthContext } from "../../../context/AuthContext";
 import { Loading } from "../../../components";
 
+const heightSliderBanner = '1000px'
+
 const sliderSettings = {
   dots: false,
   infinite: true,
@@ -77,8 +79,8 @@ const HomePage = ({ handleAddToCart }) => {
         sx={{ "& .MuiContainer-root": { p: { md: "12px", lg: "0" } } }}
       >
         <Box flex="1" display={"flex"}>
-          <SubNavbar categories={categories} />
-          <Box width={{ xs: "100%", md: "calc(100% - 220px)" }}>
+          <SubNavbar categories={categories}  />
+          <Box height="400px" width={{ xs: "100%", md: "calc(100% - 220px)" }} >
             <BannerSlider />
           </Box>
         </Box>

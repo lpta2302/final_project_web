@@ -78,7 +78,8 @@ const SubNavbar = () => {
         overflowY: "auto",
         boxShadow: "0 0 8px rgba(0,0,0,0.2)",
         borderRadius: "3px",
-        overflowX: "hidden",
+        overflowX: "auto",
+        height:'360px'
       }}
     >
       <List sx={{ py: 0 }}>
