@@ -24,6 +24,7 @@ import ManagePersonalProfile from "./_root/pages/customer/ManagePersonalProfile.
 import ManagePersonalOrder from "./_root/pages/customer/ManagePersonalOrder.jsx";
 import Product from "./_root/pages/customer/Product.jsx";
 import ProductGrid from "./components/ProductGrid/ProductGrid.jsx";
+import CheckoutPage from "./_root/pages/customer/CheckoutPage.jsx"
 
 const muiTheme = createTheme({
   colorSchemes: {
@@ -107,6 +108,7 @@ function App() {
                   <Route path="/manage-order" element={<ManagePersonalOrder />} />
                   <Route path="/favorite" element={<Favorite />} />
                   <Route path="/product/:slug" element={<Product />} />
+                  <Route path="/checkoutpage" element={<CheckoutPage />} />
                   {customerNav.map(navItem =>
                     <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
                   )}

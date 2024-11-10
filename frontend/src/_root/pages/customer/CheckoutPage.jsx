@@ -1,247 +1,320 @@
-import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import {
   Container,
-  Grid,
-  Paper,
-  Typography,
   TextField,
   Button,
-  Divider,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  FormControlLabel,
-  Checkbox,
+  Typography,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
   Box,
+  Grid,
+  Paper,
 } from "@mui/material";
+import {
+  useReadOwnCart,
+  useReadAllVouchers,
+  useReadOwnAddresses,
+  useCreateNewOrder,
+} from "../../../api/queries";
+import { useAuthContext } from "../../../context/AuthContext";
 
-// Giả định dữ liệu từ trang shopping cart
-const CheckoutPage = () => {
-  const location = useLocation();
-  const { cartItems, savedCustomerInfo } = location.state || {
-    cartItems: [],
-    savedCustomerInfo: null,
-  };
+function CheckoutPage() {
+  // Get the current user from context
+  const { user: currentUser, isLoading: isUserLoading } = useAuthContext();
 
-  const [customerInfo, setCustomerInfo] = useState({
-    name: "",
-    address: "",
-    phone: "",
-    email: "",
+  // Fetch cart, vouchers, and addresses data
+  const { data: cartData, isLoading: isCartLoading } = useReadOwnCart(currentUser?._id);
+  const { data: vouchersData, isLoading: isVouchersLoading } = useReadAllVouchers();
+  const { data: addressesData, isLoading: isAddressesLoading } = useReadOwnAddresses(currentUser?._id);
+
+  // Mutation hook for creating a new order
+  const createNewOrder = useCreateNewOrder();
+
+  // Get current date and add 5 days
+  const currentDateTime = new Date();
+  const takeOrderTime = new Date(currentDateTime);
+  takeOrderTime.setDate(takeOrderTime.getDate() + 5);
+
+  const [orderData, setOrderData] = useState({
+    userId: "",
+    paymentStatus: "unpaid",
+    paymentMethod: "credit_card",
+    shippingCost: 58500,
+    orderNote: "",
+    expectedReceiveTime: currentDateTime.toISOString().slice(0, 16),
+    takeOrderTime: takeOrderTime.toISOString().slice(0, 16),
+    address: "",  // Ensure this is set with a valid ObjectId
+    voucher: [],
+    cart: {
+      client: "",
+      cartItems: [],
+    },
   });
 
-  const [useSavedInfo, setUseSavedInfo] = useState(false);
-
+  // Set user and client information when currentUser data is loaded
   useEffect(() => {
-    if (useSavedInfo && savedCustomerInfo) {
-      setCustomerInfo(savedCustomerInfo);
-    } else {
-      setCustomerInfo({
-        name: "",
-        address: "",
-        phone: "",
-        email: "",
-      });
+    if (currentUser && currentUser._id) {
+      setOrderData((prevData) => ({
+        ...prevData,
+        userId: currentUser._id,
+        cart: {
+          ...prevData.cart,
+          client: currentUser._id,
+        },
+      }));
     }
-  }, [useSavedInfo, savedCustomerInfo]);
+  }, [currentUser]);
 
-  const totalAmount = cartItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
+  // Set cart items when cartData is loaded
+  useEffect(() => {
+    if (cartData && cartData.cartItems) {
+      setOrderData((prevData) => ({
+        ...prevData,
+        cart: {
+          ...prevData.cart,
+          cartItems: cartData.cartItems.map((item) => ({
+            spec: item.spec._id,
+            productName: item.spec.products.productName,
+            price: item.spec.price,
+            quantity: item.quantity,
+          })),
+        },
+      }));
+    }
+  }, [cartData]);
 
-  const handleInputChange = (e) => {
+  // Set default address if available
+  useEffect(() => {
+    if (addressesData && addressesData.length > 0 && !orderData.address) {
+      setOrderData((prevData) => ({
+        ...prevData,
+        address: addressesData[0]._id,  // Default to the first address
+      }));
+    }
+  }, [addressesData, orderData.address]);
+
+  // Handle form field changes
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setCustomerInfo((prev) => ({ ...prev, [name]: value }));
+    setOrderData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  // Handle changes within cart items
+  const handleNestedChange = (e, index) => {
+    const { name, value } = e.target;
+    const cartItems = [...orderData.cart.cartItems];
+    cartItems[index][name] = value;
+    setOrderData((prevData) => ({
+      ...prevData,
+      cart: { ...prevData.cart, cartItems },
+    }));
+  };
+
+  // Handle adding voucher to order
+  const handleAddVoucher = (e) => {
+    const { value } = e.target;
+    setOrderData((prevData) => ({
+      ...prevData,
+      voucher: value,
+    }));
+  };
+
+  // Handle order submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Validate address selection
+    if (!orderData.address) {
+      alert("Please select an address before submitting the order.");
+      return;
+    }
+
+    // Call the mutation to create a new order
+    createNewOrder.mutate(orderData, {
+      onSuccess: () => {
+        console.log("Order created successfully");
+        // Optionally, navigate to a different page or reset form here
+      },
+      onError: (error) => {
+        console.error("Error creating order:", error);
+      },
+    });
+  };
+
+  // Show loading while data is being fetched
+  if (isUserLoading || isCartLoading || isVouchersLoading || isAddressesLoading) {
+    return <Typography>Loading data...</Typography>;
+  }
+
   return (
-    <Container style={{ marginTop: "20px" }}>
-      <Grid container spacing={3}>
-        {/* Left Side - Product Info and Customer Form */}
-        <Grid item xs={12} md={8}>
-          {/* Product Info */}
-          <Paper style={{ padding: "16px", marginBottom: "20px" }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={3}>
-                <img
-                  src="/path-to-image" // You can replace this with your product image
-                  alt="Product"
-                  style={{ width: "100%", borderRadius: "8px" }}
+    <Container maxWidth="md">
+      <Paper elevation={3} sx={{ padding: 3 }}>
+        <Typography variant="h4" gutterBottom>
+          Order Form
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit}>
+          <TextField
+            fullWidth
+            label="User ID"
+            name="userId"
+            value={orderData.userId}
+            margin="normal"
+            disabled
+          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Payment Status</InputLabel>
+            <Select
+              name="paymentStatus"
+              value={orderData.paymentStatus}
+              onChange={handleChange}
+            >
+              <MenuItem value="unpaid">Unpaid</MenuItem>
+              <MenuItem value="paid">Paid</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Payment Method</InputLabel>
+            <Select
+              name="paymentMethod"
+              value={orderData.paymentMethod}
+              onChange={handleChange}
+            >
+              <MenuItem value="credit_card">Credit Card</MenuItem>
+              <MenuItem value="paypal">Paypal</MenuItem>
+              <MenuItem value="bank_transfer">Bank Transfer</MenuItem>
+            </Select>
+          </FormControl>
+          <TextField
+            fullWidth
+            type="number"
+            label="Shipping Cost"
+            name="shippingCost"
+            value={orderData.shippingCost}
+            onChange={handleChange}
+            margin="normal"
+          />
+          <TextField
+            fullWidth
+            label="Order Note"
+            name="orderNote"
+            value={orderData.orderNote}
+            onChange={handleChange}
+            multiline
+            rows={4}
+            margin="normal"
+          />
+          <TextField
+            fullWidth
+            type="datetime-local"
+            label="Expected Receive Time"
+            name="expectedReceiveTime"
+            value={orderData.expectedReceiveTime}
+            onChange={handleChange}
+            margin="normal"
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+          <TextField
+            fullWidth
+            type="datetime-local"
+            label="Take Order Time"
+            name="takeOrderTime"
+            value={orderData.takeOrderTime}
+            onChange={handleChange}
+            margin="normal"
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Address</InputLabel>
+            <Select
+              name="address"
+              value={orderData.address}
+              onChange={handleChange}
+            >
+              {addressesData.map((address) => (
+                <MenuItem key={address._id} value={address._id}>
+                  {`${address.address}, ${address.ward}, ${address.district}, ${address.city}`}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Vouchers</InputLabel>
+            <Select
+              name="voucher"
+              multiple
+              value={orderData.voucher}
+              onChange={handleAddVoucher}
+              renderValue={(selected) =>
+                selected
+                  .map(
+                    (id) =>
+                      vouchersData.find((voucher) => voucher._id === id)
+                        ?.voucherName || id
+                  )
+                  .join(", ")
+              }
+            >
+              {vouchersData.map((voucher) => (
+                <MenuItem key={voucher._id} value={voucher._id}>
+                  {voucher.voucherName} - {voucher.discountPercentage}% off
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <Typography variant="h6" gutterBottom mt={2}>
+            Cart Items
+          </Typography>
+          {orderData.cart.cartItems.map((item, index) => (
+            <Grid container spacing={2} key={index}>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="Product Name"
+                  name="productName"
+                  value={item.productName}
+                  margin="normal"
+                  disabled
                 />
               </Grid>
-              <Grid item xs={12} md={9}>
-                <Typography variant="h6">
-                  Acer Aspire 3 A315-44P-R5QG R7 5700U/Bạc
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Màu: Bạc
-                </Typography>
-                <Box mt={1}>
-                  <Typography variant="body1">
-                    <span
-                      style={{ textDecoration: "line-through", color: "#888" }}
-                    >
-                      14.990.000 đ
-                    </span>{" "}
-                    <span style={{ fontWeight: "bold", color: "#f00" }}>
-                      11.990.000 đ
-                    </span>
-                  </Typography>
-                </Box>
+              <Grid item xs={3}>
+                <TextField
+                  fullWidth
+                  type="number"
+                  label="Quantity"
+                  name="quantity"
+                  value={item.quantity}
+                  onChange={(e) => handleNestedChange(e, index)}
+                  margin="normal"
+                />
+              </Grid>
+              <Grid item xs={3}>
+                <TextField
+                  fullWidth
+                  label="Price"
+                  name="price"
+                  value={item.price}
+                  margin="normal"
+                  disabled
+                />
               </Grid>
             </Grid>
-          </Paper>
-
-          {/* Customer Form */}
-          <Paper style={{ padding: "16px" }}>
-            <Typography variant="h6" gutterBottom>
-              Thông tin khách hàng
-            </Typography>
-
-            {savedCustomerInfo && (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={useSavedInfo}
-                    onChange={() => setUseSavedInfo(!useSavedInfo)}
-                    color="primary"
-                  />
-                }
-                label="Sử dụng thông tin đã lưu"
-              />
-            )}
-
-            <form noValidate autoComplete="off">
-              <TextField
-                label="Họ và tên"
-                name="name"
-                value={customerInfo.name}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-                variant="outlined"
-                disabled={useSavedInfo}
-              />
-              <TextField
-                label="Địa chỉ"
-                name="address"
-                value={customerInfo.address}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-                variant="outlined"
-                disabled={useSavedInfo}
-              />
-              <TextField
-                label="Số điện thoại"
-                name="phone"
-                value={customerInfo.phone}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-                variant="outlined"
-                disabled={useSavedInfo}
-              />
-              <TextField
-                label="Email"
-                name="email"
-                value={customerInfo.email}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-                variant="outlined"
-                disabled={useSavedInfo}
-              />
-            </form>
-          </Paper>
-        </Grid>
-
-        {/* Right Side - Order Summary */}
-        <Grid item xs={12} md={4}>
-          <Paper style={{ padding: "16px" }}>
-            <Typography variant="h6" gutterBottom>
-              Thông tin đơn hàng
-            </Typography>
-            <Divider style={{ margin: "8px 0" }} />
-
-            <Grid container spacing={1}>
-              <Grid item xs={6}>
-                <Typography>Tổng tiền</Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography align="right">14.990.000 đ</Typography>
-              </Grid>
-
-              <Grid item xs={6}>
-                <Typography>Tổng khuyến mãi</Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography align="right">3.500.000 đ</Typography>
-              </Grid>
-              <Grid item xs={6} style={{ paddingLeft: "16px" }}>
-                <Typography>- Giảm giá sản phẩm</Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography align="right">3.000.000 đ</Typography>
-              </Grid>
-              <Grid item xs={6} style={{ paddingLeft: "16px" }}>
-                <Typography>- Voucher</Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography align="right">500.000 đ</Typography>
-              </Grid>
-
-              <Grid item xs={6}>
-                <Typography>Phí vận chuyển</Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography align="right">Miễn phí</Typography>
-              </Grid>
-
-              <Divider style={{ margin: "8px 0", width: "100%" }} />
-
-              <Grid item xs={6}>
-                <Typography variant="h6">Cần thanh toán</Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography variant="h6" align="right" color="error">
-                  11.490.000 đ
-                </Typography>
-              </Grid>
-            </Grid>
-            {/* Nút đặt hàng */}
-            <Button
-              variant="contained"
-              fullWidth
-              style={{
-                marginTop: "20px",
-                padding: "10px",
-                backgroundColor: "#0672cb",
-              }}
-            >
-              Đặt hàng
+          ))}
+          <Box mt={4}>
+            <Button type="submit" variant="contained" color="primary">
+              Submit Order
             </Button>
-
-            <Typography
-              variant="body2"
-              color="textSecondary"
-              align="center"
-              style={{ marginTop: "10px" }}
-            >
-              Bằng việc tiến hành đặt mua hàng, bạn đồng ý với{" "}
-              <a href="#">Điều khoản dịch vụ</a> và{" "}
-              <a href="#">Chính sách xử lý dữ liệu cá nhân</a> của FPT Shop
-            </Typography>
-          </Paper>
-        </Grid>
-      </Grid>
+          </Box>
+        </Box>
+      </Paper>
     </Container>
   );
-};
+}
 
 export default CheckoutPage;
