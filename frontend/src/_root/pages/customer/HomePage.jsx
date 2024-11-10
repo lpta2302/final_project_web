@@ -58,10 +58,10 @@ const HomePage = ({ handleAddToCart }) => {
     error,
   } = useReadAllProduct();
 
-  const { data: popularProducts, isLoading: isLoadingPopularProduct} = useReadPopularProduct();
+  const { data: popularProducts, isLoading: isLoadingPopularProduct } = useReadPopularProduct();
 
   const { data: wishList } = useReadWishlistItems(userId);
-  console.log("pop:"+popularProducts);
+  console.log("pop:" + popularProducts);
 
   useEffect(() => {
     if (!isAuthenticated || !user._id) return;
@@ -112,11 +112,11 @@ const HomePage = ({ handleAddToCart }) => {
         </Typography>
         <Box display='inline-flex' gap={2} overflow="auto" width="100%" py={1}>
           {
-            !popularProducts || !popularProducts.length || isLoadingPopularProduct ? 
-            <Loading /> :
-            popularProducts?.map((product) => (
-              <ProductCard wishList={wishList} customer={user} isLoggedIn product={product} key={product._id} />
-            ))
+            !popularProducts || !popularProducts.length || isLoadingPopularProduct ?
+              <Loading /> :
+              popularProducts?.map((product) => (
+                <ProductCard wishList={wishList} customer={user} isLoggedIn product={product} key={product._id} />
+              ))
           }
         </Box>
 

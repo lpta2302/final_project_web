@@ -201,7 +201,7 @@ const ProductGeneralInfo = () => {
           size="small"
           sx={{ width: "50px", textAlign: "center" }}
           inputProps={{ style: { textAlign: "center" } }}
-          disabled
+          
         />
         <IconButton onClick={handleIncrease} disabled={selectedSpec && quantity >= selectedSpec.stockQuantity}>
           <Add />
