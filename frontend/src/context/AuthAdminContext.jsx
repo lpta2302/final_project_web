@@ -20,7 +20,7 @@ const INIT_STATE = {
     isLoading: false,
     setUser() { },
     setIsAuthenticated() { },
-    checkAuthAdminUser: async () => false,
+    checkAuthAdminUser: async () => { },
 };
 
 const AuthAdminContext = createContext(INIT_STATE)
@@ -37,15 +37,15 @@ export default function AuthAdminProvider({ children }) {
     async function checkAuthAdminUser() {
         try {
             const adminCookie = getLocalstorage('adminCookie');
-            
-            if(!adminCookie)
+
+            if (!adminCookie)
                 return false;
 
             setBearerToken(adminCookie);
 
             const user = await getCurrentUser();
-            const { id} = user
-            
+            const { id } = user
+
             if (id)
                 return false
             else
@@ -54,7 +54,7 @@ export default function AuthAdminProvider({ children }) {
             setIsAuthenticated(true);
             return true;
         } catch (error) {
-            setLocalstorage('adminCookie',null);
+            setLocalstorage('adminCookie', null);
             console.log(error);
             return false;
         } finally {
@@ -63,10 +63,11 @@ export default function AuthAdminProvider({ children }) {
     }
 
     useEffect(() => {
-        if(!location.pathname.startsWith('/admin'))
+        if (!location.pathname.startsWith('/admin'))
             return;
+
         if (
-            localStorage.getItem('adminCookie') === null
+            getLocalstorage('adminCookie') === null
         )
             navigate('/admin/login')
         else

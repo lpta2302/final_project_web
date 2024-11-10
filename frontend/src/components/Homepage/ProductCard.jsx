@@ -9,7 +9,7 @@ import {
   styled,
   Button,
 } from "@mui/material";
-import { Link } from "react-router-dom"; 
+import { Link } from "react-router-dom";
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { enqueueSnackbar } from "notistack";
@@ -29,10 +29,10 @@ const ProductCard = ({ product, wishList, customer, isLoggedIn }) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const { mutateAsync: like, isPending: isLiking } = useAddItemToWishlist();
   const { mutateAsync: unLike, isPending: isUnliking } = useRemoveItemFromWishlist();
-  
+
   useEffect(() => {
-    if(!wishList) return;
-    setIsFavorite(wishList.products.some((prod) => String(prod._id) === String(product._id)));  
+    if (!wishList) return;
+    setIsFavorite(wishList.products.some((prod) => String(prod._id) === String(product._id)));
   }, [wishList, product._id]);
 
   const handleToggleFavorite = async () => {
@@ -51,19 +51,14 @@ const ProductCard = ({ product, wishList, customer, isLoggedIn }) => {
 
 
   }
-  useEffect(() => {
-    console.log("isFavorite inside useEffect:", isFavorite); // Make sure this shows the updated value
-}, [isFavorite]);
-  
-
   return (
     <Card
       sx={{
-        minWidth: 264,
+        minWidth: 224,
         margin: "0 auto",
         display: "flex",
         flexDirection: "column",
-        height: "525px", // Chiều cao cố định cho các thẻ card
+        height: "480px", // Chiều cao cố định cho các thẻ card
       }}
     >
       <Link
@@ -75,8 +70,8 @@ const ProductCard = ({ product, wishList, customer, isLoggedIn }) => {
           image={product.imageURLs[0]}
           alt={product.productName}
           sx={{
-            width: "264px", // Chiều rộng cố định
-            height: "264px", // Chiều cao cố định
+            width: "100%", // Chiều rộng cố định
+            height: "224px", // Chiều cao cố định
             objectFit: "contain", // Đảm bảo hình ảnh được cắt mà không bị méo
             borderRadius: "8px 8px 0 0",
           }}
@@ -90,17 +85,19 @@ const ProductCard = ({ product, wishList, customer, isLoggedIn }) => {
           }}
         >
           <Box>
-            <TruncatedTypography lineClamp={2} variant="h6" fontSize='1.1rem' lineHeight="1.2" mb={1} component="div">
+            <TruncatedTypography lineClamp={2} variant="h6" fontSize='1rem' lineHeight="1.2" mb={1} component="div">
               {product.productName}
             </TruncatedTypography>
             <TruncatedTypography
               variant="body2"
               color="text.secondary"
+              fontSize='0.8rem'
             >
               {product.description}
             </TruncatedTypography>
           </Box>
           <Typography
+            fontSize="0.8rem"
             variant="body1"
             style={{
               color: product.productStatus === "available" ? "green" : "red",
@@ -124,7 +121,7 @@ const ProductCard = ({ product, wishList, customer, isLoggedIn }) => {
           onClick={handleToggleFavorite}
           aria-label="favorite"
         >
-            {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+          {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
         </IconButton>
         <Typography variant="body2">Mã: {product.productCode}</Typography>
       </Box>

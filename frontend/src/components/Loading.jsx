@@ -4,7 +4,7 @@ import { LoadingIcon } from '../assets';
 function Loading() {
     const isLight = window.localStorage.getItem('toolpad-mode');
     return (
-        <Box sx={{ filter: isLight && "brightness(0)" }} component='img' src={LoadingIcon} />
+        <Box sx={{ display: 'flex', justifyContent: 'center', mx: 'auto', filter: isLight && "brightness(0)" }} component='img' src={LoadingIcon} />
     )
 }
 

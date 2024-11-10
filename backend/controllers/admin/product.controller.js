@@ -417,7 +417,7 @@ export const detail = async (req, res) => {
 // [GET] /products/search
 export const search = async (req, res) => {
   try {
-    const { productName, minPrice, maxPrice, productStatus } = req.query;
+    const { productName, minPrice, maxPrice, productStatus, category } = req.query;
 
     let filter = {};
 
@@ -441,6 +441,10 @@ export const search = async (req, res) => {
     // Nếu có lọc trạng thái sản phẩm
     if (productStatus) {
       filter.productStatus = productStatus;
+    }
+
+    if (category) {
+      filter.category = category;
     }
 
     // Truy vấn sản phẩm dựa trên điều kiện lọc

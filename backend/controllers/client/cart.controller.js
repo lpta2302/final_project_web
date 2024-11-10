@@ -5,7 +5,7 @@ import Voucher from "../../models/voucher.model.js";
 // [POST] /cart/add
 export const add = async (req, res) => {
   try {
-    const { client, spec } = req.body;
+    const { client, spec, quantity } = req.body; // Lấy quantity từ req.body
 
     // Chuyển đổi spec từ chuỗi sang ObjectId
     const specObjectId = new mongoose.Types.ObjectId(spec);
@@ -20,13 +20,13 @@ export const add = async (req, res) => {
       );
 
       if (itemIndex !== -1) {
-        // Nếu sản phẩm đã tồn tại, tăng số lượng
-        exitCart.cartItems[itemIndex].quantity++;
+        // Nếu sản phẩm đã tồn tại, tăng số lượng lên bằng quantity từ req.body
+        exitCart.cartItems[itemIndex].quantity += quantity || 1; // Dùng quantity nếu có, mặc định là 1 nếu không có
       } else {
-        // Nếu sản phẩm chưa tồn tại, thêm sản phẩm mới vào cartItems
+        // Nếu sản phẩm chưa tồn tại, thêm sản phẩm mới vào cartItems với quantity từ req.body
         exitCart.cartItems.push({
           spec: specObjectId, // Sử dụng ObjectId đã chuyển đổi
-          quantity: 1, // Mặc định số lượng là 1
+          quantity: quantity || 1, // Sử dụng quantity từ req.body, mặc định là 1 nếu không có
         });
       }
 
@@ -38,13 +38,13 @@ export const add = async (req, res) => {
 
       return res.status(200).json(true);
     } else {
-      // Nếu giỏ hàng chưa tồn tại, tạo mới giỏ hàng với sản phẩm đầu tiên
+      // Nếu giỏ hàng chưa tồn tại, tạo mới giỏ hàng với sản phẩm đầu tiên và quantity từ req.body
       const newCart = {
         client: client,
         cartItems: [
           {
-            spec: specObjectId, // Sử dụng ObjectId đã chuyển đổi
-            quantity: 1, // Mặc định số lượng là 1
+            spec: specObjectId,
+            quantity: quantity || 1, // Sử dụng quantity từ req.body, mặc định là 1 nếu không có
           },
         ],
       };

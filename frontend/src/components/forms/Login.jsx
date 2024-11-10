@@ -1,4 +1,4 @@
-import { forwardRef, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import {
   Container,
   Paper,
@@ -25,8 +25,8 @@ const Login = ({ setModalType, setModalOpen, isAdmin }) => {
   const navigate = useNavigate();
   const [inputs, setInputs] = useState({ username: "", password: "" });
   const [errorMessage, setErrorMessage] = useState(init_error_message);
-  const { checkAuthUser } = useAuthContext();
-  const { checkAuthAdminUser } = useAuthAdminContext();
+  const { user: customer, checkAuthUser, isAuthenticated: customerIsAuthenticated } = useAuthContext();
+  const { user: admin, checkAuthAdminUser, isAuthenticated: adminIsAuthenticated } = useAuthAdminContext();
 
   const { mutateAsync: login } = useLogin();
 
@@ -67,14 +67,14 @@ const Login = ({ setModalType, setModalOpen, isAdmin }) => {
     }
     else {
       toaster('Đăng nhập thành công.', { variant: 'success' });
-      if (isAdmin){
+      if (isAdmin) {
         localStorage.setItem('adminCookie', JSON.stringify(token));
         const isAuthenticated = await checkAuthAdminUser();
         console.log(isAuthenticated);
-        
-        if(isAuthenticated)
-          navigate(0);
-        else{
+
+        if (isAuthenticated)
+          navigate("/admin");
+        else {
           toaster('Không tìm thấy tài khoản!', { variant: 'error' })
         }
         return;
@@ -85,6 +85,15 @@ const Login = ({ setModalType, setModalOpen, isAdmin }) => {
       setModalOpen(false);
     }
   };
+
+  useEffect(() => {
+    if (isAdmin && adminIsAuthenticated) {
+      navigate('/admin');
+    }
+    else if (!isAdmin && customerIsAuthenticated) {
+      navigate('/')
+    }
+  }, [admin, customer]);
 
   return (
     <Container maxWidth="sm" sx={{ mt: 8 }}>

@@ -6,6 +6,7 @@ import ProductCard from "../../../components/Homepage/ProductCard";
 import SubNavbar from "../../../components/Homepage/Subnavbar";
 import { useReadAllCategory, useReadAllProduct, useReadWishlistItems } from "../../../api/queries";
 import { useAuthContext } from "../../../context/AuthContext";
+import { Loading } from "../../../components";
 
 const sliderSettings = {
   dots: false,
@@ -47,7 +48,6 @@ const sliderSettings = {
 const HomePage = ({ handleAddToCart }) => {
   const { user, isAuthenticated } = useAuthContext();
   const [userId, setUserId] = useState()
-  const [favorites, setFavorites] = useState({});
   const { data: categories, isLoading: isLoadingCat } = useReadAllCategory();
   const {
     data: products,
@@ -63,7 +63,7 @@ const HomePage = ({ handleAddToCart }) => {
     setUserId(user._id)
   }, [user]);
   if (isLoadingCat || isLoadingProd) {
-    return <CircularProgress />;
+    return<Loading/>;
   }
 
   if (isError || !products) {

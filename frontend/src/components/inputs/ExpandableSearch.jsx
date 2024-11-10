@@ -1,15 +1,16 @@
 /* eslint-disable react/prop-types */
 import { FormControl, IconButton, InputAdornment, OutlinedInput } from "@mui/material";
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Close } from "@mui/icons-material";
 
-export default function ExpandableSearch({ isSearchFocused, setIsSearchFocused }) {
+export default function ExpandableSearch({ isSearchFocused, setIsSearchFocused, onChange }) {
     const [query, setQuery] = useState("");
 
-    const handleSearch = () => {
+    const handleSearch = (e) => {
         setIsSearchFocused(false);
-        console.log(query);
+        
+        onChange(query);
     }
 
     const handleKeydown = (e) => {
@@ -38,6 +39,11 @@ export default function ExpandableSearch({ isSearchFocused, setIsSearchFocused }
     const handleClear = () => {
         setQuery("")
     }
+
+    useEffect(() => {
+        if(query)
+            setTimeout(handleSearch(),1500);
+    }, [query]);
 
     return (
         <FormControl sx={{ width: '100%' }} variant="outlined">

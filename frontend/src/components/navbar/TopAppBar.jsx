@@ -1,14 +1,15 @@
 import {
     Button, Typography, Toolbar, ListItemText, ListItemButton,
     ListItem, List, IconButton, Drawer, Divider, AppBar, Box, buttonClasses,
-    Modal
+    Modal,
+    Paper
 } from '@mui/material';
 import { useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import ExpandableSearch from '../inputs/ExpandableSearch.jsx'
 import { Link, NavLink } from 'react-router-dom';
 import { useAuthContext } from '../../context/AuthContext';
-import { AccountCircleOutlined } from '@mui/icons-material';
+import { AccountCircleOutlined, Image } from '@mui/icons-material';
 import { customerNav } from '../../constance/constance.jsx';
 import PropTypes from 'prop-types';
 import Logo from '../Logo.jsx';
@@ -17,6 +18,8 @@ import Login from '../forms/Login.jsx';
 import Register from '../forms/Register.jsx';
 import ForgotPassword from '../forms/ForgotPassword.jsx';
 import { LoadingIcon } from '../../assets/index.js';
+import { useSearchProduct } from '../../api/queries.js';
+import Loading from '../Loading.jsx';
 
 const drawerWidth = 240;
 
@@ -67,11 +70,14 @@ NavbarButton.propTypes = {
 const navItems = customerNav;
 
 function TopAppBar() {
-    const { isAuthenticated, isLoading: isLoadingUser , user } = useAuthContext();
+    const { isAuthenticated, isLoading: isLoadingUser, user } = useAuthContext();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [modalType, setModalType] = useState('login')
+    const [searchParam, setSearchParam] = useState();
+
+    const { data: searchResult } = useSearchProduct(searchParam);
 
     const handleDrawerToggle = () => {
         setMobileOpen((prevState) => !prevState);
@@ -146,6 +152,7 @@ function TopAppBar() {
                             { width: '300px', display: { xs: 'none', md: 'block' } }} />
                     <Box
                         sx={{
+                            position: 'relative',
                             width: isSearchFocused ? '100%' : '600px',
                             minWidth: '170px',
                             height: '100%',
@@ -158,7 +165,49 @@ function TopAppBar() {
                         <ExpandableSearch
                             isSearchFocused={isSearchFocused}
                             setIsSearchFocused={setIsSearchFocused}
+                            onChange={(query) => {
+                                console.log(query)
+                                setSearchParam({ productName: query })
+                            }}
                         />
+                        {
+                            searchResult &&
+                            (
+                                <Paper
+                                    elevation={3}
+                                    sx={{
+                                        position: 'absolute',
+                                        top: '90%',
+                                        left: 0,
+                                        right: 0,
+                                        mt: 1,
+                                        borderRadius: '8px',
+                                        zIndex: 10,
+                                    }}
+                                >
+                                    {searchResult.length > 0 ?
+
+
+                                        searchResult.map((result, index) => (
+                                            <ListItem button key={index}>
+                                                <Link
+                                                    to={`/product/${result.slug}`}
+                                                    style={{ textDecoration: "none", color: "inherit" }}
+                                                >
+                                                    <Box display='inline-flex' gap={1} alignItems="center">
+                                                        <Box width="52px" height="52px" component="img" alt={result.productName} src={`${result.imageURLs.length > 0 ? result.imageURLs[0] : <Loading />}`} />
+                                                        <Typography>{result.productName}</Typography>
+                                                    </Box>
+                                                </Link>
+                                            </ListItem>
+                                        ))
+
+                                        :
+                                        "Không tìm thấy sản phẩm nào"
+
+                                    }
+                                </Paper>
+                            )}
                     </Box>
                     <IconButton
                         color="inherit"
@@ -179,7 +228,7 @@ function TopAppBar() {
                         ))}
                         {
                             isAuthenticated ?
-                                <NavbarButton title={!isLoadingUser ? `${user.firstName} ${user.lastName}` : ""} navIcon={!isLoadingUser ? <AccountCircleOutlined /> : <Box component="img" src={LoadingIcon}/>} path='/profile' /> :
+                                <NavbarButton title={!isLoadingUser ? `${user.firstName} ${user.lastName}` : ""} navIcon={!isLoadingUser ? <AccountCircleOutlined /> : <Box component="img" src={LoadingIcon} />} path='/profile' /> :
                                 <NavbarButton title='Đăng nhập' navIcon={<AccountCircleOutlined />} onClick={handleModalToggle} />
                         }
                     </Box>
@@ -206,7 +255,7 @@ function TopAppBar() {
                 onClose={handleModalToggle}
                 aria-labelledby="parent-modal-title"
                 aria-describedby="parent-modal-description"
-                sx={{height: '100vh', maxHeight: '100vh', overflow: 'auto'}}
+                sx={{ height: '100vh', maxHeight: '100vh', overflow: 'auto' }}
             >
                 {modal[modalType]}
             </Modal>

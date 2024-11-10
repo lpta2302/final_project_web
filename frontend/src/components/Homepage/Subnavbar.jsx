@@ -31,7 +31,9 @@ const SubNavbar = () => {
   }, []);
 
   const handleCategoryClick = (category) => {
-    navigate(`/products?category=${category}`);
+    console.log(category);
+    
+    navigate(`/products?c=${category.categoryName}`, { state: { category } });
   };
 
   if (isLoading) return <CircularProgress />;
@@ -58,12 +60,12 @@ const SubNavbar = () => {
         zIndex: 1000,
       }}
     >
-      {categories.map(({ categoryName, categoryCode }) => (
+      {categories.map((category) => (
         <BottomNavigationAction
-          key={categoryCode}
-          label={categoryName}
+          key={category.categoryCode}
+          label={category.categoryName}
           icon={<CategoryIcon />}
-          onClick={() => handleCategoryClick(categoryName)}
+          onClick={() => handleCategoryClick(category)}
         />
       ))}
     </BottomNavigation>
@@ -80,13 +82,13 @@ const SubNavbar = () => {
       }}
     >
       <List sx={{ py: 0 }}>
-        {categories.map(({ categoryName, categoryCode }) => (
-          <ListItem disablePadding key={categoryCode}>
+        {categories.map((category) => (
+          <ListItem disablePadding key={category.categoryCode}>
             <ListItemButton
-              onClick={() => handleCategoryClick(categoryName)}
+              onClick={() => handleCategoryClick(category)}
               sx={{ p: "4px 8px" }}
             >
-              <ListItemText primary={categoryName} />
+              <ListItemText primary={category.categoryName} />
             </ListItemButton>
           </ListItem>
         ))}

@@ -24,6 +24,8 @@ import ManagePersonalProfile from "./_root/pages/customer/ManagePersonalProfile.
 import ManagePersonalOrder from "./_root/pages/customer/ManagePersonalOrder.jsx";
 import Product from "./_root/pages/customer/Product.jsx";
 import ProductGrid from "./components/ProductGrid/ProductGrid.jsx";
+import GridProduct from "./_root/pages/customer/GridProduct.jsx";
+import CheckoutPage from "./_root/pages/customer/CheckoutPage.jsx"
 
 const muiTheme = createTheme({
   colorSchemes: {
@@ -77,8 +79,6 @@ const muiTheme = createTheme({
   },
 });
 
-const joyTheme = extendTheme();
-
 const queryClient = new QueryClient();
 
 function App() {
@@ -101,12 +101,13 @@ function App() {
               <Routes>
                 <Route element={<RootLayout />}>
                   <Route index element={<HomePage />} />
-                  <Route path="/products" element={<ProductGrid />} />
+                  <Route path="/products/:c?/:n?/:pc?/:b?/:t?" element={<GridProduct />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/manage-profile" element={<ManagePersonalProfile />} />
                   <Route path="/manage-order" element={<ManagePersonalOrder />} />
                   <Route path="/favorite" element={<Favorite />} />
                   <Route path="/product/:slug" element={<Product />} />
+                  <Route path="/checkoutpage" element={<CheckoutPage />} />
                   {customerNav.map(navItem =>
                     <Route path={navItem.segment} element={navItem.element} key={navItem.title} />
                   )}
