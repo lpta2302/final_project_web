@@ -4,7 +4,7 @@ import Slider from "react-slick";
 import BannerSlider from "../../../components/Homepage/BannerSlider";
 import ProductCard from "../../../components/Homepage/ProductCard";
 import SubNavbar from "../../../components/Homepage/Subnavbar";
-import { useReadAllCategory, useReadAllProduct, useReadWishlistItems } from "../../../api/queries";
+import { useReadAllCategory, useReadAllProduct, useReadPopularProduct, useReadWishlistItems } from "../../../api/queries";
 import { useAuthContext } from "../../../context/AuthContext";
 import { Loading } from "../../../components";
 
@@ -57,8 +57,11 @@ const HomePage = ({ handleAddToCart }) => {
     isError,
     error,
   } = useReadAllProduct();
+
+  const { data: popularProducts, isLoading: isLoadingPopularProduct} = useReadPopularProduct();
+
   const { data: wishList } = useReadWishlistItems(userId);
-  console.log(products);
+  console.log("pop:"+popularProducts);
 
   useEffect(() => {
     if (!isAuthenticated || !user._id) return;
@@ -79,7 +82,7 @@ const HomePage = ({ handleAddToCart }) => {
         sx={{ "& .MuiContainer-root": { p: { md: "12px", lg: "0" } } }}
       >
         <Box flex="1" display={"flex"}>
-          <SubNavbar categories={categories}  />
+          <SubNavbar categories={categories} />
           <Box height="400px" width={{ xs: "100%", md: "calc(100% - 220px)" }} >
             <BannerSlider />
           </Box>
@@ -108,9 +111,13 @@ const HomePage = ({ handleAddToCart }) => {
           Sản phẩm thịnh hành
         </Typography>
         <Box display='inline-flex' gap={2} overflow="auto" width="100%" py={1}>
-          {products?.filter(product => product.tag.some(t => t.tagName.toLowerCase() === 'popular')).map((product) => (
-            <ProductCard wishList={wishList} customer={user} isLoggedIn product={product} key={product._id} />
-          ))}
+          {
+            !popularProducts || !popularProducts.length || isLoadingPopularProduct ? 
+            <Loading /> :
+            popularProducts?.map((product) => (
+              <ProductCard wishList={wishList} customer={user} isLoggedIn product={product} key={product._id} />
+            ))
+          }
         </Box>
 
         {/* Featured Products Section */}

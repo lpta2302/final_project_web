@@ -150,6 +150,13 @@ export const useReadAllProduct = () => {
   });
 };
 
+export const useReadPopularProduct = () => {
+  return useQuery({
+    queryKey: ['READ_POPULAR_PRODUCT'],
+    queryFn: () => readAll(customer_product_url.getPopularProduct()),
+  });
+};
+
 export const useSearchProduct = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_PRODUCT, searchParam],

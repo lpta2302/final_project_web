@@ -40,6 +40,7 @@ export const customer_url = {
         search: () => '/client/category/search',
     },
     product: {
+        getPopularProduct: () => '/client/product/popular',
         getAllProduct: () => '/client/product/',
         search: () => '/client/product/search',
         getProductByTag: (id) => '/client/product/tag/search/' + id,
