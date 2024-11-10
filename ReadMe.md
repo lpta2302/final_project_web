@@ -65,3 +65,11 @@ TanStack (React Query)
 
 Postman
 - Postman là công cụ được sử dụng để kiểm thử API, giúp kiểm tra và xác minh các endpoint của server trước khi triển khai. Với Postman, chúng tôi có thể dễ dàng gửi yêu cầu đến backend, kiểm tra các phản hồi từ API, từ đó đảm bảo rằng tất cả các tính năng và chức năng hoạt động chính xác.
+
+## Tài liệu thiết kế
+
+[Xem chi tiết](https://github.com/lpta2302/final_project_web/tree/fix_token/diagrams)
+
+# Lời cảm ơn
+
+Chúng em xin trân thành cảm ơn thầy Nguyễn Mạnh Tuấn, người đã dành nhiều thời gian để hướng dẫn chúng em trong quá trình thực hiện đề tài này. Sự chỉ dẫn tận tình và kiến thức phong phú của thầy đã giúp chúng em vượt qua nhiều khó khăn và hoàn thiện tốt dự án. Chính nhờ sự hỗ trợ quý báu từ thầy, chúng em đã có cơ hội học hỏi và tích lũy nhiều kinh nghiệm thực tế. Chúng em xin chân thành cảm ơn thầy!
