@@ -6,6 +6,7 @@ import {
   calculateItemsTotal,
   createOrUpdateCart,
 } from "../../helpers/order.helper.js";
+import Product from "../../models/product.model.js";
 
 // [GET] /client/order/user/:id
 export const index = async (req, res) => {
@@ -49,50 +50,53 @@ export const add = async (req, res) => {
       ...orderData
     } = req.body;
 
-    // Create or update the cart and get the new cart
+    // Tạo hoặc cập nhật giỏ hàng và lấy giỏ hàng mới
     const newCart = await createOrUpdateCart(userId, cart);
     orderData.cart = newCart._id;
 
-    // Populate spec in cart items to retrieve price and discountPercentage
+    // Populate spec trong các mục giỏ hàng để lấy thông tin price và discountPercentage
     await Cart.populate(cart, {
       path: "cartItems.spec",
       select: "price discountPercentage",
     });
 
-    // Calculate items total
+    // Tính tổng giá trị các mục
     const itemsTotal = calculateItemsTotal(cart);
 
-    // Calculate discount amount from vouchers
+    // Tính tổng giảm giá từ voucher
     const discountAmount = await calculateDiscountAmount(voucher, itemsTotal);
 
-    // Calculate total amount
+    // Tính tổng số tiền thanh toán
     const totalAmount = itemsTotal - discountAmount + shippingCost;
 
-    // Assign calculated values to orderData
+    // Gán các giá trị đã tính vào orderData
     orderData.totalAmount = totalAmount;
     orderData.discountAmount = discountAmount;
     orderData.shippingCost = shippingCost;
     orderData.userId = userId;
     orderData.voucher = voucher;
 
-    // Create new order and save to database
+    // Tạo đơn hàng mới và lưu vào cơ sở dữ liệu
     const newOrder = new Order(orderData);
     await newOrder.save();
 
     // Cập nhật purchaseCount cho các sản phẩm trong giỏ hàng
     const updateProductsCount = cart.cartItems.map((item) =>
       Product.findOneAndUpdate(
-        { _id: item.spec.products }, // Tìm sản phẩm theo ObjectId trong trường `products` của spec
+        { _id: item.spec }, // Tìm sản phẩm theo ObjectId trong trường `spec`
         { $inc: { purchaseCount: item.quantity } } // Tăng purchaseCount theo số lượng
       )
     );
     await Promise.all(updateProductsCount); // Chạy tất cả các cập nhật đồng thời
 
     // Tìm tag "popular" trong collection Tag
-    const popularTag = await Tag.findOne({ tagName: "popular" });
+    const popularTag = await Tag.findOne({ tagName: "POPULAR" });
 
     if (!popularTag) {
-      return console.log('Tag "popular" không tồn tại');
+      console.log('Tag "popular" không tồn tại');
+      return res
+        .status(400)
+        .json({ success: false, message: 'Tag "popular" không tồn tại' });
     }
 
     // Xóa tag "popular" cũ trên tất cả các sản phẩm
@@ -111,7 +115,7 @@ export const add = async (req, res) => {
 
     console.log("Cập nhật sản phẩm thịnh hành thành công");
 
-    // Populate `spec`, `voucher`, and other fields in response
+    // Populate `spec`, `voucher`, và các trường khác trong response
     const populatedOrder = await Order.findById(newOrder._id)
       .populate({
         path: "cart",

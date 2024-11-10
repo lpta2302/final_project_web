@@ -19,7 +19,7 @@ const productController = {
   showPopularProducts: async (req, res) => {
     try {
       // Tìm tag "popular" trong collection Tag
-      const popularTag = await Tag.findOne({ tagName: "popular" });
+      const popularTag = await Tag.findOne({ tagName: "POPULAR" });
 
       if (!popularTag) {
         return res.status(404).json({ error: 'Tag "popular" không tồn tại' });

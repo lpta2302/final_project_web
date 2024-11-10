@@ -29,10 +29,13 @@ export const createOrUpdateCart = async (userId, cart) => {
 export const calculateItemsTotal = (cart) => {
   let itemsTotal = 0;
   cart.cartItems.forEach((item) => {
-    const price = item.spec.price || 0;
-    const discountPercentage = item.spec.discountPercentage || 0;
-    const discountedPrice = price * (1 - discountPercentage);
-    itemsTotal += item.quantity * discountedPrice;
+    if (item.spec) {
+      // Check if spec is not null
+      const price = item.spec.price || 0;
+      const discountPercentage = item.spec.discountPercentage || 0;
+      const discountedPrice = price * (1 - discountPercentage);
+      itemsTotal += item.quantity * discountedPrice;
+    }
   });
   return itemsTotal;
 };
