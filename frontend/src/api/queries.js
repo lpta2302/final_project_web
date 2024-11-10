@@ -829,7 +829,7 @@ export const useAddCartItem = () => {
 
   return useMutation({
     mutationFn: (item) =>
-      createRecord(customerCart.addItem(),item),
+      createRecord(customerCart.addItem(), item),
     onSuccess: () => {
       queryClient.invalidateQueries([USE_READ_OWN_CART]);
     },
@@ -869,7 +869,7 @@ export const useAddItemToWishlist = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ customerId, productId }) =>
-      createRecord(customer_wishlist.addProduct(customerId), {productId: productId}),
+      createRecord(customer_wishlist.addProduct(customerId), { productId: productId }),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_OWN_WISHLIST]);
       queryClient.invalidateQueries([READ_ALL_PRODUCTS]);
@@ -906,8 +906,8 @@ export const useReadSeenProducts = (userId) => {
 export const useAddItemToSeens = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ data:{userId, productId} }) =>
-      createRecord(customer_seen.addSeenProduct(), {userId, productId}),
+    mutationFn: ({ data: { userId, productId } }) =>
+      createRecord(customer_seen.addSeenProduct(), { userId, productId }),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_SEEN_PRODUCTS]);
     },
@@ -1001,7 +1001,7 @@ export const useUpdateAddress = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (address) =>
-      updateRecord(customer_address_url.editAddress(address._id),address),
+      updateRecord(customer_address_url.editAddress(address._id), address),
     onSuccess: () => {
       queryClient.invalidateQueries(['READ_OWN_ADDRESSES']);
     },

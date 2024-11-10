@@ -24,6 +24,7 @@ import ManagePersonalProfile from "./_root/pages/customer/ManagePersonalProfile.
 import ManagePersonalOrder from "./_root/pages/customer/ManagePersonalOrder.jsx";
 import Product from "./_root/pages/customer/Product.jsx";
 import ProductGrid from "./components/ProductGrid/ProductGrid.jsx";
+import GridProduct from "./_root/pages/customer/GridProduct.jsx";
 
 const muiTheme = createTheme({
   colorSchemes: {
@@ -101,7 +102,7 @@ function App() {
               <Routes>
                 <Route element={<RootLayout />}>
                   <Route index element={<HomePage />} />
-                  <Route path="/products" element={<ProductGrid />} />
+                  <Route path="/products/:c?/:n?/:pc?/:b?/:t?" element={<GridProduct />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/manage-profile" element={<ManagePersonalProfile />} />
                   <Route path="/manage-order" element={<ManagePersonalOrder />} />
