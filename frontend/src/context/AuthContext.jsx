@@ -49,9 +49,11 @@ export default function AuthProvider({ children }) {
 
             // if return token
             const user = await getCurrentUser();
-            const { id} = user
+            const { _id} = user
+            console.log(_id);
             
-            if (id)
+            
+            if (!_id)
                 return false
             else
                 setUser(user)

@@ -44,9 +44,9 @@ export default function AuthAdminProvider({ children }) {
             setBearerToken(adminCookie);
 
             const user = await getCurrentUser();
-            const { id } = user
+            const { _id } = user
 
-            if (id)
+            if (!_id)
                 return false
             else
                 setUser(user)
