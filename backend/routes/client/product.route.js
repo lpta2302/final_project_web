@@ -13,6 +13,8 @@ productRouter.get(
   productController.searchCategory
 );
 
+productRouter.get("/tag/search", productController.showPopularProducts);
+
 // Tìm sản phẩm
 productRouter.get("/search", productController.searchProduct);
 
