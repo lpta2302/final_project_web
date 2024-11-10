@@ -83,7 +83,7 @@ const ProductCard = ({ product, wishList, customer, isLoggedIn }) => {
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
-            
+            pb: '12px !important'
           }}
         >
           <Box>
@@ -132,7 +132,7 @@ const ProductCard = ({ product, wishList, customer, isLoggedIn }) => {
               }}
               textAlign='right'
             >
-              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format((product.specs[0]?.price * product.specs[0]?.discountPercentage))}
+              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format((product.specs[0]?.price * (1 - product.specs[0]?.discountPercentage)))}
             </Typography>
           }
         </CardContent>

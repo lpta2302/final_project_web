@@ -58,6 +58,9 @@ const ManagePersonalOrder = () => {
 
   const handleTabChange = (event, newValue) => setCurrentTab(newValue);
 
+  console.log(ordersData);
+  
+
   const handleViewDetails = (orderId) => {
     setSelectedOrderId(orderId);
     setDetailModalOpen(true);
@@ -95,7 +98,7 @@ const ManagePersonalOrder = () => {
       <List>
         {orders.map((order) => {
           const formattedDate = moment(order.createdAt).format("DD-MM-YYYY");
-          const displayTotal = `${(order.totalAmount - order.discountAmount + order.shippingCost).toLocaleString()} VND`;
+          const displayTotal = `${(order.totalAmount).toLocaleString()} VND`;
 
           const statusLabels = {
             completed: "Đã giao hàng",
@@ -315,9 +318,7 @@ const ManagePersonalOrder = () => {
                   <Grid item xs={6} textAlign="right">
                     <Typography variant="h5" fontWeight="bold" color="error">
                       {(
-                        orderDetail.totalAmount -
-                        orderDetail.discountAmount +
-                        orderDetail.shippingCost
+                        orderDetail.totalAmount
                       ).toLocaleString()}{" "}
                       VND
                     </Typography>

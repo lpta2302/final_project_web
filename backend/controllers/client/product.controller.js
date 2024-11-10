@@ -192,7 +192,13 @@ const productController = {
     try {
       const topProducts = await Product.find({})
         .sort({ purchaseCount: -1 })
-        .limit(1);
+        .limit(5).populate([
+          { path: "relativeProduct" },
+          { path: "tag" },
+          { path: "specs" },
+          { path: "category" },
+          { path: "brand", select: "brandCode brandName" }, // Replace with actual fields in the "Brand" schema
+        ]);
 
       res.status(200).json(topProducts);
     } catch (error) {

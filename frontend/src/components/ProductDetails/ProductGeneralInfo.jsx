@@ -173,16 +173,16 @@ const ProductGeneralInfo = () => {
         {selectedSpec && selectedSpec.discountPercentage > 0 ? (
           <>
             <Typography variant="h6" sx={{ color: "red", fontWeight: "bold", fontSize: "1.5rem" }}>
-              ${selectedSpec.price * (1 - selectedSpec.discountPercentage / 100)}
+              {selectedSpec.price * (1 - selectedSpec.discountPercentage / 100)}{" "}VND
             </Typography>
             <Typography variant="body2" sx={{ textDecoration: "line-through", color: "gray", ml: 2 }}>
-              ${selectedSpec.price}
+              {selectedSpec.price}{" "}VND
             </Typography>
           </>
         ) : (
           selectedSpec && (
             <Typography variant="h6" sx={{ color: "red", fontWeight: "bold", fontSize: "1.5rem" }}>
-              ${selectedSpec.price}
+              {selectedSpec.price}{" "}VND
             </Typography>
           )
         )}

@@ -19,8 +19,10 @@ import {
   useCreateNewOrder,
 } from "../../../api/queries";
 import { useAuthContext } from "../../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function CheckoutPage() {
+  const navigate = useNavigate();
   // Get the current user from context
   const { user: currentUser, isLoading: isUserLoading } = useAuthContext();
 
@@ -75,9 +77,9 @@ function CheckoutPage() {
         cart: {
           ...prevData.cart,
           cartItems: cartData.cartItems.map((item) => ({
-            spec: item.spec._id,
-            productName: item.spec.products.productName,
-            price: item.spec.price,
+            spec: item?.spec?._id,
+            productName: item?.spec?.products.productName,
+            price: item?.spec?.price,
             quantity: item.quantity,
           })),
         },
@@ -135,6 +137,7 @@ function CheckoutPage() {
     createNewOrder.mutate(orderData, {
       onSuccess: () => {
         console.log("Order created successfully");
+        navigate(0);
         // Optionally, navigate to a different page or reset form here
       },
       onError: (error) => {
@@ -194,6 +197,7 @@ function CheckoutPage() {
             value={orderData.shippingCost}
             onChange={handleChange}
             margin="normal"
+            disabled
           />
           <TextField
             fullWidth
@@ -236,7 +240,7 @@ function CheckoutPage() {
               value={orderData.address}
               onChange={handleChange}
             >
-              {addressesData.map((address) => (
+              {addressesData?.map((address) => (
                 <MenuItem key={address._id} value={address._id}>
                   {`${address.address}, ${address.ward}, ${address.district}, ${address.city}`}
                 </MenuItem>
