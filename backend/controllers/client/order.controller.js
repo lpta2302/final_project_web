@@ -83,10 +83,11 @@ export const add = async (req, res) => {
     // Cập nhật purchaseCount cho các sản phẩm trong giỏ hàng
     const updateProductsCount = cart.cartItems.map((item) =>
       Product.findOneAndUpdate(
-        { _id: item.spec }, // Tìm sản phẩm theo ObjectId trong trường `spec`
+        { specs: item.spec }, // Tìm sản phẩm có `specs` chứa ObjectId `item.spec`
         { $inc: { purchaseCount: item.quantity } } // Tăng purchaseCount theo số lượng
       )
     );
+
     await Promise.all(updateProductsCount); // Chạy tất cả các cập nhật đồng thời
 
     // Tìm tag "popular" trong collection Tag
