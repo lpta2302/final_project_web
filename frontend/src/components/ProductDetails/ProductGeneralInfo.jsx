@@ -9,39 +9,65 @@ import {
 } from "@mui/material";
 import { Add, Remove, Favorite, FavoriteBorder } from "@mui/icons-material";
 import { useParams } from "react-router-dom";
-import { useAddCartItem, useReadAllReviewsAdmin, useReadProductDetailBySlug } from "../../api/queries";
+import { useAddCartItem, useAddItemToWishlist, useReadAllReviewsAdmin, useReadProductDetailBySlug, useReadWishlistItems, useRemoveItemFromWishlist } from "../../api/queries";
 import { useAuthContext } from "../../context/AuthContext";
+import { enqueueSnackbar } from "notistack";
 
 const ProductGeneralInfo = () => {
   const { slug } = useParams();
 
   const [quantity, setQuantity] = useState(1);
-  const [isFavorited, setIsFavorited] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
   const [activeSpec, setActiveSpec] = useState(null);
   const [selectedSpec, setSelectedSpec] = useState(null);
 
-  const { user, isAuthenticated, isLoading } = useAuthContext();
+  const { user, isAuthenticated } = useAuthContext();
   const { data: productData } = useReadProductDetailBySlug(slug);
+  const { data: wishList } = useReadWishlistItems(user?._id);
 
-  // Lấy specId từ sản phẩm
-  const specs = Array.isArray(productData?.specs) ? productData.specs : [];
-  const specId = selectedSpec?._id; // specId sẽ lấy từ selectedSpec
-
-  // Fetch các reviews từ API dựa trên specId
-  const { data: productReview, isPending: isLoadingReviews } = useReadAllReviewsAdmin(specId);
+  const { mutateAsync: like } = useAddItemToWishlist();
+  const { mutateAsync: unLike } = useRemoveItemFromWishlist();
   const { mutateAsync: addToCart } = useAddCartItem();
 
-  const handleAddToCart = async () =>{
-    if (isAuthenticated){
-      try{
+  const specs = Array.isArray(productData?.specs) ? productData.specs : [];
+  const { data: productReview, isPending: isLoadingReviews } = useReadAllReviewsAdmin(specs?._id);
+
+  useEffect(() => {
+    // Set the initial favorite status based on the wishlist
+    if (wishList) {
+      setIsFavorite(wishList.products.some((prod) => String(prod._id) === String(productData._id)));
+    }
+  }, [wishList, productData?._id]);
+
+  const handleToggleFavorite = async () => {
+    if (!isAuthenticated || !user._id) {
+      enqueueSnackbar("Bạn cần đăng nhập để thích sản phẩm này!", { variant: "info" });
+      return;
+    }
+
+    if (isFavorite) {
+      await unLike({ customerId: user._id, productId: productData._id });
+      enqueueSnackbar("Đã xóa khỏi danh sách yêu thích!", { variant: "success" });
+    } else {
+      await like({ customerId: user._id, productId: productData._id });
+      enqueueSnackbar("Đã thêm vào danh sách yêu thích!", { variant: "success" });
+    }
+    setIsFavorite(!isFavorite);
+  };
+
+  const handleAddToCart = async () => {
+    if (isAuthenticated) {
+      try {
         const userId = user?._id;
-        const respone = await addToCart({client: userId, spec: selectedSpec?._id, quantity});
-        console.log("Sản phẩm đã được thêm vào giỏ hàng!", respone);
-      } catch(error) {
-        console.error("Lỗi khi thêm hàng vào giỏ", error);
+        const response = await addToCart({ client: userId, spec: selectedSpec?._id, quantity });
+        console.log(response)
+        enqueueSnackbar("Sản phẩm đã được thêm vào giỏ hàng!", { variant: "success" });
+      } catch (error) {
+        enqueueSnackbar("Lỗi khi thêm vào giỏ hàng!", { variant: "error" });
+        console.log(error)
       }
     }
-  }
+  };
 
   useEffect(() => {
     if (specs && specs.length > 0) {
@@ -57,8 +83,6 @@ const ProductGeneralInfo = () => {
   };
 
   const calculateAverageRating = (reviews) => {
-    console.log(reviews);
-    
     if (!reviews || reviews.length === 0) return 0;
     const totalStars = reviews.reduce((sum, review) => sum + review.star, 0);
     return totalStars / reviews.length;
@@ -74,11 +98,6 @@ const ProductGeneralInfo = () => {
     if (quantity > 1) setQuantity(quantity - 1);
   };
 
-  const toggleFavorite = () => {
-    setIsFavorited(!isFavorited);
-  };
-
-  // Tính rating trung bình từ các reviews
   const averageRating = calculateAverageRating(productReview);
 
   return (
@@ -86,8 +105,8 @@ const ProductGeneralInfo = () => {
       {/* Product Name and Favorite Button */}
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <Typography variant="h5">{productData.productName}</Typography>
-        <IconButton onClick={toggleFavorite} sx={{ color: "red" }}>
-          {isFavorited ? <Favorite /> : <FavoriteBorder />}
+        <IconButton color="error" onClick={handleToggleFavorite} aria-label="favorite">
+          {isFavorite ? <Favorite /> : <FavoriteBorder />}
         </IconButton>
       </Box>
 

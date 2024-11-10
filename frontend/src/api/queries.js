@@ -835,7 +835,7 @@ export const useAddCartItem = () => {
 export const useDeleteCartItem = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: () => deleteRecord(customerCart.deleteItem()),
+    mutationFn: (data) => updateRecord(customerCart.deleteItem(), data),
     onSuccess: () => {
       queryClient.invalidateQueries([USE_READ_OWN_CART]);
     },
@@ -999,7 +999,6 @@ export const useUpdateAddress = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (address) =>
-      updateRecord(customer_address_url.editAddress(address._id), address),
       updateRecord(customer_address_url.editAddress(address._id), address),
     onSuccess: () => {
       queryClient.invalidateQueries(["READ_OWN_ADDRESSES"]);

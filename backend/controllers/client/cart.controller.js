@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import Cart from "../../models/cart.model.js";
-import Voucher from "../../models/voucher.model.js";
+// import Voucher from "../../models/voucher.model.js"; // Đã comment import của Voucher vì không cần dùng
 
 // [POST] /cart/add
 export const add = async (req, res) => {
@@ -106,7 +106,7 @@ const cartController = {
   // [PATCH] /client/cart
   updateCart: async (req, res) => {
     try {
-      const { cartId, cartItems, voucherId } = req.body;
+      const { cartId, cartItems /* , voucherId */ } = req.body; // Loại bỏ voucherId khỏi req.body
 
       let cart = await Cart.findById(cartId);
 
@@ -134,7 +134,7 @@ const cartController = {
         });
       }
 
-      // Add voucher to the cart if voucherId is provided
+      /* 
       if (voucherId) {
         const voucherExist = await Voucher.findOne({
           _id: voucherId,
@@ -150,13 +150,13 @@ const cartController = {
           return res.status(400).json(false);
         }
 
-        // Add the voucher to the cart if it doesn't already exist
         if (!cart.vouchers.includes(voucherId)) {
           cart.vouchers.push(voucherId);
         }
       }
+      */
 
-      // Save the updated cart
+      // Lưu lại giỏ hàng đã được cập nhật
       await cart.save();
 
       return res.status(200).json(cart);

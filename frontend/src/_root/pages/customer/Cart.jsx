@@ -9,22 +9,28 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import DiscountSection from "../../../components/Cart/usevoucher";
 import {
   useAddCartItem,
+  useDeleteCartItem,
   useReadOwnCart,
+  useReadProductDetailBySlug,
   useUpdateCart,
 } from "../../../api/queries";
 import CartItem from "../../../components/Cart/CartItem";
 import { useAuthContext } from "../../../context/AuthContext";
+import { enqueueSnackbar } from "notistack";
 
 const Cart = () => {
-  // Sử dụng hook để đọc dữ liệu giỏ hàng
+  const { slug } = useParams();
   const { user, isAuthenticated } = useAuthContext();
   const { data: fetchedCartItems, error, isLoading } = useReadOwnCart(user?._id);
   const createCartItem = useAddCartItem();
   const { mutateAsync: updateCart } = useUpdateCart();
+  const { mutateAsync: deleteCartItem } = useDeleteCartItem();
+  const { data: productData } = useReadProductDetailBySlug(slug);
+  const specs = Array.isArray(productData?.specs) ? productData.specs : [];
 
   const [cartItems, setCartItems] = useState([]);
   const [shippingFee, setShippingFee] = useState(0);
@@ -38,47 +44,68 @@ const Cart = () => {
 
   const isMobile = useMediaQuery("(max-width:600px)");
 
-  const handleUpdateCart = async () => {
+  const handleDeleteItem = async () => {
+    try{
+      const respone = await deleteCartItem({ client: user?._id, spec: specs?._id});
+      console.log(respone)
+      enqueueSnackbar("Xóa sản phẩm thành công!", { variant: "success" });
+    } catch{
+      enqueueSnackbar("Lỗi khi xóa!", { variant: "error" });
+    }
+  }
+
+  const handleUpdateCart = async (updatedCartItems) => {
     try {
-      const response = await updateCart({ cart: { cardId: fetchedCartItems?._id, cartItems: fetchedCartItems?.cartItems } });
+      // Xây dựng dữ liệu gửi lên
+      const cartId = fetchedCartItems?._id; // cartId từ dữ liệu giỏ hàng hiện tại
+
+      const cartItemsPayload = updatedCartItems.map((item) => ({
+        spec: item.spec._id, // spec là ID của sản phẩm
+        quantity: item.quantity, // số lượng sản phẩm
+      }));
+
+      const response = await updateCart({
+        cartId: cartId,
+        cartItems: cartItemsPayload, 
+        _id: user._id, // ID người dùng
+      });
+
       console.log("Cập nhật giỏ hàng thành công!", response);
     } catch (error) {
       console.error("Lỗi khi cập nhật giỏ hàng", error);
     }
-  }
-
+  };
+  
   const handleQuantityChange = (id, operation) => {
     setCartItems((prevItems) =>
-      prevItems.reduce((acc, item) => {
+      prevItems.map((item) => {
         if (item._id === id) {
           const newQuantity =
             operation === "increase" ? item.quantity + 1 : item.quantity - 1;
           if (newQuantity > 0) {
-            acc.push({ ...item, quantity: newQuantity });
-
-            // Cập nhật số lượng sản phẩm trong cơ sở dữ liệu
-            updateCart.mutate({ ...item, quantity: newQuantity });
+            return { ...item, quantity: newQuantity };
           }
-        } else {
-          acc.push(item);
         }
-        return acc;
-      }, [])
+        return item;
+      })
     );
   };
-
-  const handleDeleteItem = (id) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item._id !== id));
-  };
+  
+  // Sử dụng useEffect để gọi handleUpdateCart khi cartItems thay đổi
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      handleUpdateCart(cartItems);  // Gọi handleUpdateCart sau khi cartItems được cập nhật
+    }
+  }, [cartItems]);
 
   const totalAmount = cartItems.reduce(
-    (acc, item) => acc + item.spec?.price * item.quantity, 0
+    (acc, item) => acc + item.spec?.price * item.quantity,
+    0
   );
 
   const totalWithDiscountAndShipping =
     totalAmount + shippingFee - discountValue;
 
-  // Hiển thị thông báo đang tải hoặc lỗi nếu có
   if (isLoading) {
     return (
       <Container sx={{ marginTop: "50px" }}>
