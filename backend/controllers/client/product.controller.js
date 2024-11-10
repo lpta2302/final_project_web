@@ -1,15 +1,38 @@
 import Product from "../../models/product.model.js";
+import Tag from "../../models/tag.model.js";
 
 const productController = {
   // [GET] /client/product
   showProduct: async (req, res) => {
     try {
       // const products = await Product.find().populate("tag category specs");
-      const products = await Product.find({ productStatus: { $ne: "draft" } }).populate("tag category specs");
-      
+      const products = await Product.find({
+        productStatus: { $ne: "draft" },
+      }).populate("tag category specs");
+
       res.status(200).json(products);
     } catch (err) {
       res.status(500).json(false);
+    }
+  },
+
+  showPopularProducts: async (req, res) => {
+    try {
+      // Tìm tag "popular" trong collection Tag
+      const popularTag = await Tag.findOne({ tagName: "popular" });
+
+      if (!popularTag) {
+        return res.status(404).json({ error: 'Tag "popular" không tồn tại' });
+      }
+
+      // Lấy các sản phẩm có tag "popular" (sử dụng ObjectId của tag)
+      const popularProducts = await Product.find({ tag: popularTag._id })
+        .sort({ purchaseCount: -1 }) // Sắp xếp theo purchaseCount giảm dần
+        .limit(5); // Giới hạn lấy 5 sản phẩm thịnh hành
+
+      res.json(popularProducts);
+    } catch (error) {
+      res.status(500).json({ error: "Lỗi khi lấy sản phẩm thịnh hành" });
     }
   },
 

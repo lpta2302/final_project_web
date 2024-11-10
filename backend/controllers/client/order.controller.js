@@ -1,5 +1,6 @@
 import Order from "../../models/order.model.js";
 import Cart from "../../models/cart.model.js";
+import Tag from "../../models/tag.model.js";
 import {
   calculateDiscountAmount,
   calculateItemsTotal,
@@ -78,16 +79,37 @@ export const add = async (req, res) => {
     const newOrder = new Order(orderData);
     await newOrder.save();
 
-    // Cập nhật purchaseCount của sản phẩm dựa trên cartItems
-    for (const item of cart.cartItems) {
-      const spec = await Specification.findById(item.spec);
-      if (spec && spec.products) {
-        // Tăng purchaseCount của sản phẩm liên quan theo quantity
-        await Product.findByIdAndUpdate(spec.products, {
-          $inc: { purchaseCount: item.quantity },
-        });
-      }
+    // Cập nhật purchaseCount cho các sản phẩm trong giỏ hàng
+    const updateProductsCount = cart.cartItems.map((item) =>
+      Product.findOneAndUpdate(
+        { _id: item.spec.products }, // Tìm sản phẩm theo ObjectId trong trường `products` của spec
+        { $inc: { purchaseCount: item.quantity } } // Tăng purchaseCount theo số lượng
+      )
+    );
+    await Promise.all(updateProductsCount); // Chạy tất cả các cập nhật đồng thời
+
+    // Tìm tag "popular" trong collection Tag
+    const popularTag = await Tag.findOne({ tagName: "popular" });
+
+    if (!popularTag) {
+      return console.log('Tag "popular" không tồn tại');
     }
+
+    // Xóa tag "popular" cũ trên tất cả các sản phẩm
+    await Product.updateMany({}, { $pull: { tag: popularTag._id } });
+
+    // Lấy 5 sản phẩm có số lượng mua cao nhất
+    const popularProducts = await Product.find({})
+      .sort({ purchaseCount: -1 }) // Sắp xếp theo purchaseCount giảm dần
+      .limit(5); // Lấy 5 sản phẩm thịnh hành
+
+    // Thêm tag "popular" vào các sản phẩm thịnh hành
+    await Product.updateMany(
+      { _id: { $in: popularProducts.map((product) => product._id) } }, // Lấy danh sách sản phẩm thịnh hành
+      { $addToSet: { tag: popularTag._id } } // Thêm ObjectId của tag "popular" vào sản phẩm
+    );
+
+    console.log("Cập nhật sản phẩm thịnh hành thành công");
 
     // Populate `spec`, `voucher`, and other fields in response
     const populatedOrder = await Order.findById(newOrder._id)
