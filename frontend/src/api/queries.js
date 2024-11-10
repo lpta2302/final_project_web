@@ -150,6 +150,13 @@ export const useReadAllProduct = () => {
   });
 };
 
+export const useReadPopularProduct = () => {
+  return useQuery({
+    queryKey: ['READ_POPULAR_PRODUCT'],
+    queryFn: () => readAll(customer_product_url.getPopularProduct()),
+  });
+};
+
 export const useSearchProduct = (searchParam) => {
   return useQuery({
     queryKey: [SEARCH_PRODUCT, searchParam],
@@ -826,8 +833,7 @@ export const useAddCartItem = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (item) =>
-      createRecord(customerCart.addItem(), item),
+    mutationFn: (item) => createRecord(customerCart.addItem(), item),
     onSuccess: () => {
       queryClient.invalidateQueries([USE_READ_OWN_CART]);
     },
@@ -836,7 +842,7 @@ export const useAddCartItem = () => {
 export const useDeleteCartItem = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: () => deleteRecord(customerCart.deleteItem()),
+    mutationFn: (data) => updateRecord(customerCart.deleteItem(), data),
     onSuccess: () => {
       queryClient.invalidateQueries([USE_READ_OWN_CART]);
     },

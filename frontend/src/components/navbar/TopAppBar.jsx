@@ -7,7 +7,7 @@ import {
 import { useState } from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import ExpandableSearch from '../inputs/ExpandableSearch.jsx'
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../../context/AuthContext';
 import { AccountCircleOutlined, Image } from '@mui/icons-material';
 import { customerNav } from '../../constance/constance.jsx';
@@ -70,6 +70,7 @@ NavbarButton.propTypes = {
 const navItems = customerNav;
 
 function TopAppBar() {
+    const navigate = useNavigate();
     const { isAuthenticated, isLoading: isLoadingUser, user } = useAuthContext();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -109,6 +110,7 @@ function TopAppBar() {
         'register': <Register setModalType={setModalType} />,
         'forgot-password': <ForgotPassword setModalType={setModalType} />
     }
+
 
     return (
         <Box component='header' sx={{ display: 'flex', alignItems: 'center' }}>
@@ -170,44 +172,48 @@ function TopAppBar() {
                                 setSearchParam({ productName: query })
                             }}
                         >
-                        {
-                            searchResult && isSearchFocused &&
-                            (
-                                <Paper
-                                    elevation={3}
-                                    sx={{
-                                        position: 'absolute',
-                                        top: '90%',
-                                        left: 0,
-                                        right: 0,
-                                        mt: 1,
-                                        borderRadius: '8px',
-                                        zIndex: 10,
-                                    }}
-                                >
-                                    {searchResult.length > 0 ?
-                                        searchResult.map((result, index) => (
-                                            <ListItem button key={index}>
-                                                <Link
-                                                    to={`/product/${result.slug}`}
-                                                    style={{ textDecoration: "none", color: "inherit" }}
-                                                    onClick={()=>setIsSearchFocused(false)}
-                                                >
-                                                    <Box display='inline-flex' gap={1} alignItems="center">
-                                                        <Box width="52px" height="52px" component="img" alt={result.productName} src={`${result.imageURLs.length > 0 ? result.imageURLs[0] : <Loading />}`} />
-                                                        <Typography>{result.productName}</Typography>
-                                                    </Box>
-                                                </Link>
-                                            </ListItem>
-                                        ))
+                            {
+                                searchResult && isSearchFocused && searchParam?.productName &&
+                                (
+                                    <Paper
+                                        elevation={3}
+                                        sx={{
+                                            position: 'absolute',
+                                            top: '90%',
+                                            left: 0,
+                                            right: 0,
+                                            mt: 1,
+                                            borderRadius: '8px',
+                                            zIndex: 10,
+                                        }}
+                                    >
+                                        {searchResult.length > 0 ?
+                                            searchResult.map((result, index) => (
+                                                <ListItem button key={index}>
+                                                    <Link
+                                                        to={`/product/${result.slug}`}
+                                                        style={{ textDecoration: "none", color: "inherit" }}
+                                                        onClick={(e) => {
+                                                            e.preventDefault(); navigate(`/product/${result.slug}`)
+                                                            setIsSearchFocused(false);
+                                                            setSearchParam(prev => ({ ...prev, productName: '' }))
+                                                        }}
+                                                    >
+                                                        <Box display='inline-flex' gap={1} alignItems="center">
+                                                            <Box width="52px" height="52px" component="img" alt={result.productName} src={`${result.imageURLs.length > 0 ? result.imageURLs[0] : <Loading />}`} />
+                                                            <Typography>{result.productName}</Typography>
+                                                        </Box>
+                                                    </Link>
+                                                </ListItem>
+                                            ))
 
-                                        :
-                                        "Không tìm thấy sản phẩm nào"
+                                            :
+                                            "Không tìm thấy sản phẩm nào"
 
-                                    }
-                                </Paper>
-                            )}
-                            </ExpandableSearch>
+                                        }
+                                    </Paper>
+                                )}
+                        </ExpandableSearch>
                     </Box>
                     <IconButton
                         color="inherit"

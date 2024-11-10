@@ -55,6 +55,7 @@ const ProductCard = ({ product, wishList, customer, isLoggedIn }) => {
     <Card
       sx={{
         minWidth: 224,
+        maxWidth: 224,
         margin: "0 auto",
         display: "flex",
         flexDirection: "column",
@@ -82,16 +83,18 @@ const ProductCard = ({ product, wishList, customer, isLoggedIn }) => {
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
+            
           }}
         >
           <Box>
-            <TruncatedTypography lineClamp={2} variant="h6" fontSize='1rem' lineHeight="1.2" mb={1} component="div">
+            <TruncatedTypography lineClamp={2} variant="h6" fontSize='1rem' lineHeight="1.2" mb={0.2} component="div">
               {product.productName}
             </TruncatedTypography>
             <TruncatedTypography
               variant="body2"
               color="text.secondary"
               fontSize='0.8rem'
+              lineClamp={2}
             >
               {product.description}
             </TruncatedTypography>
@@ -106,6 +109,32 @@ const ProductCard = ({ product, wishList, customer, isLoggedIn }) => {
             Trạng thái:{" "}
             {product.productStatus === "available" ? "Còn hàng" : "Hết hàng"}
           </Typography>
+          <Typography
+            fontSize="1rem"
+            variant="body1"
+            sx={{
+              textDecoration: product.specs[0]?.discountPercentage && 'line-through'
+            }}
+            style={{
+              color: product.specs[0]?.discountPercentage && "#353535",
+            }}
+            textAlign='right'
+          >
+            { product.specs[0]?.price?.toString() && new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.specs[0]?.price)}
+          </Typography>
+          {
+            product.specs[0]?.discountPercentage &&
+            <Typography
+              fontSize="1rem"
+              variant="body1"
+              style={{
+                color: "red"
+              }}
+              textAlign='right'
+            >
+              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format((product.specs[0]?.price * product.specs[0]?.discountPercentage))}
+            </Typography>
+          }
         </CardContent>
       </Link>
       <Box

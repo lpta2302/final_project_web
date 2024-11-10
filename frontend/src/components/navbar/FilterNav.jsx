@@ -35,10 +35,20 @@ function FilterNav({ setFilterParams, params }) {
                     categories.map(category => {
                         return (
                             <Button
-                                key={category._id} variant='outlined'
-                                onClick={() => setFilter('category', category)}
+                                key={category._id}
+                                variant="outlined"
+                                onClick={() => setFilter("category", category)}
                             >
-                                <Typography variant='button'>{category.categoryName}</Typography>
+                                <Typography
+                                    variant="button"
+                                    sx={{
+                                        whiteSpace: "nowrap",
+                                        overflow: "visible",
+                                        textOverflow: "unset"
+                                    }}
+                                >
+                                    {category.categoryName}
+                                </Typography>
                             </Button>
                         )
                     })
