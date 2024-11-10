@@ -44,30 +44,28 @@ const Cart = () => {
 
   const isMobile = useMediaQuery("(max-width:600px)");
 
-  const handleDeleteItem = async () => {
-    try{
-      const respone = await deleteCartItem({ client: user?._id, spec: specs?._id});
-      console.log(respone)
+  const handleDeleteItem = async (specId) => {
+    try {
+      const response = await deleteCartItem({ client: user?._id, spec: specId });
+      setCartItems((prevItems) => prevItems.filter((item) => item.spec._id !== specId));
       enqueueSnackbar("Xóa sản phẩm thành công!", { variant: "success" });
-    } catch{
+    } catch {
       enqueueSnackbar("Lỗi khi xóa!", { variant: "error" });
     }
-  }
+  };
 
   const handleUpdateCart = async (updatedCartItems) => {
     try {
-      // Xây dựng dữ liệu gửi lên
-      const cartId = fetchedCartItems?._id; // cartId từ dữ liệu giỏ hàng hiện tại
+      const cartId = fetchedCartItems?._id; // cartId from fetched cart data
 
       const cartItemsPayload = updatedCartItems.map((item) => ({
-        spec: item.spec._id, // spec là ID của sản phẩm
-        quantity: item.quantity, // số lượng sản phẩm
+        spec: item.spec._id, // spec is the product ID
+        quantity: item.quantity, // product quantity
       }));
 
       const response = await updateCart({
         cartId: cartId,
-        cartItems: cartItemsPayload, 
-        _id: user._id, // ID người dùng
+        cartItems: cartItemsPayload,
       });
 
       console.log("Cập nhật giỏ hàng thành công!", response);
@@ -75,7 +73,7 @@ const Cart = () => {
       console.error("Lỗi khi cập nhật giỏ hàng", error);
     }
   };
-  
+
   const handleQuantityChange = (id, operation) => {
     setCartItems((prevItems) =>
       prevItems.map((item) => {
@@ -90,11 +88,10 @@ const Cart = () => {
       })
     );
   };
-  
-  // Sử dụng useEffect để gọi handleUpdateCart khi cartItems thay đổi
+
   useEffect(() => {
     if (cartItems.length > 0) {
-      handleUpdateCart(cartItems);  // Gọi handleUpdateCart sau khi cartItems được cập nhật
+      handleUpdateCart(cartItems);
     }
   }, [cartItems]);
 
@@ -103,8 +100,7 @@ const Cart = () => {
     0
   );
 
-  const totalWithDiscountAndShipping =
-    totalAmount + shippingFee - discountValue;
+  const totalWithDiscountAndShipping = totalAmount + shippingFee - discountValue;
 
   if (isLoading) {
     return (
@@ -171,7 +167,7 @@ const Cart = () => {
                   item={item}
                   isMobile={isMobile}
                   handleQuantityChange={handleQuantityChange}
-                  handleDeleteItem={handleDeleteItem}
+                  handleDeleteItem={() => handleDeleteItem(item.spec._id)}
                 />
               ))}
             </Box>

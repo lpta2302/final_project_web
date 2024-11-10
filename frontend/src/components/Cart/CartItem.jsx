@@ -17,7 +17,6 @@ const CartItem = ({
   handleQuantityChange,
   handleDeleteItem,
 }) => {
-  // Lấy thông tin từ item
   const product = item?.spec?.products;
   const price = item?.spec?.price;
   const quantity = item?.quantity;
@@ -28,16 +27,16 @@ const CartItem = ({
         display: "flex",
         marginBottom: "16px",
         flexDirection: isMobile ? "column" : "row",
-        alignItems: "center", // Đảm bảo căn giữa
+        alignItems: "center",
       }}
     >
       <CardMedia
         component="img"
         sx={{
-          width: isMobile ? "100%" : 150, // Đảm bảo kích thước hợp lý
-          height: isMobile ? 200 : 150,   // Điều chỉnh chiều cao cho phù hợp
-          objectFit: "cover",  // Hình ảnh không bị méo, vẫn giữ nguyên tỷ lệ
-          marginBottom: isMobile ? "16px" : "0", // Căn chỉnh khoảng cách trên mobile
+          width: isMobile ? "100%" : 150,
+          height: isMobile ? 200 : 150,
+          objectFit: "cover",
+          marginBottom: isMobile ? "16px" : "0",
         }}
         image={product?.imageURLs[0] || ""}
         alt={product?.productName || "Product image"}
@@ -69,7 +68,7 @@ const CartItem = ({
           sx={{ display: "flex", justifyContent: "flex-end", padding: "8px" }}
         >
           <Button
-            onClick={() => handleDeleteItem(item._id)}
+            onClick={() => handleDeleteItem(item.spec._id)}
             startIcon={<DeleteIcon />}
             color="error"
           >
