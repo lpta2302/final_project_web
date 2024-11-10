@@ -135,16 +135,16 @@ function CheckoutPage() {
     }
 
     // Call the mutation to create a new order
-    // createNewOrder.mutateAsync(orderData, {
-    //   onSuccess: () => {
-    //     console.log("Order created successfully");
-    //     // Optionally, navigate to a different page or reset form here
-    //   },
-    //   onError: (error) => {
-    //     console.error("Error creating order:", error);
-    //   },
-    // });
-    create(orderData)
+    await createNewOrder.mutateAsync(orderData, {
+      onSuccess: () => {
+        console.log("Order created successfully");
+        // Optionally, navigate to a different page or reset form here
+      },
+      onError: (error) => {
+        console.error("Error creating order:", error);
+      },
+    });
+    // create(orderData)
     navigate(0);
   };
 
