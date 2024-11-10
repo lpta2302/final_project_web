@@ -169,9 +169,9 @@ function TopAppBar() {
                                 console.log(query)
                                 setSearchParam({ productName: query })
                             }}
-                        />
+                        >
                         {
-                            searchResult &&
+                            searchResult && isSearchFocused &&
                             (
                                 <Paper
                                     elevation={3}
@@ -186,13 +186,12 @@ function TopAppBar() {
                                     }}
                                 >
                                     {searchResult.length > 0 ?
-
-
                                         searchResult.map((result, index) => (
                                             <ListItem button key={index}>
                                                 <Link
                                                     to={`/product/${result.slug}`}
                                                     style={{ textDecoration: "none", color: "inherit" }}
+                                                    onClick={()=>setIsSearchFocused(false)}
                                                 >
                                                     <Box display='inline-flex' gap={1} alignItems="center">
                                                         <Box width="52px" height="52px" component="img" alt={result.productName} src={`${result.imageURLs.length > 0 ? result.imageURLs[0] : <Loading />}`} />
@@ -208,6 +207,7 @@ function TopAppBar() {
                                     }
                                 </Paper>
                             )}
+                            </ExpandableSearch>
                     </Box>
                     <IconButton
                         color="inherit"

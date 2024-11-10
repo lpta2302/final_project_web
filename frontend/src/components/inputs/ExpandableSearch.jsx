@@ -4,12 +4,10 @@ import SearchRoundedIcon from '@mui/icons-material/SearchRounded';
 import { useEffect, useState } from "react";
 import { Close } from "@mui/icons-material";
 
-export default function ExpandableSearch({ isSearchFocused, setIsSearchFocused, onChange }) {
+export default function ExpandableSearch({ isSearchFocused, setIsSearchFocused, onChange, children }) {
     const [query, setQuery] = useState("");
 
     const handleSearch = (e) => {
-        setIsSearchFocused(false);
-        
         onChange(query);
     }
 
@@ -99,6 +97,7 @@ export default function ExpandableSearch({ isSearchFocused, setIsSearchFocused, 
                     'aria-label': 'search',
                 }}
             />
+            {children}
         </FormControl>
     );
 }
