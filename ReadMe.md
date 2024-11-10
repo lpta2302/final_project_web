@@ -1,78 +1,67 @@
-MÔN PHÁT TRIỂN ỨNG DỤNG WEB
-Tên đề tài : Xây dựng trang web bán laptop
-Ngành công nghệ thông tin (CNTT) trong những năm gần đây đã có những bước phát triển vượt bậc trên thế giới cũng như trong nước. CNTT đã góp phần rất lớn cho sự phát triển kinh tế của nước ta trong thời kỳ đổi mới. Chính vì thế nhu cầu tin học hóa các chương trình quản lý hàng hóa cũng đang rất cần thiết để có thể đổi mới với quy định quản lý, đạt hiệu quả cao. Ứng dụng tin học trong công tác quản lý đã phát triển mạnh mẽ giúp cho công tác quản lý ngày càng trở nên hiệu quả hơn như nâng cao hiệu suất trong công việc, đưa ra các báo cáo, các số liệu thống kê một cách nhanh chóng chính xác và kịp thời. Đồng thời nhờ có việc ứng dụng tin học đã tiết kiệm được rất nhiều thời gian, công sức của con người, nó làm giảm nhẹ bộ máy quản lý vốn rất cồng kềnh từ trước tới nay
+# Môn Phát Triển Ứng Dụng Web
 
-Mô tả và mục tiêu dự án
-Mô TẢ:
-WEBSITE Nodejs hỗ trợ chức năng mua hàng trực tuyến qua Internet, có phân quyền admin và customer. Admin có thể quản lý được tài khoản khách hàng, thêm, xóa, sửa các trường thông tin hiển thị lên trang web. Bên cạnh đó, admin sẽ báo cáo thống kê đơn hàng, số lượng khách trong ngày, trong tháng. Phần customer, người dùng có thể đăng ký tạo tài khoản, đăng nhập, có các chức năng khi đăng nhập mới có thể hiện được như thêm sản phẩm vào danh sách yêu thích hay thanh toán đơn hàng. Ngoài ra có thể sửa đổi thông tin cá nhân của từng tài khoản thông qua chức năng quản lý hồ sơ cá nhân.
+## Tên đề tài: Xây dựng Website Bán Hàng Laptop
 
-MỤC TIÊU:
-Xây dựng 1 website bán laptop để người dùng có thể nhanh chóng tiếp cận đến thông tin sản phẩm và tiện lợi rút ngắn thời gian hơn thay vì phải đến cửa hàng để biết thêm thông tin và mua sản phẩm.
+Trong thời đại công nghệ số hiện nay, thương mại điện tử đã và đang trở thành một xu hướng phát triển mạnh mẽ trên toàn cầu, bao gồm cả Việt Nam. Thị trường thương mại điện tử Việt Nam vẫn đang tăng trưởng với tốc độ ấn tượng sau thời kỳ COVID-19. Theo Hiệp hội Thương mại điện tử Việt Nam, ước tính trong năm 2023, thị trường đạt quy mô 25 tỷ USD, ghi nhận mức tăng trưởng ấn tượng hơn 25% so với năm 2022. Trong đó, bán lẻ hàng hóa trực tuyến đóng góp 17,3 tỷ USD, cho thấy tiềm năng to lớn của lĩnh vực này. Không những thế, thương mại điện tử còn chiếm 15-17% trong tổng giá trị kinh tế quốc gia.
 
-Tác giả
-Lương Phúc Thiên Ân - Tác giả https://github.com/lpta2302/final_project_web
-Đoàn Thanh Lâm - Đồng tác giả
-Nguyễn Hoàng Minh Tấn - Đồng tác giả
-Dương Lâm Gia Kiệt - Đồng tác giả
-Phạm Trung - Đồng tác giả
-xây dựng trang web bán laptop
-Ngành công nghệ thông tin (CNTT) trong những năm gần đây đã có những bước phát triển vượt bậc trên thế giới cũng như trong nước. CNTT đã góp phần rất lớn cho sự phát triển kinh tế của nước ta trong thời kỳ đổi mới. Bên cạnh đó, các thiết bị điện tử cụ thể là laptop hiện đang rất cần thiết để có thể tiếp cận được và theo kịp với tốc độ phát triển của công nghệ thông tin. Đồng thời, việc ùn tắc giao thông hiện đang trong tình trạng nan giải nên 
+Thị trường phụ kiện máy tính cũng không nằm ngoài xu hướng chung, nhu cầu mua linh kiện máy tính trực tuyến đang ngày càng gia tăng. Người tiêu dùng ưu tiên sự tiện lợi, có thể so sánh giá cả và đánh giá sản phẩm trước khi quyết định mua hàng. Việc mua sắm online không chỉ giúp tiết kiệm thời gian mà còn mang lại nhiều lựa chọn hơn, góp phần thúc đẩy thị trường mua bán phụ kiện máy tính trực tuyến phát triển mạnh mẽ.
 
-Kiến thức áp dụng
-Sử dụng các control cơ bản và nâng cao trong Webform.
-DataGridView, DataSet, DataTable, DataRow.
-Phân tích thiết kế hệ thống cơ sở dữ liệu.
-Phân tích thiết kế giao diện.
-Trigger SQL.
-Procedure, function SQL.
-Kết nối SQL server với ứng dụng winform.
-Chuyển data giữa các form.
-Phân quyền người dùng trên ứng dụng.
-DataBiding cơ bản và nâng cao.
-Thêm, xóa, sửa dữ liệu từ trang quản trị.
-Triển khai
-Nền tảng xây dựng
-Nền tảng hệ thống phần mềm Công nghệ .NET được dùng để xây dựng các ứng dụng Web là ASP.NET, nó cung cấp hai vùng tên khá mạnh và đầy đủ phục vụ cho việc tạo các ứng dụng Web là System.Webvà System.Web.UI. Trong phần này chúng ta sẽ tập trung chủ yếu vào việc dùng ngôn ngữ C# để lập trình với ASP.NET.
-Bộ công cụ Web Form cũng được thiết kế để hỗ trợ mô hình phát triển nhanh (RAD). Với Web Form, ta có thể kéo thả các điều khiển trên Form thiết kế cũng như có thể viết mã trực tiếp trong tập tin .aspxhay .aspx.cs. Ứng dụng Web sẽ được triển khai trên máy chủ, còn người dùng sẽ tương tác với ứng dụng thông qua trình duyệt. .NET còn hỗ trợ ta bộ cung cụ để tạo ra các ứng dụng tuân theo mô hình n - lớp (tầng - n tier), giúp ta có thể quản lý được ứng dụng được dễ dàng hơn và nhờ thế nâng cao hiệu suất phát triển phần mềm.
+## Mô tả và Mục tiêu Dự Án
 
-eb Form là bộ công cụ cho phép thực thi các ứng dụng mà các trang Web do nó tạo động ra được phân phối đến trình duyệt thông qua mạng Internet.
+### Mô Tả
+Website FCOMPUTER là một trang web thương mại điện tử bán các sản phẩm laptop và phụ kiện. Website này sẽ có hai nhóm người dùng chính: **Quản lý (Admin)** và **Khách hàng (User)**.
 
-Với Web Forms, ta tạo ra các trang HTML với nội dung tĩnh và dùng mã C# chạy trên Server để xử lý dữ liệu tĩnh này rồi tạo ra trang Web động, gửi trang này về trình duyệt dưới mã HTML chuẩn.
+- **Quản lý (Admin)**: Quản trị hệ thống, quản lý sản phẩm, quản lý khách hàng, thống kê doanh thu, và các chức năng quản trị khác giúp cho việc quản lý website một cách dễ dàng.
+- **Khách hàng (User)**: Xem thông tin sản phẩm, tìm kiếm, thêm sản phẩm vào giỏ hàng và thực hiện thanh toán trực tuyến.
 
-Web Forms được thiết để chạy trên bất kỳ trình duyệt nào, trang HTML gửi về sẽ được gọt giũa sao cho thích hợp với phiên bản của trình duyệt. Ngoài dùng C#, ta cũng có thể dùng ngôn ngữ VB.NET để tạo ra các ứng dụng Web tương tự.
+Website còn hỗ trợ các chức năng tìm kiếm, thống kê và quản lý giỏ hàng. Khách hàng có thể thêm sản phẩm vào giỏ và thanh toán trực tuyến. Phương thức thanh toán sẽ được hỗ trợ qua các phương thức đăng ký tài khoản và thanh toán trực tuyến.
 
-Web Forms chia giao diện người dùng thành hai phần : phần thấy trực quan ( hay UI) và phần trang mã phía sau của UI. Quan điểm này thì tương tự với Windows Form, nhưng với Web Forms, hai phần này nằm trên hai tập tin riêng biệt. Phần giao diện UI được lưu trữ trong tập tin có phần mở rộng là .aspx, còn mã được lưu trữ trong tập tin có phần mở rộng là .aspx.cs.
+### Mục Tiêu
+- Xây dựng một ecommerce website bán và quản lý sản phẩm laptop, cho phép người dùng dễ dàng tìm kiếm, xem thông tin và mua các sản phẩm laptop và phụ kiện.
+- Nghiên cứu và ứng dụng công nghệ MERN stack (MongoDB, Express, React, Node.js) để phát triển toàn bộ back-end và front-end của website.
+- Tích hợp các tính năng như giỏ hàng, thanh toán trực tuyến, quản lý sản phẩm và quản lý đơn hàng vào website.
+- Đảm bảo tính bảo mật, hiệu suất và trải nghiệm người dùng tốt cho website.
 
-SQL Server là một hệ quản lý cơ sở dữ liệu quan hệ được phát triển bởi Microsoft . Là một máy chủ cơ sở dữ liệu , nó là một sản phẩm phần mềm có chức năng chính lưu trữ và truy xuất dữ liệu theo yêu cầu của các ứng dụng phần mềm khác - có thể chạy trên cùng một máy tính hoặc trên một máy tính khác qua mạng
+## Tác giả
 
-MySQL là hệ quản trị cơ sở dữ liệu tự do nguồn mở phổ biến nhất thế giới và được các nhà phát triển rất ưa chuộng trong quá trình phát triển ứng dụng. Vì MySQL là cơ sở dữ liệu tốc độ cao, ổn định và dễ sử dụng, có tính khả chuyển, hoạt động trên nhiều hệ điều hành cung cấp một hệ thống lớn các hàm tiện ích rất mạnh. Với tốc độ và tính bảo mật cao, MySQL rất thích hợp cho các ứng dụng có truy cập CSDL trên internet. MySQL miễn phí hoàn toàn cho nên bạn có thể tải về MySQL từ trang chủ. Nó có nhiều phiên bản cho các hệ điều hành khác nhau: phiên bản Win32 cho các hệ điều hành dòng Windows, Linux, Mac OS X, Unix, FreeBSD, NetBSD, Novell NetWare, SGI Irix, Solaris, SunOS,...
+- Lương Phúc Thiên Ân - Tác giả: https://github.com/lpta2302
+- Dương Lâm Gia Kiệt - Đồng tác giả: https://github.com/DLGiaKiet
+- Đoàn Thanh Lâm - Đồng tác giả: https://github.com/thanhlamcode
+- Nguyễn Hoàng Minh Tấn - Đồng tác giả: https://github.com/AriTannia
+- Phạm Trung - Đồng tác giả: https://github.com/PhamTrung1204
 
-MySQL là một trong những ví dụ rất cơ bản về Hệ Quản trị Cơ sở dữ liệu quan hệ sử dụng Ngôn ngữ truy vấn có cấu trúc (SQL).
+## Kiến thức áp dụng
 
-MySQL được sử dụng cho việc bổ trợ PHP, Perl, và nhiều ngôn ngữ khác, nó làm nơi lưu trữ những thông tin trên các trang web viết bằng PHP hay Perl,...
+- Phân tích thiết kế hệ thống
+- Sử dụng MERN Stack (MongoDB, Express.js, React.js, Node.js)
+- Áp dụng MUI (Material UI) thư viện React Component
+- Tích hợp OAuth 2.0
+- Sử dụng TanStack (React Query)
+- Kiểm thử API với Postman
 
-Chuẩn Lập Trình
-Đưa ra các quy ước khi coding với ngôn ngữ lập trình C#, với các quy tắc này giúp tiết kiệm thời gian rất lớn trong tiến trình phát triển phần mềm và cả trong quá trình bảo trì sản phẩm. Giúp sinh viên quen với làm việc theo nhóm. Tài liệu này chủ yếu hướng dẫn sinh viên với ngôn ngữ lập trình C#, nhưng có rất nhiều quy tắc được sử dụng trong nhiều ngôn ngữ lập trình khác tích hợp trong bộ công cụ Visual Studio .NET.
+## Triển khai
 
-Tài Liệu Thiết Kế
-XEM TẠI ĐÂY
+### Nền tảng xây dựng
 
-Tài liệu cho nhà phát triển
-XEM TẠI ĐÂY
+Dự án "Website bán laptop FCOMPUTER" được xây dựng trên nền tảng MERN stack, bao gồm MongoDB, Express.js, React.js và Node.js, cùng với các công nghệ bổ trợ như MUI, OAuth 2.0 và TanStack.
 
-Tài liệu cho người dùng cuối
-tại đây
+MERN Stack
+- MongoDB: Là cơ sở dữ liệu NoSQL, MongoDB lưu trữ thông tin về sản phẩm, khách hàng và đơn hàng dưới dạng tài liệu JSON, giúp dễ dàng mở rộng và thao tác với dữ liệu không có cấu trúc cố định.
 
-Kênh Truyền Thông
-fan page: quản lý web ban hang
+- Express.js: Đây là framework backend cho Node.js, giúp xử lý các yêu cầu HTTP từ phía client, tổ chức API và giao tiếp với cơ sở dữ liệu. Express.js giúp tối ưu hóa việc quản lý routing và middleware cho hệ thống.
 
-Đóng góp ý kiến
-XEM TẠI ĐÂY
+- React.js: Là thư viện JavaScript phổ biến để xây dựng giao diện người dùng động. React.js sử dụng các component tái sử dụng, giúp tăng cường khả năng bảo trì và mở rộng giao diện người dùng một cách dễ dàng và hiệu quả. Đồng thời, React đảm bảo rằng các thay đổi trong giao diện sẽ được phản ánh ngay lập tức mà không cần phải tải lại toàn bộ trang.
 
-Lời cảm ơn
-Để hoàn thành tốt đề tài này chúng em xin cảm ơn thầy Mai Cường Thọ. Một lần nữa chúng em xin trân trọng cảm ơn thầy Mai Cường Thọ đã tận tình giúp đỡ, hướng dẫn chúng em trong suốt quá trình thực hiện đề tài.
+- Node.js: Là môi trường chạy JavaScript phía server, giúp xử lý các yêu cầu HTTP, giao tiếp với cơ sở dữ liệu và điều phối logic phía server. Node.js cho phép xây dựng ứng dụng có khả năng xử lý đồng thời tốt, giúp hệ thống hoạt động nhanh và hiệu quả.
 
-Danh sách lỗi:
-Không hiện hình ảnh (đã khắc phục);
-1 số dòng CSDL không chỉnh sửa được;
-Chưa đăng kí được
+MUI (Material-UI)
+- MUI là một thư viện UI phổ biến, được sử dụng để xây dựng giao diện người dùng hiện đại và thân thiện. MUI cung cấp một bộ sưu tập các component UI như nút bấm, thanh điều hướng, bảng dữ liệu, form nhập liệu... Các component này được thiết kế theo nguyên lý Material Design của Google, giúp giao diện trông đẹp mắt, đồng nhất và dễ sử dụng. Ngoài ra, MUI hỗ trợ tính năng responsive, giúp giao diện hoạt động tốt trên mọi loại thiết bị, từ desktop đến mobile.
+
+OAuth 2.0
+- Để bảo mật hệ thống và quản lý quyền truy cập của người dùng, chúng tôi sử dụng OAuth 2.0.
+
+TanStack (React Query)
+- TanStack (React Query) là một thư viện mạnh mẽ giúp quản lý việc truy vấn dữ liệu giữa frontend và backend. Nó hỗ trợ caching, đồng bộ hóa và tái sử dụng dữ liệu một cách hiệu quả, giúp cải thiện hiệu suất ứng dụng, giảm số lần gọi API và giảm độ trễ khi tải dữ liệu.
+
+Postman
+- Postman là công cụ được sử dụng để kiểm thử API, giúp kiểm tra và xác minh các endpoint của server trước khi triển khai. Với Postman, chúng tôi có thể dễ dàng gửi yêu cầu đến backend, kiểm tra các phản hồi từ API, từ đó đảm bảo rằng tất cả các tính năng và chức năng hoạt động chính xác.
