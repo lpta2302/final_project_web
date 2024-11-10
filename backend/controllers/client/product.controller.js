@@ -192,7 +192,7 @@ const productController = {
     try {
       const topProducts = await Product.find({})
         .sort({ purchaseCount: -1 })
-        .limit(5);
+        .limit(1);
 
       res.status(200).json(topProducts);
     } catch (error) {

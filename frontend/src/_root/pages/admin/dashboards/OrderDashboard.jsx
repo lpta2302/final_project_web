@@ -50,14 +50,17 @@ const OrderDashboard = () => {
 
     orders.forEach((order) => {
       const orderDate = new Date(order.createdAt);
+      console.log(orderDate);
+
       if (orderDate.getFullYear() !== currentDay.getFullYear()) return;
       const month = orderDate.getMonth();
-      const day = orderDate.getDay();
+      const day = orderDate.getDate();
+
       monthlyData[month].count += 1;
 
+      monthlyData[month].days[day - 1].count += 1;
       if (order.paymentStatus === 'paid') {
         monthlyData[month].paidOrder += 1;
-        monthlyData[month].days[day - 1].count += 1;
 
         monthlyData[month].totalAmount += order.totalAmount;
         monthlyData[month].days[day - 1].totalAmount += order.TotalAmount;
@@ -65,6 +68,8 @@ const OrderDashboard = () => {
     });
     setTotalOrders(orders.length);
     setOrdersByMonth(Object.values(monthlyData));
+    console.log(monthlyData);
+
 
     setOrdersByDay(monthlyData[currentDay.getMonth()].days)
 
@@ -79,12 +84,10 @@ const OrderDashboard = () => {
     setOrdersByMonth(Object.values(monthlyData));
     setOrdersByDay(monthlyData[currentDay.getMonth()].days)
     const thisMonthData = monthlyData[currentDay.getMonth()];
-    console.log(thisMonthData.count + "");
 
     setThisMonthOrders(thisMonthData.count + "");
     setAverageOrderValue(thisMonthData.paidOrder > 0 ? thisMonthData.totalAmount / thisMonthData.paidOrder + "" : "0");
   }, [currentDay]);
-  console.log(thisMonthOrders);
 
 
   return (
