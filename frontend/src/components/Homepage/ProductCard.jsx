@@ -92,6 +92,7 @@ const ProductCard = ({ product, wishList, customer, isLoggedIn }) => {
               variant="body2"
               color="text.secondary"
               fontSize='0.8rem'
+              lineClamp={2}
             >
               {product.description}
             </TruncatedTypography>
@@ -106,6 +107,32 @@ const ProductCard = ({ product, wishList, customer, isLoggedIn }) => {
             Trạng thái:{" "}
             {product.productStatus === "available" ? "Còn hàng" : "Hết hàng"}
           </Typography>
+          <Typography
+            fontSize="1rem"
+            variant="body1"
+            sx={{
+              textDecoration: product.specs[0]?.discount && 'line-through'
+            }}
+            style={{
+              color: product.productStatus === "available" ? "green" : "red",
+            }}
+            textAlign='right'
+          >
+            { product.specs[0]?.price?.toString() && new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.specs[0]?.price)}
+          </Typography>
+          {
+            product.specs[0]?.discount &&
+            <Typography
+              fontSize="1rem"
+              variant="body1"
+              style={{
+                color: product.productStatus === "available" ? "green" : "red",
+              }}
+              textAlign='right'
+            >
+              {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format((product.specs[0]?.price * product.specs[0]?.discount))}
+            </Typography>
+          }
         </CardContent>
       </Link>
       <Box

@@ -25,7 +25,7 @@ export default function ExpandableSearch({ isSearchFocused, setIsSearchFocused, 
     };
 
     const handleSearchBlur = () => {
-        setIsSearchFocused(false)
+        // setTimeout(setIsSearchFocused(false),500)
     };
 
 

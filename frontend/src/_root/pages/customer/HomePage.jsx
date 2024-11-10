@@ -57,13 +57,13 @@ const HomePage = ({ handleAddToCart }) => {
   } = useReadAllProduct();
   const { data: wishList } = useReadWishlistItems(userId);
   console.log(products);
-  
+
   useEffect(() => {
     if (!isAuthenticated || !user._id) return;
     setUserId(user._id)
   }, [user]);
   if (isLoadingCat || isLoadingProd) {
-    return<Loading/>;
+    return <Loading />;
   }
 
   if (isError || !products) {
@@ -83,20 +83,6 @@ const HomePage = ({ handleAddToCart }) => {
           </Box>
         </Box>
 
-        {/* Popular Products Section */}
-        <Typography
-          variant="h4"
-          align="left"
-          sx={{ margin: "30px 0", fontSize: "24px", fontWeight: "600" }}
-        >
-          Sản phẩm thịnh hành
-        </Typography>
-        <Box display='inline-flex' gap={2} overflow="auto" width="100%" py={1}>
-          {products?.map((product) => (
-            <ProductCard wishList={wishList} customer={user} isLoggedIn product={product} key={product._id} />
-          ))}
-        </Box>
-
         {/* Promotion Products Section */}
         <Typography
           variant="h4"
@@ -106,22 +92,22 @@ const HomePage = ({ handleAddToCart }) => {
           Sản phẩm khuyến mãi
         </Typography>
         <Box display='inline-flex' gap={2} overflow="auto" width="100%" py={1}>
-          {products?.map((product) => (
+          {products?.filter(product => product.specs[0]?.discount).map((product) => (
             <ProductCard wishList={wishList} customer={user} isLoggedIn={isAuthenticated} product={product} key={product._id} />
           ))}
         </Box>
 
-        {/* Best-selling Products Section */}
+        {/* Popular Products Section */}
         <Typography
           variant="h4"
           align="left"
           sx={{ margin: "30px 0", fontSize: "24px", fontWeight: "600" }}
         >
-          Laptop bán chạy
+          Sản phẩm thịnh hành
         </Typography>
         <Box display='inline-flex' gap={2} overflow="auto" width="100%" py={1}>
-          {products?.map((product) => (
-            <ProductCard wishList={wishList} customer={user} isLoggedIn={isAuthenticated} product={product} key={product._id} />
+          {products?.filter(product => product.tag.some(t => t.tagName.toLowerCase() === 'popular')).map((product) => (
+            <ProductCard wishList={wishList} customer={user} isLoggedIn product={product} key={product._id} />
           ))}
         </Box>
 
@@ -131,7 +117,20 @@ const HomePage = ({ handleAddToCart }) => {
           align="left"
           sx={{ margin: "30px 0", fontSize: "24px", fontWeight: "600" }}
         >
-          Sản phẩm nổi bật
+          Sản phẩm mới
+        </Typography>
+        <Box display='inline-flex' gap={2} overflow="auto" width="100%" py={1}>
+          {products?.filter(product => product.tag.some(t => t.tagName.toLowerCase() === 'new')).map((product) => (
+            <ProductCard wishList={wishList} customer={user} isLoggedIn={isAuthenticated} product={product} key={product._id} />
+          ))}
+        </Box>
+        {/* Featured Products Section */}
+        <Typography
+          variant="h4"
+          align="left"
+          sx={{ margin: "30px 0", fontSize: "24px", fontWeight: "600" }}
+        >
+          Tất cả sản phẩm
         </Typography>
         <Box display='inline-flex' gap={2} overflow="auto" width="100%" py={1}>
           {products?.map((product) => (
