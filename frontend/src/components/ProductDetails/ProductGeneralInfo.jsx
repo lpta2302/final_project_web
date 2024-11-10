@@ -156,11 +156,11 @@ const ProductGeneralInfo = () => {
               <Box sx={{ display: "flex", flexDirection: "column", textAlign: "right" }}>
                 {productData.discountPercentage > 0 && (
                   <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
-                    ${originalPrice}
+                    {originalPrice}{" "}VND
                   </Typography>
                 )}
                 <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                  ${discountPrice.toFixed(2)}
+                  {discountPrice.toFixed(2)}{" "}VND
                 </Typography>
               </Box>
             </Button>

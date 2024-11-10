@@ -33,6 +33,7 @@ function CheckoutPage() {
 
   // Mutation hook for creating a new order
   const createNewOrder = useCreateNewOrder();
+  const {mutateAsync: create} = useCreateNewOrder();
 
   // Get current date and add 5 days
   const currentDateTime = new Date();
@@ -124,7 +125,7 @@ function CheckoutPage() {
   };
 
   // Handle order submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validate address selection
@@ -134,17 +135,17 @@ function CheckoutPage() {
     }
 
     // Call the mutation to create a new order
-    createNewOrder.mutate(orderData, {
-      onSuccess: () => {
-        console.log("Order created successfully");
-        navigate(0);
-        // Optionally, navigate to a different page or reset form here
-      },
-      onError: (error) => {
-        navigate(0);
-        console.error("Error creating order:", error);
-      },
-    });
+    // createNewOrder.mutateAsync(orderData, {
+    //   onSuccess: () => {
+    //     console.log("Order created successfully");
+    //     // Optionally, navigate to a different page or reset form here
+    //   },
+    //   onError: (error) => {
+    //     console.error("Error creating order:", error);
+    //   },
+    // });
+    create(orderData)
+    navigate(0);
   };
 
   // Show loading while data is being fetched

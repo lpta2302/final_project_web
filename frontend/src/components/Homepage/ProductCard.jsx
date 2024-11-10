@@ -31,7 +31,7 @@ const ProductCard = ({ product, wishList, customer, isLoggedIn }) => {
   const { mutateAsync: unLike, isPending: isUnliking } = useRemoveItemFromWishlist();
 
   useEffect(() => {
-    if (!wishList) return;
+    if (!wishList || !wishList.products) return;
     setIsFavorite(wishList.products.some((prod) => String(prod._id) === String(product._id)));
   }, [wishList, product._id]);
 
