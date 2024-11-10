@@ -906,6 +906,8 @@ export const useAddItemToSeens = () => {
   return useMutation({
     mutationFn: ({ data: { userId, productId } }) =>
       createRecord(customer_seen.addSeenProduct(), { userId, productId }),
+    mutationFn: ({ data: { userId, productId } }) =>
+      createRecord(customer_seen.addSeenProduct(), { userId, productId }),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_ALL_SEEN_PRODUCTS]);
     },
@@ -997,6 +999,7 @@ export const useUpdateAddress = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (address) =>
+      updateRecord(customer_address_url.editAddress(address._id), address),
       updateRecord(customer_address_url.editAddress(address._id), address),
     onSuccess: () => {
       queryClient.invalidateQueries(["READ_OWN_ADDRESSES"]);

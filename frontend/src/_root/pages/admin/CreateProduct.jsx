@@ -64,7 +64,7 @@ function CreateProduct() {
   const location = useLocation();
   const initProductId = location.state?.productId;
   console.log(initProductId);
-  
+
 
   // const initProduct = state?.productId ? state.product : 
   // {
@@ -79,7 +79,7 @@ function CreateProduct() {
   //   console.log(initProduct);
   const [variants, setVariants] = useState(initProduct.specs)
   const [productCode, setProductCode] = useState(initProduct.productCode)
-  const [productStatus, setProductStatus] = useState(productStatuses.draft.label)
+  const [productStatus, setProductStatus] = useState(productStatuses.available.label)
   const [productName, setProductName] = useState(initProduct.productName)
   const [description, setDescription] = useState(initProduct.description)
   const [tags, setTags] = useState(initProduct.tag)
@@ -105,7 +105,7 @@ function CreateProduct() {
     if (product) {
       setVariants(product.specs || initProduct.specs);
       setProductCode(product.productCode || '');
-      setProductStatus(product.productStatus || productStatuses.draft.label)
+      setProductStatus(product.productStatus || productStatuses.available.label)
       setProductName(product.productName || '');
       setDescription(product.description || '');
       setTags(product.tag || []);
@@ -129,18 +129,25 @@ function CreateProduct() {
   }
   const handleSave = async (isSaveDraft) => {
     const errors = { ...JSON.parse(JSON.stringify(initErrorState)) };
-    const savedVariants =
-      JSON.parse(JSON.stringify(
-        variants.filter((variant, index) => {
-          const enoughData = variant.specifications.length > 0
-          if (!enoughData)
-            errors.variants[index] = "Phải có ít nhất 1 thông số sản phẩm"
-          return enoughData
-        })
-      ))
+    console.log(
+      JSON.parse(JSON.stringify(variants.filter((variant, index) => {
+        const enoughData = variant.specifications.length > 0
+        if (!enoughData)
+          errors.variants[index] = "Phải có ít nhất 1 thông số sản phẩm"
+        return enoughData
+      })))
+    );
 
-    savedVariants.forEach(variant => {
-      variant.specifications = variant.specifications.map(spec => ({ value: spec.value, key: spec._id }))
+    const savedVariants = JSON.parse(JSON.stringify(variants.filter((variant, index) => {
+      const enoughData = variant.specifications.length > 0
+      if (!enoughData)
+        errors.variants[index] = "Phải có ít nhất 1 thông số sản phẩm"
+      return enoughData
+    })))
+    console.log(savedVariants);
+
+    savedVariants.forEach((variant, index) => {
+      variant.specifications = variants[index].specifications.map(spec => !!spec.value && !!spec.key && ({ value: spec.value, key: spec.key._id }))
     })
 
     setFormErrors(errors);
@@ -149,6 +156,20 @@ function CreateProduct() {
     if (!validateForm())
       toaster({ variant: 'error', message: 'Lưu sản phẩm thất bại' })
     else {
+
+      console.log({
+        productCode,
+        productName,
+        description,
+        category: category?._id,
+        tag: tags.map(t => t._id),
+        brand: brand?._id,
+        variations: savedVariants,
+        productStatus: isSaveDraft ? "draft" : productStatus,
+        files
+      });
+
+
       if (initProductId) {
 
         const updatedProduct = updateProduct(
@@ -188,7 +209,7 @@ function CreateProduct() {
       }
     }
 
-    toaster("Lưu sản phẩn thành công", {variant: 'success'})
+    toaster("Lưu sản phẩn thành công", { variant: 'success' })
 
     navigate(-1);
   }
@@ -211,7 +232,7 @@ function CreateProduct() {
       slotProps={{
         toolbar: {
           handleSaveDraft: !initProductId && (async () => handleSave(true)), handleSave: async () => handleSave(),
-          handleDelete: initProductId ? async () => { await deleteProduct(initProductId); navigate(-1); } : ()=>navigate(-1),
+          handleDelete: initProductId ? async () => { await deleteProduct(initProductId); navigate(-1); } : () => navigate(-1),
           disabled: !validateForm()
         }
       }}
@@ -235,7 +256,7 @@ function CreateProduct() {
                   setProductCode(e.target.value)
                 }}
                 label="Mã sản phẩm" fullWidth margin="normal" placeholder="PC001" />
-              <FormControl sx={{width: { md: '30%', xs: '100%' }}} margin="normal">
+              <FormControl sx={{ width: { md: '30%', xs: '100%' } }} margin="normal">
                 <InputLabel id="product-status">Trạng thái</InputLabel>
                 <Select sx={{ height: '100%' }} labelId="product-status" label='Trạng thái' value={productStatus} onChange={(e) => setProductStatus(e.target.value)}>
                   {
@@ -355,6 +376,7 @@ function CreateProduct() {
                     specificatinKeys={specificationKeys}
                     specifications={variant.specifications}
                     setSpecifications={newSpecs => {
+                      console.log(newSpecs)
                       setVariantInfo(index, 'specifications', newSpecs)
                     }} key={index} />
                 </Box>
@@ -520,13 +542,13 @@ function CreateProduct() {
             </CssVarsProvider>
           </Box>
         </Grid2>
-        <Grid2 size={{xs:12, md: 0}} display={{xs: 'block', md: 'none'}}>
+        <Grid2 size={{ xs: 12, md: 0 }} display={{ xs: 'block', md: 'none' }}>
           <PageToolbar {...{
             handleSaveDraft: !initProductId && (async () => handleSave(true)), handleSave: async () => handleSave(),
-            handleDelete: initProductId ? async () => { await deleteProduct(initProductId); navigate(-1); } : ()=>navigate(-1),
+            handleDelete: initProductId ? async () => { await deleteProduct(initProductId); navigate(-1); } : () => navigate(-1),
             disabled: !validateForm(),
-            isMobile:true
-          }}/>
+            isMobile: true
+          }} />
         </Grid2>
       </Grid2>
     </CustomPageContainer>

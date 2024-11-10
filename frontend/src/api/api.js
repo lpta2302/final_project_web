@@ -172,7 +172,7 @@ export async function updateProduct(url, data) {
   // JSON fields (tag, relativeProduct, specs, category, and brand)
   formData.append("imageUrls", JSON.stringify(data.imageUrls || []));
   formData.append("tag", JSON.stringify(data.tag || []));
-  formData.append("specs", JSON.stringify(data.variations));
+  formData.append("variations", JSON.stringify(data.variations));
 
   // Image or file handling
   if (data.files) {

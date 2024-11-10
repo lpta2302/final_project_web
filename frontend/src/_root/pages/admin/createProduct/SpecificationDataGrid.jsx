@@ -7,7 +7,7 @@ import DataGridConfirmDialog from "../../../../components/dialogs/DataGridConfir
 
 const columnFields = [
     { field: 'key',
-        valueFormatter:(value)=>typeof value === 'string' ? value : value?.key,
+        valueFormatter:(value)=>{return typeof value === 'string' ? value : value?.key},
         headerName: 'Thông số', width: 300, editable: true },
     { field: 'value', headerName: 'Giá trị', width: 300, editable: true, renderEditCell: (params) => (<CustomEditCell {...params} isRequired />), isRequired: true },
 ];
@@ -18,9 +18,10 @@ function SpecificationDataGrid({ specificatinKeys, specifications, setSpecificat
     const [deleteDialogPayload, setDeleteDialogPayload] = useState({ state: false, id: null });
     const [updateCellError, setUpdateCellError] = useState({})
     const [editingRowId, setEditingRowId] = useState();
+    
 
     columnFields[0].renderEditCell = (params) => (
-        <CustomEditDropdownCell {...params} options={specificatinKeys.map(specKey => specKey.key)} />
+        <CustomEditDropdownCell {...params} options={specificatinKeys.map(specKey => specKey)} labelField="key" />
     );
 
     columnFields.forEach(col => {

@@ -47,7 +47,6 @@ const sliderSettings = {
 const HomePage = ({ handleAddToCart }) => {
   const { user, isAuthenticated } = useAuthContext();
   const [userId, setUserId] = useState()
-  const [favorites, setFavorites] = useState({});
   const { data: categories, isLoading: isLoadingCat } = useReadAllCategory();
   const {
     data: products,
@@ -63,7 +62,7 @@ const HomePage = ({ handleAddToCart }) => {
     setUserId(user._id)
   }, [user]);
   if (isLoadingCat || isLoadingProd) {
-    return <CircularProgress />;
+    return <CircularProgress sx={{mx:'auto'}}/>;
   }
 
   if (isError || !products) {
