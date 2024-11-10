@@ -878,7 +878,7 @@ export const useRemoveItemFromWishlist = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({ customerId, productId }) =>
-      updateRecord(admin_category_url.deleteCategory(customerId), productId),
+      updateRecord(customer_wishlist.deleteProduct(customerId), {productId}),
     onSuccess: () => {
       queryClient.invalidateQueries([READ_OWN_WISHLIST]);
       queryClient.invalidateQueries([READ_ALL_PRODUCTS]);

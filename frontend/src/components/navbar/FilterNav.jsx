@@ -9,7 +9,9 @@ function FilterNav({ setFilterParams, params }) {
 
     const { data: brands, isLoading: isLoadingBrands } = useReadAllBrand();
     const { data: categories, isLoading: isLoadingCategories } = useReadAllCategory();
-    if (isLoadingBrands || isLoadingCategories) return <CircularProgress sx={{ mx: 'auto' }} />;
+    if (isLoadingBrands || isLoadingCategories) return <Box display="flex" justifyContent="center" width="100%">
+        <CircularProgress />
+    </Box>;
 
     return (
         <Box sx={{ mb: 2 }}>  {/* Add margin bottom for spacing */}
@@ -47,27 +49,27 @@ function FilterNav({ setFilterParams, params }) {
         </Box>
     )
 }
-            // <Typography variant="h6" sx={{ mb: 1 }}>Chọn theo tiêu chí</Typography> {/* Section title */}
-            // <Grid2 container gap={1}>
-            //     <Grid2 size={{ xs: 4, sm: 3, md: 12 / 5 }}>
-            //         <FormControl fullWidth>
-            //             <InputLabel id="brand-label">Nhãn hiệu</InputLabel>
-            //             <Select
-            //                 sx={{ minWidth: '200px' }}
-            //                 labelId="brand-label"
-            //                 id="brand"
-            //                 name="brand"
-            //                 value={selectedFilters?.brand || ''}
-            //                 label="Brand"
-            //                 onChange={(e) => setFilter('brand', e.target.value)}
-            //             >
-            //                 {brands.map(({ brandName }) => (
-            //                     <MenuItem key={brandName} value={brandName}>{brandName}</MenuItem>
-            //                 ))}
-            //             </Select>
-            //         </FormControl>
-            //     </Grid2>
-            // </Grid2>
+// <Typography variant="h6" sx={{ mb: 1 }}>Chọn theo tiêu chí</Typography> {/* Section title */}
+// <Grid2 container gap={1}>
+//     <Grid2 size={{ xs: 4, sm: 3, md: 12 / 5 }}>
+//         <FormControl fullWidth>
+//             <InputLabel id="brand-label">Nhãn hiệu</InputLabel>
+//             <Select
+//                 sx={{ minWidth: '200px' }}
+//                 labelId="brand-label"
+//                 id="brand"
+//                 name="brand"
+//                 value={selectedFilters?.brand || ''}
+//                 label="Brand"
+//                 onChange={(e) => setFilter('brand', e.target.value)}
+//             >
+//                 {brands.map(({ brandName }) => (
+//                     <MenuItem key={brandName} value={brandName}>{brandName}</MenuItem>
+//                 ))}
+//             </Select>
+//         </FormControl>
+//     </Grid2>
+// </Grid2>
 
 
 export default FilterNav

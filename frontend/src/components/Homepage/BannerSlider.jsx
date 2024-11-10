@@ -100,9 +100,9 @@ const BannerSlider = () => {
                 display: "flex",
                 justifyContent: "center",
                 margin: "0 auto",
-                width: "50%", // Độ rộng 50% của container
+                width: "100%", // Độ rộng 50% của container
                 height: "auto",
-                objectFit: "cover",
+                objectFit: "contain",
                 maxHeight: "320px",
                 borderRadius: "8px",
               }}

@@ -57,7 +57,9 @@ function GridProduct() {
       <Grid2 container spacing={2}> {/* Use Grid for layout */}
         {
           isLoadingWishlist || isSearching ?
-            <CircularProgress /> :
+            <Box display="flex" justifyContent="center" width="100%">
+              <CircularProgress />
+            </Box> :
             searchResult.map((product) => (
               <Grid2 item size={{ xs: 12, sm: 6, md: 4, lg: 12 / 5 }} key={product._id}> {/* Responsive grid items */}
                 <ProductCard
