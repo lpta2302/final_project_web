@@ -1,15 +1,16 @@
 import { DataGrid, GridActionsCellItem, GridToolbar } from '@mui/x-data-grid';
 import { renderEditCustomerStatus } from './customRenderer/customerStatus.jsx';
-import { useDeleteoOrderAmin, useReadAllOrdersAdmin, useSearchOrderAdmin, useUpdateOrderAdmin } from '../../../api/queries.js';
-import { CreditCard, Delete, Done, DoNotDisturbAltOutlined, FilterAlt, FilterAltOff, HourglassTopOutlined, LensBlurRounded, LocalShipping, Money, Pending } from '@mui/icons-material';
+import { useDeleteoOrderAmin, useGetOrderDetail, useReadAllOrdersAdmin, useSearchOrderAdmin, useUpdateOrderAdmin } from '../../../api/queries.js';
+import { Close, CreditCard, Delete, Done, DoNotDisturbAltOutlined, FilterAlt, FilterAltOff, HourglassTopOutlined, LensBlurRounded, LocalShipping, Money, Pending, ViewAgendaOutlined } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
 import DataGridConfirmDialog from '../../../components/dialogs/DataGridConfirmDialog.jsx';
 import { CustomPageContainer, FilterDrawer, HighLightCard, ManagePageSearch } from "../../../components";
 import { enqueueSnackbar as toaster } from 'notistack';
-import { Box, Button, ButtonGroup, Drawer, Grid2 } from '@mui/material';
+import { Box, Button, ButtonGroup, Dialog, DialogContent, DialogTitle, Drawer, Grid2, IconButton, List, ListItem, ListItemText, Typography } from '@mui/material';
 import { renderCustomStatus, renderEditCustomStatus } from './customRenderer/customStatusRender.jsx';
 import setDeepState from '../../../util/setDeepState.js';
 import { formatDate } from '../../../util/datetimeHandler.js';
+import moment from 'moment';
 
 // {"_id":"6718dc7a3010027ae58c30d1",
 //   "userId":"670dd3f0602cc40efb3bc78c",
@@ -83,6 +84,7 @@ const defaultSorting = [
 const today = formatDate(new Date());
 
 function ManageOrder() {
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [isOpenFilter, setIsOpenFilter] = useState(false)
   const [searchValue, setSearchValue] = useState('')
   const [searchParam, setSearchParam] = useState()
@@ -106,7 +108,7 @@ function ManageOrder() {
   },[orders])
   useEffect(() => {
     setTimeout(() => {
-      if (!searchValue && Object.keys(searchParam)?.length < 1) {
+      if (!searchValue && !searchParam && Object.keys(searchParam)?.length < 1) {
         return;
       }
       setSearchParam(
@@ -177,7 +179,16 @@ function ManageOrder() {
       width: 100,
       cellClassName: 'actions',
       getActions: ({ id }) => {
-        return [<GridActionsCellItem
+        return [
+          <GridActionsCellItem
+            icon={<ViewAgendaOutlined />}
+            label="Edit"
+            className="textPrimary"
+            onClick={()=>{setSelectedOrderId(id);setDetailModalOpen(true)}}
+            color="inherit"
+            key="edit"
+          />,
+          <GridActionsCellItem
           icon={<Delete color='error' />}
           label="Delete"
           onClick={() => setDialogPayload({ state: true, id: id })}
@@ -277,7 +288,15 @@ function ManageOrder() {
 
     setIsOpenFilter(newState);
   };
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
 
+  const { data: orderDetail, isLoading: isLoadingDetail } = useGetOrderDetail(
+    selectedOrderId
+  );
+  const handleCloseDetailModal = () => {
+    setDetailModalOpen(false);
+    setSelectedOrderId(null);
+  };
 
 
   return (
@@ -298,7 +317,129 @@ function ManageOrder() {
           <HighLightCard isLoading={isLoadingOrders} title="Đơn hàng đang xử lí" value={orders?.filter(o => o.processStatus === 'processing')?.length} />
         </Grid2>
     </Grid2>
+    <Dialog
+        open={detailModalOpen}
+        onClose={handleCloseDetailModal}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>
+          Chi tiết đơn hàng
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseDetailModal}
+            sx={{ position: "absolute", right: 8, top: 8 }}
+          >
+            <Close />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers>
+          {isLoadingDetail ? (
+            <Typography>Đang tải chi tiết đơn hàng...</Typography>
+          ) : orderDetail ? (
+            <>
+              <Typography variant="h6" gutterBottom>
+                Thông tin đơn hàng:
+              </Typography>
+              <Grid2 container spacing={2}>
+                <Grid2 item xs={6}>
+                  <Typography variant="body2">Mã đơn hàng:</Typography>
+                  <Typography variant="body2">{orderDetail._id}</Typography>
+                </Grid2>
+                <Grid2 item xs={6}>
+                  <Typography variant="body2">Ngày đặt hàng:</Typography>
+                  <Typography variant="body2">
+                    {moment(orderDetail.createdAt).format("DD-MM-YYYY")}
+                  </Typography>
+                </Grid2>
+                <Grid2 item xs={12}>
+                  <Typography variant="body2">Ghi chú:</Typography>
+                  <Typography variant="body2">
+                    {orderDetail.orderNote || "Không có ghi chú"}
+                  </Typography>
+                </Grid2>
+              </Grid2>
 
+              <Typography variant="h6" gutterBottom>
+                Sản phẩm trong đơn hàng:
+              </Typography>
+              <List>
+                {orderDetail.cart?.cartItems.map((item) => (
+                  <ListItem key={item._id}>
+                    <Box
+                      component="img"
+                      src={
+                        item.spec?.products?.imageURLs?.[0] ||
+                        "https://via.placeholder.com/60"
+                      }
+                      alt={item.spec?.products?.productName || "Ảnh sản phẩm"}
+                      sx={{ width: 60, height: 60, borderRadius: 2, mr: 2 }}
+                    />
+                    <ListItemText
+                      primary={
+                        item.spec?.products?.productName || "Tên không có sẵn"
+                      }
+                      secondary={
+                        <Typography variant="body2">{`Số lượng: ${item.quantity} - Đơn giá: ${item.spec?.price.toLocaleString()} VND`}</Typography>
+                      }
+                    />
+                  </ListItem>
+                ))}
+              </List>
+
+              <Typography variant="h6" gutterBottom>
+                Thông tin tài chính:
+              </Typography>
+              <Grid2 container spacing={2}>
+                <Grid2 item xs={12}>
+                  <Typography variant="body2">Phí vận chuyển:</Typography>
+                  <Typography variant="body2">
+                    {orderDetail.shippingCost.toLocaleString()} VND
+                  </Typography>
+                </Grid2>
+                <Grid2 item xs={12}>
+                  <Typography variant="body2">Giảm giá:</Typography>
+                  <Typography variant="body2">
+                    - {orderDetail.discountAmount.toLocaleString()} VND
+                  </Typography>
+                </Grid2>
+                <Grid2 container spacing={2} sx={{ mt: 1 }}>
+                  <Grid2 item xs={6}>
+                    <Typography variant="body2" color="black" fontWeight="bold">
+                      Tổng cộng:
+                    </Typography>
+                  </Grid2>
+                  <Grid2 item xs={6} textAlign="right">
+                    <Typography variant="h5" fontWeight="bold" color="error">
+                      {(
+                        orderDetail.totalAmount
+                      ).toLocaleString()}{" "}
+                      VND
+                    </Typography>
+                  </Grid2>
+                </Grid2>
+              </Grid2>
+
+              <Typography variant="h6" gutterBottom>
+                Địa chỉ giao hàng:
+              </Typography>
+              <Typography variant="body2">
+                Địa chỉ: {orderDetail.address?.address || "Không có địa chỉ"}
+              </Typography>
+              <Typography variant="body2">
+                Quận/Huyện:{" "}
+                {orderDetail.address?.district || "Không có thông tin"}
+              </Typography>
+              <Typography variant="body2">
+                Tỉnh/Thành phố:{" "}
+                {orderDetail.address?.city || "Không có thông tin"}
+              </Typography>
+            </>
+          ) : (
+            <Typography>Chi tiết đơn hàng không khả dụng.</Typography>
+          )}
+        </DialogContent>
+      </Dialog>
     <Drawer
         sx={{
           '& .MuiDrawer-paper': { backgroundImage: 'none', py: '80px' },

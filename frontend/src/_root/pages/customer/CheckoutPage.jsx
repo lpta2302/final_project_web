@@ -141,6 +141,7 @@ function CheckoutPage() {
         // Optionally, navigate to a different page or reset form here
       },
       onError: (error) => {
+        navigate(0);
         console.error("Error creating order:", error);
       },
     });
