@@ -3,6 +3,7 @@ import Register from './forms/Register'
 import ForgotPassword from './forms/ForgotPassword'
 
 import TopAppBar from './navbar/TopAppBar'
+import FilterNav from './navbar/FilterNav'
 
 import CustomPageContainer from './pageContainer/CustomPageContainer'
 import PageToolbar from './pageContainer/PageToolbar'
@@ -32,6 +33,7 @@ export {
     Register,
     ForgotPassword,
     TopAppBar,
+    FilterNav,
     Loading,
 
     ExpandableSearch,

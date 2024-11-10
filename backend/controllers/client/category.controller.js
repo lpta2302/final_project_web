@@ -28,6 +28,10 @@ export const search = async (req, res) => {
 
     const category = await Category.find(filter);
 
+    category.forEach(cat => {
+      cat.products = undefined; // Or null, if you prefer
+    });
+
     res.json(category);
   } catch (error) {
     res.status(400).json(false);
