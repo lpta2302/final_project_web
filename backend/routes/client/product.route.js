@@ -7,11 +7,17 @@ const productRouter = Router();
 // Tìm kiếm sản phẩm dựa theo tag
 productRouter.get("/tag/search/:tagId", productController.searchTag);
 
+
+// Tìm kiếm sản phẩm dựa theo cat
+productRouter.get("/category/search:categoryId", productController.searchCategory);
+
 // Tìm sản phẩm
 productRouter.get("/search", productController.searchProduct);
 
 // Xem chi tiết sản phẩm
 productRouter.get("/details/:id", productController.showDetailsProduct);
+
+productRouter.get("/details/slug/:slug", productController.getProductBySlug);
 
 // Xem sản phẩm
 productRouter.get("/", productController.showProduct);

@@ -22,14 +22,13 @@ function Search({ searchValue, setSearchValue, handleSearch }) {
         size='small'
         id="search"
         placeholder="Search…"
-        color='black.light'
         value={searchValue}
         onKeyDown={handleKeydown}
         onChange={handleOnChange}
         sx={{
             alignItems: 'center',
             flexGrow: 1,
-            color: 'black.light',
+            color: 'black',
             '& .MuiOutlinedInput-notchedOutline': {
                 borderColor: 'black.light',
                 transition: 'all 0.3s ease' // Default outline color
@@ -56,6 +55,7 @@ function Search({ searchValue, setSearchValue, handleSearch }) {
         }
         endAdornment=
         {
+            !!searchValue &&
             searchValue !== "" &&
             (<InputAdornment position="end">
                 <IconButton onMouseDown={handleClear}>

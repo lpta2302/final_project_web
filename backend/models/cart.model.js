@@ -2,7 +2,6 @@ import mongoose from "mongoose";
 import slug from "mongoose-slug-generator";
 
 mongoose.plugin(slug);
-
 const cartSchema = new mongoose.Schema(
   {
     client: {
@@ -16,12 +15,6 @@ const cartSchema = new mongoose.Schema(
           default: 1,
           type: Number,
         },
-      },
-    ],
-    vouchers: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "voucher",
       },
     ],
   },

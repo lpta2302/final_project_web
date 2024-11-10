@@ -1,6 +1,10 @@
 /* eslint-disable react/prop-types */
 import { createContext, useEffect, useState, useContext } from "react";
-import { getLocalstorage } from "../util/localstorage";
+import { getLocalstorage, setLocalstorage, removeLocalstorage } from "../util/localstorage";
+import { setBearerToken } from "../api/myAxios";
+import { getCurrentUser } from "../api/api";
+import { enqueueSnackbar as toaster } from 'notistack';
+
 const INIT_USER = {
     id: '',
     name: '',
@@ -18,6 +22,7 @@ const INIT_STATE = {
     setUser() { },
     setIsAuthenticated() { },
     checkAuthUser: async () => false,
+    logout: () => {},
 };
 
 const AuthContext = createContext(INIT_STATE)
@@ -36,19 +41,25 @@ export default function AuthProvider({ children }) {
             
             if(!cookieFallback)
                 return false;
+
+            setBearerToken(cookieFallback);
             
-            setUser(cookieFallback)
-            // const { id, ...userInfo } = await getCurrentUser(cookieFallback);
+            // if return user
+            // setUser(cookieFallback)
+
+            // if return token
+            const user = await getCurrentUser();
+            const { id} = user
             
-            // if (!user.id)
-            //     return false
-            // else
-            //     // setUser({ id, ...userInfo })
-            //     setUser(user)
+            if (id)
+                return false
+            else
+                setUser(user)
 
             setIsAuthenticated(true);
             return true;
         } catch (error) {
+            setLocalstorage('cookieFallback',null);
             console.log(error);
             return false;
         } finally {
@@ -56,13 +67,19 @@ export default function AuthProvider({ children }) {
         }
     }
 
+    const logout = () => {
+        removeLocalstorage('cookieFallback');
+        setUser(INIT_USER);
+        setIsAuthenticated(false);
+        setBearerToken(null);
+        toaster('Đăng xuất thành công', { variant: 'success' });
+    };
+
     useEffect(() => {
         if (
-            localStorage.getItem('cookieFallback') === '[]' ||
             localStorage.getItem('cookieFallback') === null
         )
             console.log('not found');
-        // navigate(0);
         else
             checkAuthUser();
     }, []);
@@ -76,6 +93,7 @@ export default function AuthProvider({ children }) {
         setToken,
         setIsAuthenticated,
         checkAuthUser,
+        logout,
     }
 
     return (

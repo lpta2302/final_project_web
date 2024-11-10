@@ -1,7 +1,8 @@
 export const AUTH_URL = {
     login: '/auth/login',
     register: '/auth/register',
-    forgotPassword: ''
+    forgotPassword: '',
+    getCurrentUser: '/client/account/token/information'
 }
 
 //----------------------------- CUSTOMER -----------------------------
@@ -16,7 +17,8 @@ export const customer_url = {
     cart: {
         addItem: () => '/cart/add',
         deleteItem: () => '/cart/delete',
-        getOwnCart: (id) => '/cart/showCart/' + id
+        getOwnCart: (id) => '/cart/showCart/' + id,
+        updateOwnCart: (id) => '/cart/my-cart/' + id
     },
     brand: {
         getAllBrand: () => '/client/brand/',
@@ -41,14 +43,16 @@ export const customer_url = {
         getAllProduct: () => '/client/product/',
         search: () => '/client/product/search',
         getProductByTag: (id) => '/client/product/tag/search/' + id,
+        getProductByCategory: (id) => '/client/product/category/search/' + id,
         getDetailProduct: (id) => '/client/product/details/' + id,
+        getDetailProductBySlug: (slug) => '/client/product/details/slug/' + slug,
         getRelativeProducts: (id) => '/relative/' + id
     },
     wishList: {
-        addProduct: (id) => '/client/wishList/add-to-wissList/' + id,
+        addProduct: (id) => '/client/wishList/add-to-wishList/' + id,
         search: (id) => '/client/wishList/my-wishList/' + id + '/search',
         deleteProduct: (id) => '/client/wishList/my-wishList/del-from-wishList/' + id,
-        getAllProduct: (id) => '/slient/wishList/my-wishList/' + id
+        getAllProduct: (id) => '/client/wishList/my-wishList/' + id
     },
     account: {//ok
         getAccountDetail: (id) => '/client/account/details/' + id,
@@ -121,6 +125,7 @@ export const admin_url = {
         getOrderOfUser: (id) => '/order/user/' + id,
         getOrderDetail: (id) => '/order/detail/' + id,
         editOrder: (id) => '/order/edit/' + id,
+        deleteOrder: (id) => '/order/' + id,
         search: () => '/order/search/',
         generalStatistic: () => '/order/statistic/',//x
         statisticRevenue: () => '/order/statistic-revenue/'//x
@@ -132,9 +137,37 @@ export const admin_url = {
         deleteCarousel: (id) => '/carousel/' + id,
     },
     review: {
-        getAllReview: (id) => '/client/reviews/' + id,
+        getAllReview: (id) => '/reviews/' + id,
         search: (id) => '/reviews/' + id + '/search/',
         deleteReview: (id) => '/reviews/' + id,
         getReview: (id) => '/reviews/' + id
+    },
+    specificationKey: {
+        getAllSpecificationKey: () => '/spec/specification-keys',
+        addSpecificationKey: () => '/spec/specification-keys',
+        deleteSpecificationKey: (id) => '/spec/specification-keys/' + id,
+        updateSpecificationKey: (id) => '/spec/specification-keys/' + id
+    },
+    specification: {
+        getAllSpecification: () => '/spec/',
+        addSpecification: () => '/spec/specification/',
+        deleteSpecification: (id) => '/spec/' + id,
+        deleteSpecificationKeyValue: (id) => '/spec/specification/' + id,
+        updateSpecificationKeyValue: (id) => '/spec/specification/' + id,
+        updateSpecification: (id) => '/spec/' + id,
+        searchSpecification: () => '/spec/search/',
+    },
+    stats: {
+        // Account statistics
+        getNewUsersDaily: () => '/stats/daily',
+        getNewUsersWeekly: () => '/stats/weekly',
+        getNewUsersMonthly: () => '/stats/monthly',
+        getAccountRoleStatistics: () => '/stats/roles',
+
+        // Product statistics
+        getProductSpecsStatistics: () => '/stats/specs-per-product',
+        getProductWithDiscountStatistics: () => '/stats/product-discount',
+        getTotalStockValue: () => '/stats/total-stock-value',
     }
 }
+

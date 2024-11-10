@@ -24,6 +24,6 @@ export default (app) => {
   app.use("/voucher", voucherRoutes);
   app.use("/order", orderRoutes);
   app.use("/carousel", carouselRoutes);
-  app.use("/reviews", reviewRoutes);
   app.use("/stats", statsRoutes);
+  app.use("/reviews", reviewRoutes);
 };

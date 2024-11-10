@@ -2,9 +2,10 @@ import { AppProvider } from '@toolpad/core/AppProvider'
 import { DashboardLayout } from '@toolpad/core/DashboardLayout'
 import { useMemo, useState } from "react"
 import Logo from '../components/Logo'
-import { useNavigate, Outlet } from 'react-router-dom'
-import { Box, Grid2, Typography, useTheme } from '@mui/material'
+import { useNavigate, Outlet, useLocation } from 'react-router-dom'
+import { Box, createTheme, Grid2, IconButton, Typography, useTheme } from '@mui/material'
 import { adminNav } from '../constance/constance.jsx'
+import { ArrowBack } from '@mui/icons-material'
 
 const initSession = {
   user: null
@@ -13,21 +14,8 @@ const initSession = {
 function AdminLayout() {
   const [pathname, setPathname] = useState('/admin');
   const navigate = useNavigate();
-  const [session, setSession] = useState(initSession);
-  const theme = useTheme();
-
-
-  const authentication = useMemo(() => {
-    return {
-      signIn: () => {
-        setSession(initSession);
-      },
-      signOut: () => {
-        setSession(null);
-      },
-    };
-  }, [])
-
+  const location = useLocation();
+  const theme = useTheme()
 
   // useEffect(() => {
   //   if (session.user === null) {
@@ -57,6 +45,7 @@ function AdminLayout() {
 
   return (
     <AppProvider
+      theme={theme}
       navigation={adminNav}
       router={router}
       branding={{
@@ -66,17 +55,25 @@ function AdminLayout() {
             onClick={handleLogoClick}
             display='flex'
             alignItems='center'
+            height="100%"
+            justifyContent='center'
+            flexDirection={{xs:'column', md:'row'}}
           >
-            <Logo />
-            <Typography variant='subtitle2' ml={{ sm: '12px', xs: 'none' }}>Admin</Typography>
+            <Logo lineHeight={1} fontSize={{xs: '1.2rem', md:'1.5rem'}}/>
+            <Typography lineHeight='1rem' variant='subtitle2' ml={{ sm: '12px', xs: 'none' }} fontSize={{xs:'0.5rem', md:'1rem'}}>Admin</Typography>
           </Box>
       }}
-      // theme={theme}
-      session={session}
-      authentication={authentication}
     >
       <DashboardLayout>
-          <Outlet />
+        <Box>
+          {
+            !location.pathname.startsWith('/admin') &&
+            <IconButton onClick={() => navigate(-1)}>
+              <ArrowBack />
+            </IconButton>
+          }
+        </Box>
+        <Outlet />
       </DashboardLayout>
     </AppProvider>
   )

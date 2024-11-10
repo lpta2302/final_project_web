@@ -1,81 +1,82 @@
-import { DataGrid, GridActionsCellItem, GridToolbar } from '@mui/x-data-grid';
-import { PageContainer } from '@toolpad/core';
-import { renderEditProductStatus, renderProductStatus, STATUS_OPTIONS } from './customRenderer/productStatus.jsx';
+import { DataGrid, GridActionsCellItem } from '@mui/x-data-grid';
+import { renderProductStatus } from './customRenderer/productStatus.jsx';
 import { useEffect, useState } from 'react';
 import DataGridConfirmDialog from '../../../components/dialogs/DataGridConfirmDialog.jsx';
-import { CustomGridToolbar, ManagePageSearch } from "../../../components";
+import { CustomGridToolbar, CustomPageContainer, ManagePageSearch } from "../../../components";
 import { enqueueSnackbar as toaster } from 'notistack';
 import { Box } from '@mui/material';
-import { Delete } from '@mui/icons-material';
-import { useDeleteProduct, useReadAllProduct } from '../../../api/queries.js';
+import { Delete, Edit } from '@mui/icons-material';
+import { useDeleteProduct, useReadAllProductAdmin, useReadAllReviewsAdmin, useSearchProductAdmin } from '../../../api/queries.js';
 import { useNavigate } from 'react-router-dom';
+import renderImageSamples from './customRenderer/renderImageSamples.jsx';
+
+// const carouselSchema = mongoose.Schema({
+//   title: {
+//     type: String,
+//     required: true, // Bắt buộc
+//   },
+//   imgUrl: {
+//     type: String,
+//     required: true, // Bắt buộc
+//   },
+//   slug: {
+//     type: String,
+//     unique: true, // Không được trùng
+//   },
+// });
 
 const columnFields = [
-  { field: 'productCode', headerName: 'Id', width: 150 },
-    { field: 'productName', headerName: 'Tên sản phẩm', width: 200 },
-    { field: 'description', headerName: 'Mô tả', width: 300 },
-    {
-      field: 'productStatus',
-      headerName: 'Trạng thái',
-      width: 150,
-      renderCell: renderProductStatus,
-      renderEditCell: renderEditProductStatus,
-      type: 'singleSelect',
-      valueOptions: STATUS_OPTIONS,
-      editable: true,
-      align: 'center'
-    },
+  {
+    field: 'imageUrls',
+    headerName: 'Avatar',
+    display: 'flex',
+    renderCell: renderImageSamples,
+    valueGetter: (value, row) => row.imageURLs,
+    sortable: false,
+    filterable: false,
+   },
+  { field: 'productCode', headerName: 'Id', width: 100 },
+  { field: 'productName', headerName: 'Tên sản phẩm', flex: 1, minWidth: 150 },
+  { field: 'description', headerName: 'Mô tả', width: 150 },
+  {
+    field: 'productStatus',
+    headerName: 'Trạng thái',
+    width: 150,
+    renderCell: renderProductStatus,
+    type: 'singleSelect',
+    align: 'center'
+  },
 ]
 
-
-function ManageAccount() {
+function ManageProduct() {
   const navigate = useNavigate()
-  const [searchValue, setSearchValue] = useState('')
   const [rows, setRows] = useState()
+  const [searchValue, setSearchValue] = useState('')
+  const [searchParam, setSearchParam] = useState({})
+  const [detailId, setDetailId] = useState()
 
-  const { data, isPending: isLoading } = useReadAllProduct();
+  
+  const { data, isPending: isLoading } = useReadAllProductAdmin();
   const [dialogPayload, setDialogPayload] = useState({ state: false, id: null });
-
-  const { mutateAsync: deleteAccount } = useDeleteProduct();
-  // const { mutateAsync: updateAccountStatus } = useUpdateAccountStatus();
-
+  
+  const { mutateAsync: deleteProduct, isPending: isDeleting } = useDeleteProduct();
+  const { data: searchResult } = useSearchProductAdmin(searchParam);
+  
+  useEffect(() => {
+    if(data){
+      setDetailId(data[0].specs[2])
+    }
+  }, [data]);
 
   const breadcrumbs = [
     { path: '/', title: 'Home' },
     { path: '/manage-product', title: 'Quản lý sản phẩm' },
   ]
 
-  useEffect(() => setRows(data), [data])
-  console.log(data);
-
+  useEffect(() => setRows(data?.map(item=>({...item, category:item?.category?.categoryName}))), [data])
+  
   const columns = [
     ...columnFields,
-    // {
-    //   field: 'imageURLs',
-    //   headerName: 'Hình ảnh',
-    //   width: 200,
-    //   renderCell: (params) => (
-    //     <img src={params.value[0]} alt="Product" style={{ width: '50px', height: '50px' }} />
-    //   ),
-    // },
-    // {
-    //   field: 'category',
-    //   headerName: 'Phân loại',
-    //   width: 150,
-    //   valueGetter: (value, row) => console.log(row),
-    // },
-    // {
-    //   field: 'brand',
-    //   headerName: 'Thương hiệu',
-    //   width: 150,
-    //   valueGetter: (params) => params.row.brand.name || '',
-    // },
-    // {
-    //   field: 'specs',
-    //   headerName: 'Thông số kỹ thuật',
-    //   width: 200,
-    //   renderCell: (params) => params.value.map(spec => spec.name).join(', '),
-    // },
     {
       field: 'actions',
       type: 'actions',
@@ -83,8 +84,17 @@ function ManageAccount() {
       width: 100,
       align: 'center',
       cellClassName: 'actions',
-      getActions: ({ row:{_id: id}}) => {
+      getActions: ({ row, id}) => {
+        const { productCode } = row
+        
         return [
+          <GridActionsCellItem
+            icon={<Edit/>}
+            label="Edit"
+            onClick={() => navigate('product-detail/'+productCode.toLowerCase(),{state:{productId: id}})}
+            color="inherit"
+            key="edit"
+          />,
           <GridActionsCellItem
             icon={<Delete color='error' />}
             label="Delete"
@@ -97,6 +107,7 @@ function ManageAccount() {
     }
   ];
 
+
   const handleDeleteClick = async (isAccept) => {
 
     const { id } = dialogPayload
@@ -107,17 +118,9 @@ function ManageAccount() {
     }
 
 
-    await deleteAccount(id)
+    await deleteProduct(id)
     setRows(rows.filter((row) => row.accountCode !== id));
     setDialogPayload({ state: false, id: null });
-  }
-
-  const handleUpdate = async (updatedRow) => {
-    console.log(updatedRow);
-    
-    // await updateAccountStatus(updatedRow)
-    // toaster("Cập nhật trạng thái tài khoản thành công", { variant: 'success' })
-    return updatedRow;
   }
 
   const handleUpdateError = () => {
@@ -125,13 +128,42 @@ function ManageAccount() {
   }
 
   const handleSearch = () => {
-    console.log(searchValue);
+    if (!searchValue && Object.keys(searchParam).length <= 2) {
+      return;
+    }
 
+    const param = {};
+    if (searchValue.startsWith('#')) {
+      param[columnFields[1].field] = searchValue.substring(1)
+    }
+    else if(searchValue.startsWith('&')){
+      param[columnFields[4].field] = searchValue.substring(1)
+    } 
+    else {
+      param[columnFields[2].field] = searchValue
+    }
+    setSearchParam(param)
   }
+
+  useEffect(() => {
+    setTimeout(() => {
+      const param = {};
+      if (searchValue.startsWith('#')) {
+        param[columnFields[1].field] = searchValue.substring(1)
+      }
+      else if(searchValue.startsWith('&')){
+        param[columnFields[4].field] = searchValue.substring(1)
+      } 
+      else {
+        param[columnFields[2].field] = searchValue
+      }
+      setSearchParam(param)
+    }, 1500);
+  }, [searchValue]);  
 
 
   return (
-    <PageContainer
+    <CustomPageContainer
       title='Quản lý sản phẩm'
       breadCrumbs={breadcrumbs}
       sx={{ maxWidth: { xl: 'unset', lg: '94vw', sm: '92vw', xs: '100vw' } }}
@@ -140,31 +172,40 @@ function ManageAccount() {
         display='flex'
         width='100%'
         justifyContent='flex-end'
+        alignItems='center'
+        mb={3}
       >
         <ManagePageSearch
           {...{ searchValue, setSearchValue, handleSearch }}
         />
       </Box>
       <DataGridConfirmDialog
+        isPending={isDeleting}
         onClick={handleDeleteClick}
         state={dialogPayload.state}
         title="Xác nhận xóa?"
         content="Sản phẩm, bao gồm cả thông tin sẽ bị xóa vĩnh viễn và không thể khôi phục."
       />
       <DataGrid
-        getRowId={(row) => row.productCode}
-        rows={rows}
+        getRowId={(row) => row._id ? row._id : row.id}
+        rows={searchResult ? searchResult : rows}
         columns={columns}
         slots={{ toolbar: CustomGridToolbar }}
-        slotProps={{toolbar:{onClick: ()=> navigate('create-product')}}}
-        checkboxSelection
-        processRowUpdate={handleUpdate}
+        slotProps={{ toolbar: { onClick: () => navigate('create-product') } }}
         onProcessRowUpdateError={handleUpdateError}
         loading={isLoading}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 5,
+            },
+          },
+        }}
+        pageSizeOptions={[5, 10]}
       />
 
-    </PageContainer>
+    </CustomPageContainer>
   )
 }
 
-export default ManageAccount
+export default ManageProduct

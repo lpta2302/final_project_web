@@ -1,5 +1,6 @@
 import account from "../../models/account.model.js";
 import wishList from "../../models/wishlist.model.js";
+import SeenModel from "../../models/seen.model.js";
 import Address from "../../models/address.model.js";
 import Review from "../../models/review.model.js";
 import Cart from "../../models/cart.model.js";
@@ -28,26 +29,36 @@ const accountController = {
         // Tạo accountCode
         const accountCode = `ACC_${emailPrefix}${timeString}`;
 
-        const _account = new account({
+        const newAccount = new account({
           ...req.body,
           password: hashedPassword,
           accountCode: accountCode, // Gắn accountCode vào req.body
         });
 
-        await _account.save();
+        const savedAccount = await newAccount.save();
         console.log("a");
+        console.log(savedAccount._id);
+        
 
         const wishlist = new wishList({
           client: {
-            _id: _account._id,
+            _id: savedAccount._id,
           },
         });
 
         await wishlist.save();
 
+        const seen = new SeenModel({
+          userId: {
+            _id: savedAccount._id.toString(),
+          },
+        });
+
+        await seen.save();
+
         // Tạo JWT
         const token = jwt.sign(
-          { id: _account._id, email: _account.email },
+          { id: savedAccount._id, email: savedAccount.email },
           secretKey,
           {
             expiresIn: "24h", // Token sẽ hết hạn sau 1 giờ

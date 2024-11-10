@@ -27,39 +27,64 @@ const productController = {
   // [GET] client/product/search
   searchProduct: async (req, res) => {
     try {
-      // Lấy từ khóa tìm kiếm (nếu không có thì mặc định là chuỗi rỗng)
-      const search = req.query.search || "";
-
-      // Điều kiện lọc và sắp xếp
-      let sort = req.query.sort || "productName"; // Mặc định sắp xếp theo tên sản phẩm (productName)
-
-      // Cấu trúc dữ liệu sắp xếp (tăng dần hoặc giảm dần)
-      req.query.sort ? (sort = req.query.sort.split(",")) : (sort = [sort]);
-
-      let sortBy = {};
-      if (sort[1]) {
-        sortBy[sort[0]] = sort[1];
-      } else {
-        sortBy[sort[0]] = "asc"; // Mặc định sắp xếp tăng dần
+      const { productName, minPrice, maxPrice, productStatus, category, tag, brand, slug } = req.query;
+  
+      let filter = {};
+  
+      // Product name (case-insensitive partial match)
+      if (productName) {
+        filter.productName = { $regex: productName, $options: "i" };
+      }
+  
+      // Price filtering based on the first element of the specs array
+      if (minPrice || maxPrice) {
+        filter["specs.0.price"] = {}; // Accessing the price of the first element in specs
+        if (minPrice) {
+          filter["specs.0.price"].$gte = Number(minPrice); // Greater than or equal to minPrice
+        }
+        if (maxPrice) {
+          filter["specs.0.price"].$lte = Number(maxPrice); // Less than or equal to maxPrice
+        }
+      }
+  
+      // Product status
+      if (productStatus) {
+        filter.productStatus = productStatus;
+      }
+  
+      // Category filtering
+      if (category) {
+        filter.category = category;
       }
 
-      // Tìm kiếm trong productCode, productName và description
-      const products = await Product.find({
-        $or: [
-          { productCode: { $regex: search, $options: "i" } },
-          { productName: { $regex: search, $options: "i" } },
-          { description: { $regex: search, $options: "i" } }, // Tìm kiếm thêm theo description
-        ],
-      }).sort(sortBy);
-
-      // Trả về kết quả tìm kiếm
+      if (brand) {
+        filter.brand = brand;
+      }
+  
+      // Tag filtering
+      if (tag) {
+        filter.tag = { $in: tag }; // Match any tag in the array
+      }
+  
+      // Slug filtering
+      if (slug) {
+        filter.slug = slug;
+      }
+  
+      // Query products based on filter conditions, and populate necessary references
+      const products = await Product.find(filter)
+        .populate("category")
+        .populate("tag")
+        .populate("specs")
+        .populate("brand");
+  
+      // Return the list of products
       res.status(200).json(products);
-    } catch (err) {
-      // Xử lý lỗi
+    } catch (error) {
       res.status(500).json(false);
     }
   },
-
+  
   // [GET] /client/product/relative/:idProduct
   relativeProduct: async (req, res) => {
     try {
@@ -94,6 +119,39 @@ const productController = {
       res.status(200).json(products);
     } catch (err) {
       res.status(500).json(false);
+    }
+  },
+
+  // [GET] client/category/search
+  searchCategory: async (req, res) => {
+    try {
+      const { categoryId } = req.params;
+      const products = await Product.find({
+        category: categoryId,
+      });
+
+      res.status(200).json(products);
+    } catch (err) {
+      res.status(500).json(false);
+    }
+  },
+
+  getProductBySlug: async (req, res) => {
+    try {
+      const slug = req.params.slug;
+      console.log(slug);
+
+      const product = await Product.findOne({ slug: slug }).populate([
+        { path: "relativeProduct" },
+        { path: "tag" },
+        { path: "specs" },
+        { path: "category" },
+        { path: "brand", select: "brandCode brandName" }, // Replace with actual fields in the "Brand" schema
+      ]);
+
+      res.json(product);
+    } catch (error) {
+      res.json(false);
     }
   },
 };

@@ -8,7 +8,7 @@ function CustomGridToolbar(props) {
 
   const handleClick = onClick ? onClick :
     () => {
-      const id = new Date().toISOString();
+      const id = new Date().toISOString();;
 
       setRows((oldRows) => [
         ...oldRows,

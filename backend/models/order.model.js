@@ -9,6 +9,7 @@ const orderScheme = new mongoose.Schema(
     processStatus: {
       type: String,
       enum: ["pending", "completed", "cancelled"],
+      default: "pending",
     },
     paymentStatus: {
       type: String,
@@ -20,7 +21,6 @@ const orderScheme = new mongoose.Schema(
     },
     totalAmount: {
       type: Number,
-      required: true,
     },
     shippingCost: {
       type: Number,

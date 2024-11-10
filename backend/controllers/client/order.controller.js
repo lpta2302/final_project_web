@@ -1,4 +1,10 @@
 import Order from "../../models/order.model.js";
+import Cart from "../../models/cart.model.js";
+import {
+  calculateDiscountAmount,
+  calculateItemsTotal,
+  createOrUpdateCart,
+} from "../../helpers/order.helper.js";
 
 // [GET] /client/order/user/:id
 export const index = async (req, res) => {
@@ -34,12 +40,59 @@ export const index = async (req, res) => {
 // [POST] /client/order/add
 export const add = async (req, res) => {
   try {
-    const record = new Order(req.body);
-    await record.save();
+    const {
+      userId,
+      cart,
+      voucher = [],
+      shippingCost = 0,
+      ...orderData
+    } = req.body;
 
-    res.json(record);
+    // Create or update the cart and get the new cart
+    const newCart = await createOrUpdateCart(userId, cart);
+    orderData.cart = newCart._id;
+
+    // Populate spec in cart items to retrieve price and discountPercentage
+    await Cart.populate(cart, {
+      path: "cartItems.spec",
+      select: "price discountPercentage",
+    });
+
+    // Calculate items total
+    const itemsTotal = calculateItemsTotal(cart);
+
+    // Calculate discount amount from vouchers
+    const discountAmount = await calculateDiscountAmount(voucher, itemsTotal);
+
+    // Calculate total amount
+    const totalAmount = itemsTotal - discountAmount + shippingCost;
+
+    // Assign calculated values to orderData
+    orderData.totalAmount = totalAmount;
+    orderData.discountAmount = discountAmount;
+    orderData.shippingCost = shippingCost;
+    orderData.userId = userId;
+    orderData.voucher = voucher;
+
+    // Create new order and save to database
+    const newOrder = new Order(orderData);
+    await newOrder.save();
+
+    // Populate `spec`, `voucher`, and other fields in response
+    const populatedOrder = await Order.findById(newOrder._id)
+      .populate({
+        path: "cart",
+        populate: {
+          path: "cartItems.spec",
+          select: "price discountPercentage",
+        },
+      })
+      .populate("voucher address");
+
+    res.json(populatedOrder);
   } catch (error) {
-    res.status(400).json(false);
+    console.error(error);
+    res.status(400).json({ success: false, message: "Lỗi khi tạo đơn hàng" });
   }
 };
 

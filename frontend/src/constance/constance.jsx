@@ -2,7 +2,14 @@ import {
   AccountBoxOutlined,
   CategoryOutlined,
   Dashboard,
+  Done,
+  DoNotDisturbAltOutlined,
+  Drafts,
+  HourglassBottomOutlined,
+  People,
+  ViewCarouselOutlined,
   WarehouseOutlined,
+  Warning,
 } from "@mui/icons-material";
 import {
   BoxIcon,
@@ -20,9 +27,13 @@ import {
   Voucher,
   Dashboard as DashboardPage,
   ManageCriteria,
+  ManageSliderBanner,
+  CustomerDashboard,
+  OrderDashboard,
 } from "../_root/pages";
 import Orders from "../_root/pages/customer/Orders";
 import Cart from "../_root/pages/customer/Cart";
+import { element } from "prop-types";
 
 export const adminNav = [
   {
@@ -49,7 +60,13 @@ export const adminNav = [
   },
   {
     kind: "header",
-    title: "Quản lý mua hàng",
+    title: "Quản lý cửa hàng",
+  },
+  {
+    segment: "manage-slider-banner",
+    title: "Slider Banner",
+    icon: <ViewCarouselOutlined />,
+    element: <ManageSliderBanner />,
   },
   {
     segment: "manage-voucher",
@@ -78,11 +95,24 @@ export const adminNav = [
     title: "Báo cáo",
   },
   {
-    segment: "dashboard",
-    title: "Thống kê",
+    segment: 'reports',
+    title: 'Thống kê',
     icon: <Dashboard />,
-    element: <DashboardPage />,
-  },
+    children: [
+      {
+        segment: 'customers',
+        title: 'Khách hàng',
+        icon: <People />,
+        element: <CustomerDashboard />
+      },
+      {
+        segment: 'orders',
+        title: 'Đơn hàng',
+        icon: <OrderIcon />,
+        element: <OrderDashboard />
+      },
+    ],
+  }
 ];
 
 export const customerNav = [
@@ -105,3 +135,31 @@ export const customerNav = [
     element: <Cart />,
   },
 ];
+
+export const productStatuses = {
+  available: {
+    label: 'available',
+    color: 'success',
+    icon: Done,
+  },
+  unavailable: {
+    label: 'unavailable',
+    color: 'error',
+    icon: DoNotDisturbAltOutlined,
+  },
+  outOfStock: {
+    label: 'out of stock',
+    color: 'warning',
+    icon: Warning,
+  },
+  incoming: {
+    label: 'incoming',
+    color: 'secondary',
+    icon: HourglassBottomOutlined,
+  },
+  draft: {
+    label: 'draft',
+    color: 'whitesmoke',
+    icon: Drafts,
+  },
+}

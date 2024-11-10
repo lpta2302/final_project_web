@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Container,
   Card,
@@ -11,100 +11,15 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import axios from "axios";
+import { useReadAllVouchers } from "../../../api/queries"; // Import your hooks here
 
 const Voucher = () => {
-  const [vouchers, setVouchers] = useState([]);
-  const [collectedVouchers, setCollectedVouchers] = useState([]); // Lưu mã đã thu thập
   const [open, setOpen] = useState(false);
   const [selectedVoucher, setSelectedVoucher] = useState(null);
+  const [collectedVouchers, setCollectedVouchers] = useState([]);
 
-  useEffect(() => {
-    const mockVouchers = [
-      {
-        _id: "1",
-        voucherName: "Giảm giá 10%",
-        discountPercentage: 10,
-        description: "Áp dụng cho tất cả sản phẩm",
-        type: "percent",
-        fixedAmount: null,
-        voucherCode: "CODE10",
-        expiryDate: "31/12/2024",
-        applicableFor: "Khách hàng mới",
-        minOrderValue: 1000000,
-        appliesToBrand: "Dell",
-        freeShipping: false,
-      },
-      {
-        _id: "2",
-        voucherName: "Giảm 50.000 VND",
-        discountPercentage: null,
-        description: "Giảm 50.000 VND cho đơn hàng trên 500.000 VND",
-        type: "fixed",
-        fixedAmount: 50000,
-        voucherCode: "FIXED50000",
-        expiryDate: "30/11/2024",
-        applicableFor: "Tất cả khách hàng",
-        minOrderValue: 500000,
-        appliesToBrand: "Asus",
-        freeShipping: true,
-      },
-      {
-        _id: "3",
-        voucherName: "Miễn phí vận chuyển",
-        discountPercentage: null,
-        description: "Áp dụng cho tất cả đơn hàng",
-        type: "free_shipping",
-        fixedAmount: null,
-        voucherCode: "FREESHIP",
-        expiryDate: "31/10/2024",
-        applicableFor: "Tất cả khách hàng",
-        minOrderValue: 0,
-        appliesToBrand: null,
-        freeShipping: true,
-      },
-      {
-        _id: "4",
-        voucherName: "Miễn phí vận chuyển",
-        discountPercentage: null,
-        description: "Áp dụng cho tất cả đơn hàng",
-        type: "free_shipping",
-        fixedAmount: null,
-        voucherCode: "FREESHIP",
-        expiryDate: "31/10/2024",
-        applicableFor: "Tất cả khách hàng",
-        minOrderValue: 0,
-        appliesToBrand: null,
-        freeShipping: true,
-      },
-      {
-        _id: "5",
-        voucherName: "Miễn phí vận chuyển",
-        discountPercentage: null,
-        description: "Áp dụng cho tất cả đơn hàng",
-        type: "free_shipping",
-        fixedAmount: null,
-        voucherCode: "FREESHIP",
-        expiryDate: "31/10/2024",
-        applicableFor: "Tất cả khách hàng",
-        minOrderValue: 0,
-        appliesToBrand: null,
-        freeShipping: true,
-      },
-    ];
-
-    const fetchVouchers = async () => {
-      try {
-        // const response = await axios.get("/api/vouchers");
-        // setVouchers(response.data);
-        setVouchers(mockVouchers); // Dữ liệu giả lập
-      } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu voucher", error);
-      }
-    };
-
-    fetchVouchers();
-  }, []);
+  // Fetch all vouchers
+  const { data: vouchers = [], isLoading, error } = useReadAllVouchers();
 
   const handleOpen = (voucher) => {
     setSelectedVoucher(voucher);
@@ -116,16 +31,19 @@ const Voucher = () => {
     setSelectedVoucher(null);
   };
 
-  // Hàm thu thập mã giảm giá
+  // Collect voucher code
   const handleCollectVoucher = (voucher) => {
-    setCollectedVouchers((prevVouchers) => {
-      if (!prevVouchers.includes(voucher.voucherCode)) {
-        return [...prevVouchers, voucher.voucherCode];
+    setCollectedVouchers((prev) => {
+      if (!prev.includes(voucher.voucherCode)) {
+        return [...prev, voucher.voucherCode];
       }
-      return prevVouchers; // Nếu mã đã có trong danh sách, không thêm nữa
+      return prev;
     });
     handleClose();
   };
+
+  if (isLoading) return <Typography>Đang tải dữ liệu voucher...</Typography>;
+  if (error) return <Typography>Có lỗi xảy ra khi lấy dữ liệu voucher</Typography>;
 
   return (
     <Container>
@@ -140,18 +58,15 @@ const Voucher = () => {
                 <Typography variant="h5" gutterBottom>
                   {voucher.voucherName}
                 </Typography>
-                {voucher.type === "percent" && (
+                {voucher.discountPercentage && (
                   <Typography variant="body1">
                     Giảm {voucher.discountPercentage}%
                   </Typography>
                 )}
-                {voucher.type === "fixed" && (
+                {voucher.fixedAmount && (
                   <Typography variant="body1">
                     Giảm cố định: {voucher.fixedAmount} VND
                   </Typography>
-                )}
-                {voucher.type === "free_shipping" && (
-                  <Typography variant="body1">Miễn phí vận chuyển</Typography>
                 )}
                 <Typography variant="body2" color="textSecondary">
                   {voucher.description}
@@ -170,63 +85,44 @@ const Voucher = () => {
         ))}
       </Grid>
 
-      {/* Modal chi tiết voucher */}
+      {/* Voucher detail modal */}
       {selectedVoucher && (
         <Dialog open={open} onClose={handleClose}>
           <DialogTitle>{selectedVoucher.voucherName}</DialogTitle>
           <DialogContent>
-            <Typography variant="body1">
-              {selectedVoucher.description}
-            </Typography>
-            {selectedVoucher.type === "percent" && (
+            <Typography variant="body1">{selectedVoucher.description}</Typography>
+            {selectedVoucher.discountPercentage && (
               <Typography variant="body1">
                 Giảm {selectedVoucher.discountPercentage}%
               </Typography>
             )}
-            {selectedVoucher.type === "fixed" && (
+            {selectedVoucher.fixedAmount && (
               <Typography variant="body1">
                 Giảm cố định: {selectedVoucher.fixedAmount} VND
               </Typography>
             )}
-            {selectedVoucher.freeShipping && (
-              <Typography variant="body1">Miễn phí vận chuyển</Typography>
-            )}
             <Typography variant="body1">
-              Mã áp dụng: {selectedVoucher.voucherCode}
+              Mã áp dụng: {selectedVoucher.voucherCode || "Không có mã"}
             </Typography>
             <Typography variant="body1">
-              Hạn sử dụng: {selectedVoucher.expiryDate}
+              Ngày cập nhật: {new Date(selectedVoucher.updatedAt).toLocaleDateString("vi-VN")}
             </Typography>
             <Typography variant="body1">
-              Đối tượng áp dụng: {selectedVoucher.applicableFor}
+              Số khách hàng đã thu thập: {selectedVoucher.clients.length}
             </Typography>
-            <Typography variant="body1">
-              Giá trị đơn hàng tối thiểu:{" "}
-              {selectedVoucher.minOrderValue
-                ? `${selectedVoucher.minOrderValue} VND`
-                : "Không yêu cầu"}
-            </Typography>
-            {selectedVoucher.appliesToBrand && (
-              <Typography variant="body1">
-                Áp dụng cho hãng: {selectedVoucher.appliesToBrand}
-              </Typography>
-            )}
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="secondary">
               Đóng
             </Button>
-            <Button
-              onClick={() => handleCollectVoucher(selectedVoucher)}
-              color="primary"
-            >
+            <Button onClick={() => handleCollectVoucher(selectedVoucher)} color="primary">
               Thu thập mã
             </Button>
           </DialogActions>
         </Dialog>
       )}
 
-      {/* Hiển thị danh sách mã đã thu thập */}
+      {/* Display collected voucher codes */}
       <Typography variant="h5" style={{ marginTop: "20px" }}>
         Danh sách mã đã thu thập:
       </Typography>

@@ -104,8 +104,6 @@ function TopAppBar() {
         'forgot-password': <ForgotPassword setModalType={setModalType} />
     }
 
-    console.log(user, isLoadingUser, isAuthenticated);
-
     return (
         <Box component='header' sx={{ display: 'flex', alignItems: 'center' }}>
             <AppBar color='white' component="nav"

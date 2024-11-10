@@ -5,15 +5,16 @@ import { useDeleteAccount, useReadAllAccount, useUpdateAccountStatus } from '../
 import { Delete } from '@mui/icons-material';
 import { useEffect, useState } from 'react';
 import DataGridConfirmDialog from '../../../components/dialogs/DataGridConfirmDialog.jsx';
-import { ManagePageSearch } from "../../../components";
+import { CustomPageContainer, ManagePageSearch } from "../../../components";
 import { enqueueSnackbar as toaster } from 'notistack';
 import { Box } from '@mui/material';
+import { formatDDMMYYY } from '../../../util/datetimeHandler.js';
 
 
 function ManageAccount() {
   const [searchValue, setSearchValue] = useState('')
   const [rows, setRows] = useState()
-  const { data } = useReadAllAccount();
+  const { data, isLoading } = useReadAllAccount();
   const [dialogPayload, setDialogPayload] = useState({ state: false, id: null });
   const { mutateAsync: deleteAccount } = useDeleteAccount();
   const { mutateAsync: updateAccountStatus } = useUpdateAccountStatus();
@@ -25,6 +26,8 @@ function ManageAccount() {
   ]
 
   useEffect(() => setRows(data), [data])
+  console.log(data);
+  
 
   const columns = [
     { field: 'accountCode', headerName: 'Id', width: 150 },
@@ -33,7 +36,7 @@ function ManageAccount() {
     { field: 'lastName', headerName: 'Tên', width: 200 },
     { field: 'email', headerName: 'Email', width: 200 },
     { field: 'phoneNumber', headerName: 'Số điện thoại', width: 150 },
-    { field: 'dateOfBirth', headerName: 'Ngày sinh', width: 150 },
+    { field: 'dateOfBirth', headerName: 'Ngày sinh', width: 150, valueFormatter: (value) => formatDDMMYYY(new Date(value)) },
     {
       field: 'accountStatus', headerName: 'Trạng thái', width: 150, renderCell: renderCustomerStatus,
       renderEditCell: renderEditCustomerStatus,
@@ -94,7 +97,7 @@ function ManageAccount() {
 
 
   return (
-    <PageContainer
+    <CustomPageContainer
       title='Quản lý tài khoản'
       breadCrumbs={breadcrumbs}
       sx={{ maxWidth: { xl: 'unset', lg: '94vw', sm: '92vw', xs: '100vw' } }}
@@ -103,6 +106,7 @@ function ManageAccount() {
         display='flex'
         width='100%'
         justifyContent='flex-end'
+        mb={3}
       >
         <ManagePageSearch
           {...{ searchValue, setSearchValue, handleSearch }}
@@ -119,13 +123,20 @@ function ManageAccount() {
         rows={rows}
         columns={columns}
         slots={{ toolbar: GridToolbar }}
-        checkboxSelection
-        // onCellEditStop={handleUpdate}
         processRowUpdate={handleUpdate}
         onProcessRowUpdateError={handleUpdateError}
+        loading={isLoading}
+        initialState={{
+          pagination: {
+            paginationModel: {
+              pageSize: 5,
+            },
+          },
+        }}
+        pageSizeOptions={[5, 10]}
       />
 
-    </PageContainer>
+    </CustomPageContainer>
   )
 }
 

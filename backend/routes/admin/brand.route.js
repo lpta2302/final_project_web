@@ -18,6 +18,6 @@ brandRoutes.patch("/:id", brandController.updateBrand);
 brandRoutes.post("/", brandController.addBrand);
 
 // Xem tất cả các brand
-brandRoutes.get("/", isAdmin, brandController.showBrand);
+brandRoutes.get("/", brandController.showBrand);
 
 export default brandRoutes;

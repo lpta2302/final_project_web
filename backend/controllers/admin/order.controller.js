@@ -105,9 +105,11 @@ export const edit = async (req, res) => {
   try {
     const orderId = req.params.orderId;
 
+    const { processStatus } = req.body;
+
     const result = await Order.findOneAndUpdate(
       { _id: orderId },
-      { processStatus: "completed" },
+      { processStatus: processStatus },
       { new: true }
     );
 
@@ -148,7 +150,7 @@ export const search = async (req, res) => {
 
     // Kiểm tra nếu orderId có trong query
     if (orderId) {
-      filter._id = orderId; // Tìm kiếm chính xác theo orderId
+      filter._id = orderId; // Tìm kiếm theo orderId
     }
 
     // Kiểm tra nếu paymentMethod có trong query

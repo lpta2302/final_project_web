@@ -53,6 +53,8 @@ export const getSeenProducts = async (req, res) => {
     // Tìm bản ghi `seen` của người dùng
     const seen = await Seen.findOne({ userId: userId }).populate("products");
 
+    console.log(seen);
+    
     if (!seen || seen.products.length === 0) {
       return res.status(404).json(false);
     }

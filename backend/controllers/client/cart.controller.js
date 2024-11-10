@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 import Cart from "../../models/cart.model.js";
-import Voucher from "../../models/voucher.model.js";
+// import Voucher from "../../models/voucher.model.js"; // Đã comment import của Voucher vì không cần dùng
 
 // [POST] /cart/add
 export const add = async (req, res) => {
   try {
-    const { client, spec } = req.body;
+    const { client, spec, quantity } = req.body; // Lấy quantity từ req.body
 
     // Chuyển đổi spec từ chuỗi sang ObjectId
     const specObjectId = new mongoose.Types.ObjectId(spec);
@@ -20,13 +20,13 @@ export const add = async (req, res) => {
       );
 
       if (itemIndex !== -1) {
-        // Nếu sản phẩm đã tồn tại, tăng số lượng
-        exitCart.cartItems[itemIndex].quantity++;
+        // Nếu sản phẩm đã tồn tại, tăng số lượng lên bằng quantity từ req.body
+        exitCart.cartItems[itemIndex].quantity += quantity || 1; // Dùng quantity nếu có, mặc định là 1 nếu không có
       } else {
-        // Nếu sản phẩm chưa tồn tại, thêm sản phẩm mới vào cartItems
+        // Nếu sản phẩm chưa tồn tại, thêm sản phẩm mới vào cartItems với quantity từ req.body
         exitCart.cartItems.push({
           spec: specObjectId, // Sử dụng ObjectId đã chuyển đổi
-          quantity: 1, // Mặc định số lượng là 1
+          quantity: quantity || 1, // Sử dụng quantity từ req.body, mặc định là 1 nếu không có
         });
       }
 
@@ -38,13 +38,13 @@ export const add = async (req, res) => {
 
       return res.status(200).json(true);
     } else {
-      // Nếu giỏ hàng chưa tồn tại, tạo mới giỏ hàng với sản phẩm đầu tiên
+      // Nếu giỏ hàng chưa tồn tại, tạo mới giỏ hàng với sản phẩm đầu tiên và quantity từ req.body
       const newCart = {
         client: client,
         cartItems: [
           {
-            spec: specObjectId, // Sử dụng ObjectId đã chuyển đổi
-            quantity: 1, // Mặc định số lượng là 1
+            spec: specObjectId,
+            quantity: quantity || 1, // Sử dụng quantity từ req.body, mặc định là 1 nếu không có
           },
         ],
       };
@@ -88,7 +88,7 @@ export const showCart = async (req, res) => {
       path: "cartItems.spec",
       populate: {
         path: "products", // Populate product trong spec
-        select: "productName price", // Chọn các trường cần thiết từ product
+        select: "productName price imageURLs", // Chọn các trường cần thiết từ product
       },
     });
 
@@ -106,7 +106,7 @@ const cartController = {
   // [PATCH] /client/cart
   updateCart: async (req, res) => {
     try {
-      const { cartId, cartItems, voucherId } = req.body;
+      const { cartId, cartItems /* , voucherId */ } = req.body; // Loại bỏ voucherId khỏi req.body
 
       let cart = await Cart.findById(cartId);
 
@@ -134,7 +134,7 @@ const cartController = {
         });
       }
 
-      // Add voucher to the cart if voucherId is provided
+      /* 
       if (voucherId) {
         const voucherExist = await Voucher.findOne({
           _id: voucherId,
@@ -150,13 +150,13 @@ const cartController = {
           return res.status(400).json(false);
         }
 
-        // Add the voucher to the cart if it doesn't already exist
         if (!cart.vouchers.includes(voucherId)) {
           cart.vouchers.push(voucherId);
         }
       }
+      */
 
-      // Save the updated cart
+      // Lưu lại giỏ hàng đã được cập nhật
       await cart.save();
 
       return res.status(200).json(cart);

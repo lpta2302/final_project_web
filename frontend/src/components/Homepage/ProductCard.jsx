@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -6,21 +6,59 @@ import {
   CardMedia,
   CardContent,
   IconButton,
+  styled,
+  Button,
 } from "@mui/material";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import { Link } from "react-router-dom"; // Import Link từ react-router-dom
+import { Link } from "react-router-dom";
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { enqueueSnackbar } from "notistack";
+import { useAddItemToWishlist, useRemoveItemFromWishlist } from "../../api/queries";
 
-const ProductCard = ({ product, handleToggleFavorite, isFavorite }) => {
+const TruncatedTypography = styled(Typography, {
+  shouldForwardProp: (prop) => prop !== 'lineClamp', // Ensure lineClamp can be passed as a prop
+})(({ lineClamp = 3 }) => ({
+  display: '-webkit-box',
+  overflow: 'hidden',
+  WebkitBoxOrient: 'vertical',
+  WebkitLineClamp: lineClamp, // Use dynamic lineClamp value
+  lineClamp, // Fallback for other browsers
+}));
+
+const ProductCard = ({ product, wishList, customer, isLoggedIn }) => {
+  const [isFavorite, setIsFavorite] = useState(false);
+  const { mutateAsync: like, isPending: isLiking } = useAddItemToWishlist();
+  const { mutateAsync: unLike, isPending: isUnliking } = useRemoveItemFromWishlist();
+
+  useEffect(() => {
+    if (!wishList) return;
+    setIsFavorite(wishList.products.some((prod) => String(prod._id) === String(product._id)));
+  }, [wishList, product._id]);
+
+  const handleToggleFavorite = async () => {
+    if (!isLoggedIn || !customer._id) {
+      enqueueSnackbar("Bạn cần đăng nhập để thích sản phẩm này!", { variant: 'info' });
+      return;
+    }
+
+    if (isFavorite) {
+      await unLike({ customerId: customer._id, productId: product._id });
+    } else {
+      await like({ customerId: customer._id, productId: product._id })
+    }
+
+    setIsFavorite(!isFavorite);
+
+
+  }
   return (
     <Card
       sx={{
-        maxWidth: 300,
-        width: "100%",
+        minWidth: 224,
         margin: "0 auto",
         display: "flex",
         flexDirection: "column",
-        height: "525px", // Chiều cao cố định cho các thẻ card
+        height: "480px", // Chiều cao cố định cho các thẻ card
       }}
     >
       <Link
@@ -32,9 +70,9 @@ const ProductCard = ({ product, handleToggleFavorite, isFavorite }) => {
           image={product.imageURLs[0]}
           alt={product.productName}
           sx={{
-            width: "100%",
-            height: "300px",
-            objectFit: "cover",
+            width: "100%", // Chiều rộng cố định
+            height: "224px", // Chiều cao cố định
+            objectFit: "contain", // Đảm bảo hình ảnh được cắt mà không bị méo
             borderRadius: "8px 8px 0 0",
           }}
         />
@@ -47,18 +85,19 @@ const ProductCard = ({ product, handleToggleFavorite, isFavorite }) => {
           }}
         >
           <Box>
-            <Typography variant="h6" component="div">
+            <TruncatedTypography lineClamp={2} variant="h6" fontSize='1rem' lineHeight="1.2" mb={1} component="div">
               {product.productName}
-            </Typography>
-            <Typography
+            </TruncatedTypography>
+            <TruncatedTypography
               variant="body2"
               color="text.secondary"
-              sx={{ marginBottom: "8px" }}
+              fontSize='0.8rem'
             >
               {product.description}
-            </Typography>
+            </TruncatedTypography>
           </Box>
           <Typography
+            fontSize="0.8rem"
             variant="body1"
             style={{
               color: product.productStatus === "available" ? "green" : "red",
@@ -73,11 +112,13 @@ const ProductCard = ({ product, handleToggleFavorite, isFavorite }) => {
         display="flex"
         justifyContent="space-between"
         alignItems="center"
-        p={2}
+        px={2}
+        mt={'auto'}
+        mb={0.5}
       >
         <IconButton
           color="error"
-          onClick={() => handleToggleFavorite(product)}
+          onClick={handleToggleFavorite}
           aria-label="favorite"
         >
           {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}

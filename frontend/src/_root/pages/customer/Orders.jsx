@@ -1,6 +1,8 @@
+import ManagePersonalOrder from "./ManagePersonalOrder";
+
 function Orders() {
     return (
-        <div>Orders</div>
+        <ManagePersonalOrder />
     )
 }
 
