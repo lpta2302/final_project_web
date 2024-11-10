@@ -94,7 +94,7 @@ const HomePage = ({ handleAddToCart }) => {
           Sản phẩm khuyến mãi
         </Typography>
         <Box display='inline-flex' gap={2} overflow="auto" width="100%" py={1}>
-          {products?.filter(product => product.specs[0]?.discount).map((product) => (
+          {products?.filter(product => product.specs[0]?.discountPercentage).map((product) => (
             <ProductCard wishList={wishList} customer={user} isLoggedIn={isAuthenticated} product={product} key={product._id} />
           ))}
         </Box>
