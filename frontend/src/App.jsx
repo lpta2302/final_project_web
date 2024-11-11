@@ -28,10 +28,6 @@ import GridProduct from "./_root/pages/customer/GridProduct.jsx";
 import CheckoutPage from "./_root/pages/customer/CheckoutPage.jsx"
 
 const muiTheme = createTheme({
-  colorSchemes: {
-    dark: true,
-    light: true
-  },
   defaultColorScheme: "light",
   palette: {
     white: {

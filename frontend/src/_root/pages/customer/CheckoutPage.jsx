@@ -145,7 +145,7 @@ function CheckoutPage() {
       },
     });
     // create(orderData)
-    navigate(0);
+    navigate('/');
   };
 
   // Show loading while data is being fetched
