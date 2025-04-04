@@ -3,8 +3,11 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import morgan from "morgan";
 import routesAdmin from "./routes/admin/index.route.js";
-import expressSession from 'express-session'; 
+import expressSession from "express-session";
 import routesClient from "./routes/client/index.js";
+// const punycode = require('punycode/');
+
+import punycode from "punycode";
 
 import dotenv, { parse } from "dotenv";
 import database from "./config/database.js";
@@ -22,16 +25,16 @@ app.use(morgan("common"));
 app.use((req, res, next) => {
   const isHttps = req.protocol === "https"; // Check if the protocol is HTTPS
   const secureCookie = isHttps ? true : false; // Set secure flag based on protocol
-  
+
   // Fetch or generate token (use a session value or any dynamic value you prefer)
-  const liveToken = req.session ? req.session.liveToken : "default_token_value"; 
+  const liveToken = req.session ? req.session.liveToken : "default_token_value";
 
   res.cookie("__vercel_live_token", liveToken, {
     httpOnly: true,
     secure: true, // Only set secure flag if HTTPS
-    sameSite: 'strict', // Use dynamic SameSite value
+    sameSite: "strict", // Use dynamic SameSite value
   });
-  
+
   next();
 });
 

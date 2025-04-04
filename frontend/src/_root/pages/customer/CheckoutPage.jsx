@@ -27,13 +27,17 @@ function CheckoutPage() {
   const { user: currentUser, isLoading: isUserLoading } = useAuthContext();
 
   // Fetch cart, vouchers, and addresses data
-  const { data: cartData, isLoading: isCartLoading } = useReadOwnCart(currentUser?._id);
-  const { data: vouchersData, isLoading: isVouchersLoading } = useReadAllVouchers();
-  const { data: addressesData, isLoading: isAddressesLoading } = useReadOwnAddresses(currentUser?._id);
+  const { data: cartData, isLoading: isCartLoading } = useReadOwnCart(
+    currentUser?._id
+  );
+  const { data: vouchersData, isLoading: isVouchersLoading } =
+    useReadAllVouchers();
+  // const { data: addressesData, isLoading: isAddressesLoading } =
+  //   useReadOwnAddresses(currentUser?._id);
 
   // Mutation hook for creating a new order
   const createNewOrder = useCreateNewOrder();
-  const {mutateAsync: create} = useCreateNewOrder();
+  const { mutateAsync: create } = useCreateNewOrder();
 
   // Get current date and add 5 days
   const currentDateTime = new Date();
@@ -48,7 +52,7 @@ function CheckoutPage() {
     orderNote: "",
     expectedReceiveTime: currentDateTime.toISOString().slice(0, 16),
     takeOrderTime: takeOrderTime.toISOString().slice(0, 16),
-    address: "",  // Ensure this is set with a valid ObjectId
+    address: "", // Ensure this is set with a valid ObjectId
     voucher: [],
     cart: {
       client: "",
@@ -88,15 +92,33 @@ function CheckoutPage() {
     }
   }, [cartData]);
 
+  const addressesData = [
+    {
+      _id: "addr1",
+      address: "123 Lê Lợi",
+      ward: "Phường Bến Thành",
+      district: "Quận 1",
+      city: "TP. Hồ Chí Minh",
+    },
+    {
+      _id: "addr2",
+      address: "456 Nguyễn Huệ",
+      ward: "Phường Nguyễn Thái Bình",
+      district: "Quận 1",
+      city: "TP. Hồ Chí Minh",
+    },
+  ];
+  // const isAddressesLoading = false;
+
   // Set default address if available
   useEffect(() => {
-    if (addressesData && addressesData.length > 0 && !orderData.address) {
-      setOrderData((prevData) => ({
-        ...prevData,
-        address: addressesData[0]._id,  // Default to the first address
-      }));
-    }
-  }, [addressesData, orderData.address]);
+    setOrderData((prevData) => ({
+      ...prevData,
+      address: "6711cc0dcdf8a1dcfcf38f88",
+    }));
+  }, []);
+
+  console.log(addressesData);
 
   // Handle form field changes
   const handleChange = (e) => {
@@ -145,11 +167,11 @@ function CheckoutPage() {
       },
     });
     // create(orderData)
-    navigate('/');
+    navigate("/");
   };
 
   // Show loading while data is being fetched
-  if (isUserLoading || isCartLoading || isVouchersLoading || isAddressesLoading) {
+  if (isUserLoading || isCartLoading || isVouchersLoading) {
     return <Typography>Loading data...</Typography>;
   }
 
